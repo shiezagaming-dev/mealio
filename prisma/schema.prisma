@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String    @id @default(cuid())
+  username          String    @unique
+  email             String    @unique
+  password          String
+  avatar            String?
+  bio               String?
+  favoriteCuisines  String[]
+  dietaryPreferences String[]
+  skillLevel        String    @default("Beginner")
+  
+  // Gamification
+  xp                Int       @default(0)
+  level             Int       @default(1)
+  streak            Int       @default(0)
+  
+  // Relations
+  savedRecipes      SavedRecipe[]
+  createdRecipes    Recipe[]
+  mealPlans         MealPlan[]
+  shoppingLists     ShoppingList[]
+  history           History[]
+  achievements      Achievement[]
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model Recipe {
+  id            String   @id @default(cuid())
+  title         String
+  description   String
+  image         String
+  prepTime      Int
+  cookTime      Int
+  difficulty    String
+  servings      Int
+  ingredients   Json     // Array of {item, amount, unit}
+  instructions  Json     // Array of {step, text, image}
+  nutrition     Json?    // {calories, protein, carbs, fat}
+  cuisine       String
+  category      String
+  rating        Float     @default(0)
+  userId        String?
+  user          User?     @relation(fields: [userId], references: [id])
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model SavedRecipe {
+  id        String   @id @default(cuid())
+  userId    String
+  recipeId  String
+  folder    String   @default("Favorites")
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model MealPlan {
+  id            String   @id @default(cuid())
+  userId        String
+  weekStartDate DateTime
+  plan          Json     // Array of {day, breakfast, lunch, dinner}
+  user          User     @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+}
+
+model ShoppingList {
+  id        String   @id @default(cuid())
+  userId    String
+  items     Json     // Array of {item, amount, unit, checked}
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model History {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String   // "SCAN", "COOK", "SEARCH"
+  recipeId  String?
+  query     String?
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String
+  unlockedAt  DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+}

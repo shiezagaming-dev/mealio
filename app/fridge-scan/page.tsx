@@ -1,0 +1,120 @@
+'use client';
+
+import React, { useState } from 'react';
+import { Camera, Refrigerator, Loader2, X, Plus, Search } from 'lucide-react';
+import Link from 'next/link';
+
+export default function FridgeScanPage() {
+  const [image, setImage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [detectedIngredients, setDetectedIngredients] = useState<string[]>([]);
+  const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setImage(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleScan = async () => {
+    if (!image) return;
+    setLoading(true);
+    // Simulation appel AIService.scanFridge
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setDetectedIngredients(["Tomates", "Œufs", "Fromage", "Lait", "Épinards", "Oignons"]);
+    setLoading(false);
+  };
+
+  const toggleIngredient = (ing: string) => {
+    setSelectedIngredients(prev => 
+      prev.includes(ing) ? prev.filter(i => i !== ing) : [...prev, ing]
+    );
+  };
+
+  return (
+    <div className="max-w-md mx-auto px-6 pt-8 space-y-6">
+      <header className="space-y-2">
+        <h1 className="text-3xl font-bold">Scan Frigo 🧊</h1>
+        <p className="text-slate-500 dark:text-slate-400">Qu'avez-vous dans vos placards ?</p>
+      </header>
+
+      {!detectedIngredients.length ? (
+        <div className="space-y-6">
+          <div className="aspect-square glass-card relative overflow-hidden flex items-center justify-center border-dashed border-2 border-slate-300 dark:border-slate-600">
+            {image ? (
+              <>
+                <img src={image} alt="Fridge" className="w-full h-full object-cover" />
+                <button onClick={() => setImage(null)} className="absolute top-4 right-4 p-2 bg-black/50 text-white rounded-full"><X size={20} /></button>
+              </>
+            ) : (
+              <div className="text-center space-y-4 p-8">
+                <div className="mx-auto w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-full flex items-center justify-center"><Refrigerator size={32} /></div>
+                <p className="text-sm text-slate-500">Prenez une photo de votre frigo</p>
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <label className="flex items-center justify-center space-x-2 p-4 glass-card cursor-pointer">
+              <Camera size={20} />
+              <span className="font-medium">Photo</span>
+              <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleFileUpload} />
+            </label>
+            <label className="flex items-center justify-center space-x-2 p-4 glass-card cursor-pointer">
+              <Plus size={20} />
+              <span className="font-medium">Manuel</span>
+              <input type="file" className="hidden" />
+            </label>
+          </div>
+
+          <button 
+            disabled={!image || loading}
+            onClick={handleScan}
+            className="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-lg disabled:opacity-50 flex items-center justify-center space-x-2"
+          >
+            {loading ? <><Loader2 className="animate-spin" /><span>Analyse...</span></> : <span>Détecter les ingrédients</span>}
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-bold">Ingrédients détectés</h2>
+            <button onClick={() => setDetectedIngredients([])} className="text-sm text-slate-500">Recommencer</button>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {detectedIngredients.map(ing => (
+              <button 
+                key={ing}
+                onClick={() => toggleIngredient(ing)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  selectedIngredients.includes(ing) 
+                  ? "bg-brand-500 text-white shadow-md scale-105" 
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                }`}
+              >
+                {ing}
+              </button>
+            ))}
+          </div>
+
+          <div className="p-6 glass-card bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 space-y-4">
+            <div className="flex items-center space-x-2 text-blue-700 dark:text-blue-400 font-bold">
+              <Search size={20} />
+              <span>Trouver des recettes</span>
+            </div>
+            <p className="text-sm text-blue-600/80 dark:text-blue-400/80">
+              L'IA va vous proposer des plats utilisant vos {selectedIngredients.length} ingrédients sélectionnés.
+            </p>
+            <button className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors">
+              Générer des idées
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
