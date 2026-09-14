@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { askMealioChef } from '../data/ollama';
 
-function craftReply(message, recipes) {
+function craftFallbackReply(message, recipes) {
   const lower = message.toLowerCase();
 
   if (lower.includes('substitute') || lower.includes('instead of') || lower.includes("don't have")) {
@@ -20,15 +21,13 @@ function craftReply(message, recipes) {
     const pick = recipes[Math.floor(Math.random() * recipes.length)];
     return `How about ${pick.name}? It takes about ${pick.time} minutes and is rated ${pick.difficulty.toLowerCase()}. Want the full recipe?`;
   }
-
   const mentioned = recipes.filter((r) =>
     r.ingredients.some((i) => lower.includes(i.name.toLowerCase().split(' ')[0]))
   );
   if (mentioned.length) {
     return `With what you've mentioned, you could make ${mentioned.slice(0, 3).map((r) => r.name).join(', ')}. Want me to open one?`;
   }
-
-  return "Tell me what ingredients you have, how much time you've got, or what you're craving, and I'll suggest something to cook.";
+  return "Tell me what ingredients you have, how much time you've got, or what you're craving. (Ollama ne répond pas, réponse de secours utilisée.)";
 }
 
 export default function AIChef() {
@@ -38,18 +37,27 @@ export default function AIChef() {
     { role: 'ai', text: "Hey, I'm your AI Chef 👋 Ask me what to cook, for substitutions, or how to adapt a recipe." },
   ]);
   const [input, setInput] = useState('');
+  const [thinking, setThinking] = useState(false);
   const endRef = useRef(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, thinking]);
 
-  function send() {
-    if (!input.trim()) return;
-    const userMsg = { role: 'user', text: input.trim() };
-    const reply = { role: 'ai', text: craftReply(input.trim(), allRecipes()) };
-    setMessages((m) => [...m, userMsg, reply]);
+  async function send() {
+    if (!input.trim() || thinking) return;
+    const userText = input.trim();
+    const userMsg = { role: 'user', text: userText };
+    setMessages((m) => [...m, userMsg]);
     setInput('');
+    setThinking(true);
+
+    const recipes = allRecipes();
+    const aiText = await askMealioChef(userText, recipes, messages);
+    const finalText = aiText || craftFallbackReply(userText, recipes);
+
+    setMessages((m) => [...m, { role: 'ai', text: finalText }]);
+    setThinking(false);
   }
 
   const suggestions = [
@@ -70,6 +78,7 @@ export default function AIChef() {
         {messages.map((m, i) => (
           <div key={i} className={`chat-bubble ${m.role}`}>{m.text}</div>
         ))}
+        {thinking && <div className="chat-bubble ai">Mealio réfléchit…</div>}
         <div ref={endRef} />
       </div>
 
@@ -86,7 +95,7 @@ export default function AIChef() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
         />
-        <button className="btn btn-ghost" onClick={send}>Send</button>
+        <button className="btn btn-ghost" onClick={send} disabled={thinking}>Send</button>
       </div>
     </div>
   );
