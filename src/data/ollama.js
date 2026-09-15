@@ -1,27 +1,12 @@
-// Connects to Ollama running locally (http://localhost:11434) — no API key needed.
-// Only works while Ollama is running on this machine.
+import { MealioAPI } from '../services/api';
 
-const OLLAMA_URL = 'http://localhost:11434/api/chat';
-const MODEL = 'gemma3:4b'; // change this to match exactly what `ollama list` shows you
-
-export async function askOllama(messages, { model = MODEL, temperature = 0.7 } = {}) {
+export async function askOllama(messages) {
   try {
-    const res = await fetch(OLLAMA_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model,
-        messages,
-        stream: false,
-        options: { temperature },
-      }),
-    });
-    if (!res.ok) throw new Error(`Ollama error ${res.status}`);
-    const data = await res.json();
-    return data?.message?.content?.trim() || null;
+    const response = await MealioAPI.chat(messages);
+    return response.choices[0].message.content;
   } catch (e) {
-    console.warn('Ollama unreachable (is it running? CORS enabled?):', e);
-    return null;
+    console.error('AI Backend Error:', e);
+    throw e;
   }
 }
 
@@ -44,5 +29,9 @@ If you recommend a dish, use a name from the list above when relevant.`;
     { role: 'user', content: userMessage },
   ];
 
-  return askOllama(messages);
+  try {
+    return await askOllama(messages);
+  } catch (e) {
+    return "I'm having trouble connecting to my chef brain. Please try again in a moment!";
+  }
 }

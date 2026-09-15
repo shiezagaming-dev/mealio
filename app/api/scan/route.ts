@@ -3,13 +3,12 @@ import { AIService } from '@/services/ai.service';
 
 export async function POST(req: Request) {
   try {
-    const { image } = await req.json(); // image en base64
+    const { image } = await req.json();
     
     if (!image) {
-      return NextResponse.json({ error: 'Image manquante' }, { status: 400 });
+      return NextResponse.json({ error: 'Image missing' }, { status: 400 });
     }
 
-    // Utilisation du nouveau AIService qui passe par le Worker
     const identification = await AIService.analyzeImage(
       image.split(',')[1] || image, 
       "Identify this food dish. Tell me the name of the dish and the main ingredients you see. Be concise."
