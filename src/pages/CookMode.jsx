@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { askAI } from '../data/aiService';
 
 const HOW_TO_KEYWORDS = {
   saute: 'Sauté means cooking food quickly in a small amount of fat over fairly high heat, stirring often.',
@@ -22,11 +23,11 @@ export default function CookMode() {
   const [running, setRunning] = useState(false);
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState(null);
+  const [loadingAI, setLoadingAI] = useState(false);
   const intervalRef = useRef(null);
   const wakeLockRef = useRef(null);
 
   useEffect(() => {
-    // Keep the screen awake while cooking, when supported.
     if ('wakeLock' in navigator) {
       navigator.wakeLock.request('screen').then((wl) => (wakeLockRef.current = wl)).catch(() => {});
     }
@@ -96,13 +97,30 @@ export default function CookMode() {
     setRunning(false);
   }
 
-  function askMealio() {
+  async function askMealio() {
     if (!question.trim()) return;
     const lower = question.toLowerCase();
+    
     const hit = Object.keys(HOW_TO_KEYWORDS).find((k) => lower.includes(k));
-    const reply = hit ? HOW_TO_KEYWORDS[hit] : `For "${question.trim()}" — check the ingredient list above, or ask something like "what does sauté mean?"`;
-    setAnswer(reply);
-    setQuestion('');
+    if (hit) {
+      setAnswer(HOW_TO_KEYWORDS[hit]);
+      setQuestion('');
+      return;
+    }
+
+    setLoadingAI(true);
+    try {
+      const prompt = `You are a cooking assistant. The user is currently on step ${stepIdx + 1} of the recipe "${recipe.name}": "${step}". 
+      The user asks: "${question}". Provide a concise, practical answer.`;
+      
+      const { text } = await askAI([{ role: 'user', content: prompt }]);
+      setAnswer(text);
+    } catch (e) {
+      setAnswer(`I'm not sure about that, but try checking the ingredient list or a cooking guide!`);
+    } finally {
+      setLoadingAI(false);
+      setQuestion('');
+    }
   }
 
   return (
@@ -153,7 +171,9 @@ export default function CookMode() {
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && askMealio()}
           />
-          <button className="btn btn-ghost" onClick={askMealio}>Ask</button>
+          <button className="btn btn-ghost" onClick={askMealio} disabled={loadingAI}>
+            {loadingAI ? '...' : 'Ask'}
+          </button>
         </div>
         {answer && (
           <div className="card" style={{ padding: 14, marginTop: 10, background: 'var(--basil-light)', border: 'none' }}>

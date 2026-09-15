@@ -5,6 +5,7 @@ import { useApp } from '../context/AppContext';
 const CUISINES = ['Italian', 'Asian', 'Mexican', 'Indian', 'American', 'Mediterranean'];
 const DIETS = ['Vegetarian', 'Vegan', 'Gluten-free', 'Dairy-free'];
 const SKILLS = ['Beginner', 'Intermediate', 'Advanced'];
+const AVATARS = ['🧑‍🍳', '👩‍🍳', '👨‍🍳', '🧑‍🌾', '🐱', '🐶', '🦊', '🐼', '🦁', '🦄'];
 
 export default function Settings() {
   const { state, setState, toggleTheme, showToast } = useApp();
@@ -14,6 +15,11 @@ export default function Settings() {
   function saveProfile() {
     setState((s) => ({ ...s, profile }));
     showToast('Profile updated');
+  }
+
+  function handleLogout() {
+    setState(s => ({ ...s, account: { ...s.account, loggedIn: false } }));
+    navigate('/auth');
   }
 
   function toggleList(list, value) {
@@ -36,9 +42,23 @@ export default function Settings() {
         <textarea className="input" style={{ marginTop: 6, minHeight: 60 }} value={profile.bio} onChange={(e) => setProfile({ ...profile, bio: e.target.value })} />
 
         <label className="sub" style={{ display: 'block', marginTop: 12 }}>Avatar</label>
-        <div className="chip-row" style={{ marginTop: 6 }}>
-          {['🧑‍🍳', '👩‍🍳', '👨‍🍳', '🧑‍🌾', '🐱'].map((a) => (
-            <span key={a} className={`chip ${profile.avatar === a ? 'active' : ''}`} style={{ fontSize: 18 }} onClick={() => setProfile({ ...profile, avatar: a })}>{a}</span>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginTop: 6 }}>
+          {AVATARS.map((a) => (
+            <div 
+              key={a} 
+              onClick={() => setProfile({ ...profile, avatar: a })}
+              style={{ 
+                fontSize: 24, 
+                padding: 8, 
+                textAlign: 'center', 
+                borderRadius: '50%', 
+                cursor: 'pointer',
+                background: profile.avatar === a ? 'var(--chili-light)' : 'var(--bg-soft)',
+                border: profile.avatar === a ? '2px solid var(--chili)' : '2px solid transparent'
+              }}
+            >
+              {a}
+            </div>
           ))}
         </div>
       </div>
@@ -94,6 +114,8 @@ export default function Settings() {
         <span className="grow title" style={{ fontSize: 14.5 }}>Offline access for saved recipes</span>
         <input type="checkbox" defaultChecked />
       </div>
+
+      <button className="btn btn-ghost btn-block" style={{ marginTop: 24, color: 'var(--chili)' }} onClick={handleLogout}>Log out</button>
     </div>
   );
 }

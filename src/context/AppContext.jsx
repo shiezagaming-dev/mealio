@@ -19,6 +19,7 @@ function loadState() {
 function defaultState() {
   return {
     theme: 'light',
+    account: { email: '', username: '', loggedIn: false },
     profile: {
       username: 'Chef Alex',
       bio: 'Learning one recipe at a time 🍳',
@@ -44,18 +45,14 @@ function defaultState() {
 }
 
 export function AppProvider({ children }) {
-  const [state, setState] = useState(() => defaultState());
+  const [state, setState] = useState(() => {
+    const saved = loadState();
+    return saved ? { ...defaultState(), ...saved } : defaultState();
+  });
   const [toast, setToast] = useState(null);
   const [liveRecipes, setLiveRecipes] = useState([]);
   const [liveLoading, setLiveLoading] = useState(true);
 
-  useEffect(() => {
-    const loaded = loadState();
-    if (loaded) setState((s) => ({ ...s, ...loaded }));
-  }, []);
-
-  // Pull real meals + real photos from TheMealDB on startup.
-  // Falls back to the local mock recipes (no photos) if offline or blocked.
   useEffect(() => {
     let cancelled = false;
     setLiveLoading(true);
@@ -84,8 +81,6 @@ export function AppProvider({ children }) {
   }
 
   function allRecipes() {
-    // Live (real photo) recipes first, then the user's own, then the
-    // built-in offline fallback set — de-duped just in case of overlap.
     const combined = [...liveRecipes, ...state.userRecipes, ...seedRecipes];
     const seen = new Set();
     return combined.filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true)));
@@ -136,7 +131,10 @@ export function AppProvider({ children }) {
   }
 
   function clearCheckedShopping() {
-    setState((s) => ({ ...s, shoppingList: s.shoppingList.filter((i) => !i.checked) }));
+    setState((s) => ({
+      ...s,
+      shoppingList: s.shoppingList.filter((i) => !i.checked)
+    }));
   }
 
   function logHistory(entry) {
@@ -245,7 +243,7 @@ export function AppProvider({ children }) {
     searchOnline,
   };
 
-  return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>;
+  return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>
 }
 
 export function useApp() {

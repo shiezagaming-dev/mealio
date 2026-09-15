@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { askAI } from '../data/aiService';
 
 const REMIX_OPTIONS = [
   'Make it vegetarian', 'Make it vegan', 'Make it cheaper', 'Make it faster',
@@ -13,9 +14,9 @@ export default function RecipeDetail() {
   const { getRecipe, toggleSave, state, addToShoppingList } = useApp();
   const recipe = getRecipe(id);
   const [servings, setServings] = useState(recipe?.servings || 2);
-  const [remixNote, setRemixNote] = useState('');
   const [remixResult, setRemixResult] = useState(null);
   const [customAsk, setCustomAsk] = useState('');
+  const [loadingAI, setLoadingAI] = useState(false);
 
   const scale = recipe ? servings / recipe.servings : 1;
 
@@ -38,44 +39,36 @@ export default function RecipeDetail() {
 
   const isSaved = state.savedIds.includes(recipe.id);
 
-  function runRemix(option) {
-    // Simulated remix logic — replace with a real LLM call for genuine rewrites.
-    let note = '';
-    switch (option) {
-      case 'Make it vegetarian':
-        note = 'Swap any meat for a plant-based protein like tofu, chickpeas, or mushrooms.';
-        break;
-      case 'Make it vegan':
-        note = 'Replace dairy with plant-based milk/cheese and any meat with a plant protein.';
-        break;
-      case 'Make it cheaper':
-        note = 'Use budget staples: swap parmesan for a cheaper hard cheese and reduce meat by a third.';
-        break;
-      case 'Make it faster':
-        note = `Pre-chop everything first and use a smaller cut of protein — should shave about ${Math.round(recipe.time * 0.3)} minutes off.`;
-        break;
-      case 'Make it easier':
-        note = 'Skip optional garnishes and use pre-minced garlic and canned/pre-chopped vegetables.';
-        break;
-      case 'Make it spicier':
-        note = 'Add extra chili flakes, a diced fresh chili, or a dash of hot sauce.';
-        break;
-      case 'Make it less spicy':
-        note = 'Cut any chili in half and add a spoon of cream or yogurt to mellow the heat.';
-        break;
-      case 'Use only ingredients I have':
-        note = 'Tell Mealio which ingredients you\'re missing and it will suggest a swap for each.';
-        break;
-      default:
-        note = 'Here\'s a suggestion for that request.';
+  async function runRemix(option) {
+    setLoadingAI(true);
+    try {
+      const prompt = `Recipe: ${recipe.name}. Ingredients: ${recipe.ingredients.map(i => i.name).join(', ')}. 
+      Request: ${option}. Provide a concise rewritten suggestion (2-4 sentences) on how to adapt this recipe.`;
+      
+      const { text } = await askAI([{ role: 'user', content: prompt }]);
+      setRemixResult(text);
+    } catch (e) {
+      setRemixResult("I couldn't rewrite this right now, but try swapping the main protein for a similar alternative!");
+    } finally {
+      setLoadingAI(false);
     }
-    setRemixResult(note);
   }
 
-  function askCustom() {
+  async function askCustom() {
     if (!customAsk.trim()) return;
-    setRemixResult(`For "${customAsk.trim()}" — try substituting with something similar in texture and moisture (e.g. plain yogurt or a neutral oil), adjusting quantity to taste.`);
-    setCustomAsk('');
+    setLoadingAI(true);
+    try {
+      const prompt = `Recipe: ${recipe.name}. User question: ${customAsk}. 
+      Provide a concise, helpful answer (2-4 sentences).`;
+      
+      const { text } = await askAI([{ role: 'user', content: prompt }]);
+      setRemixResult(text);
+    } catch (e) {
+      setRemixResult("I'm having trouble answering that. Try checking the ingredients list!");
+    } finally {
+      setLoadingAI(false);
+      setCustomAsk('');
+    }
   }
 
   return (
@@ -177,8 +170,8 @@ export default function RecipeDetail() {
             value={customAsk}
             onChange={(e) => setCustomAsk(e.target.value)}
           />
-          <button className="btn btn-secondary btn-block" style={{ marginTop: 8 }} onClick={askCustom}>
-            Ask Mealio
+          <button className="btn btn-secondary btn-block" style={{ marginTop: 8 }} onClick={askCustom} disabled={loadingAI}>
+            {loadingAI ? 'Thinking...' : 'Ask Mealio'}
           </button>
           {remixResult && (
             <div className="card" style={{ padding: 14, marginTop: 12, background: 'var(--basil-light)', border: 'none' }}>

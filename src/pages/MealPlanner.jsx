@@ -1,10 +1,13 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { weekDays } from '../data/mockData';
+import { askAI } from '../data/aiService';
 
 export default function MealPlanner() {
   const { state, getRecipe, allRecipes, setMealPlanDay, generateWeek, addToShoppingList } = useApp();
   const navigate = useNavigate();
+  const [loadingAI, setLoadingAI] = useState(false);
 
   function addWeekToShoppingList() {
     const items = [];
@@ -15,6 +18,27 @@ export default function MealPlanner() {
     if (items.length) addToShoppingList(items);
   }
 
+  async function smartGenerateWeek() {
+    setLoadingAI(true);
+    try {
+      const pool = allRecipes().map(r => ({ id: r.id, name: r.name, cuisine: r.cuisine }));
+      const prompt = `You are a meal planner. From this list of recipes: ${JSON.stringify(pool)}, 
+      pick 7 varied recipes for a week (Monday to Sunday). Return ONLY a JSON object where keys are days 
+      (Monday, Tuesday, etc.) and values are recipe IDs.`;
+      
+      const { text } = await askAI([{ role: 'user', content: prompt }]);
+      const plan = JSON.parse(text);
+      
+      weekDays.forEach(day => {
+        if (plan[day]) setMealPlanDay(day, plan[day]);
+      });
+    } catch (e) {
+      generateWeek();
+    } finally {
+      setLoadingAI(false);
+    }
+  }
+
   return (
     <div className="screen">
       <div className="back-row" style={{ padding: 0, marginBottom: 6 }}>
@@ -22,8 +46,8 @@ export default function MealPlanner() {
         <h1 style={{ marginLeft: 12 }}>Meal Plan</h1>
       </div>
 
-      <button className="btn btn-primary btn-block" style={{ marginTop: 12 }} onClick={generateWeek}>
-        ✨ Generate My Week
+      <button className="btn btn-primary btn-block" style={{ marginTop: 12 }} onClick={smartGenerateWeek} disabled={loadingAI}>
+        {loadingAI ? 'Planning your week...' : '✨ Smart Generate My Week'}
       </button>
 
       <div className="section">
