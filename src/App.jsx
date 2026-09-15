@@ -15,7 +15,11 @@ import History from './pages/History';
 import Achievements from './pages/Achievements';
 import AIChef from './pages/AIChef';
 import Auth from './pages/Auth';
+import Onboarding from './pages/Onboarding';
 import './styles/global.css';
+import { App as CapacitorApp } from '@capacitor/app';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function AuthGuard({ children }) {
   const { state } = useApp();
@@ -26,7 +30,26 @@ function AuthGuard({ children }) {
 }
 
 function Shell() {
-  const { toast } = useApp();
+  const { state } = useApp();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fix Android Hardware Back Button
+    const backListener = CapacitorApp.addListener('backButton', (data) => {
+      if (window.history.length > 1) {
+        navigate(-1);
+      }
+    });
+
+    return () => {
+      backListener.then(l => l.remove());
+    };
+  }, [navigate]);
+
+  if (!state.hasCompletedOnboarding) {
+    return <Onboarding />;
+  }
+
   return (
     <div className="app-shell">
       <Routes>
@@ -46,7 +69,6 @@ function Shell() {
         <Route path="/ai-chef" element={<AuthGuard><AIChef /></AuthGuard>} />
       </Routes>
       <BottomNav />
-      {toast && <div className="toast">{toast}</div>}
     </div>
   );
 }

@@ -19,9 +19,10 @@ function loadState() {
 function defaultState() {
   return {
     theme: 'light',
+    hasCompletedOnboarding: false,
     account: { email: '', username: '', loggedIn: false },
     profile: {
-      username: 'Chef Alex',
+      username: '',
       bio: 'Learning one recipe at a time 🍳',
       avatar: '🧑‍🍳',
       cuisines: ['Italian', 'Asian'],
@@ -78,6 +79,14 @@ export function AppProvider({ children }) {
   function showToast(msg) {
     setToast(msg);
     setTimeout(() => setToast(null), 1800);
+  }
+
+  function completeOnboarding(name) {
+    setState(s => ({
+      ...s,
+      hasCompletedOnboarding: true,
+      profile: { ...s.profile, username: name }
+    }));
   }
 
   function allRecipes() {
@@ -241,6 +250,7 @@ export function AppProvider({ children }) {
     toast,
     liveLoading,
     searchOnline,
+    completeOnboarding,
   };
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>
