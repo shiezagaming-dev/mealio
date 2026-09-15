@@ -1,6 +1,10 @@
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://mealio-ai-backend.your-subdomain.workers.dev';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 async function request(endpoint, body) {
+  if (!BACKEND_URL) {
+    throw new Error('VITE_BACKEND_URL is not defined. Please check your .env file.');
+  }
+
   try {
     const response = await fetch(`${BACKEND_URL}${endpoint}`, {
       method: 'POST',

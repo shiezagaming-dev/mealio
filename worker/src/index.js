@@ -95,15 +95,8 @@ async function handleRecipe(request, env, corsHeaders) {
 async function handleAnalyze(request, env, corsHeaders) {
   const { image, prompt } = await request.json();
   
-  const visionModels = ['google/gemini', 'openai/gpt-4-vision', 'anthropic/claude-3'];
-  const isVisionCapable = visionModels.some(m => env.OPENROUTER_MODEL.includes(m));
-
-  if (!isVisionCapable) {
-    return new Response(JSON.stringify({ error: 'The current AI model does not support image analysis.' }), { 
-      status: 400, 
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-    });
-  }
+  // Gemini 2.0 Flash (configured in wrangler.toml) supports vision.
+  // We remove the restrictive check and rely on the model's capability.
 
   const result = await callOpenRouter({
     messages: [
