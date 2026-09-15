@@ -63,7 +63,7 @@ export default function Settings() {
 
       <div className="section">
         <div className="section-head"><h3>Cooking Skill</h3></div>
-        <div className="chip-row" style={{ marginTop: 6 }}>
+        <div className="chip-row">
           {SKILLS.map((s) => (
             <span key={s} className={`chip ${profile.skill === s ? 'active' : ''}`} onClick={() => setProfile({ ...profile, skill: s })}>{s}</span>
           ))}

@@ -44,6 +44,7 @@ function SnapMeal() {
     if (!file) return;
     setLoading(true);
     setResult(null);
+    // Simulated recognition — swap this for a real vision model call (see README).
     setTimeout(() => {
       const pool = allRecipes();
       const pick = pool[Math.floor(Math.random() * pool.length)];
@@ -159,6 +160,7 @@ function FromIngredients() {
     if (!have.length) return;
     setLoading(true);
 
+    // Local mock-data match (always available, works offline).
     const localScored = allRecipes().map((r) => {
       const ingredientNames = r.ingredients.map((i) => i.name.toLowerCase());
       const hits = have.filter((h) => ingredientNames.some((n) => n.includes(h) || h.includes(n)));
@@ -166,6 +168,7 @@ function FromIngredients() {
       return { r, pct: Math.min(100, Math.max(pct, hits.length ? 45 : 10)) };
     }).filter((m) => m.pct > 0);
 
+    // Real recipes with real photos, matched by first ingredient via TheMealDB.
     const liveScored = await findMealsByIngredients(have);
 
     const combined = [...liveScored, ...localScored]
@@ -220,6 +223,8 @@ function CreateOwnRecipe() {
 
   function cleanUpWithAI() {
     if (!notes.trim()) return;
+    // Simulated "messy notes -> structured recipe" transform.
+    // Swap for a real LLM call (Ollama / OpenRouter) — see README.
     const parts = notes.split(',').map((p) => p.trim()).filter(Boolean);
     const ingredients = parts.slice(0, Math.ceil(parts.length / 2)).map((p) => ({ name: p, qty: 1, unit: '' }));
     const steps = parts.slice(Math.ceil(parts.length / 2)).map((p) => `${p.charAt(0).toUpperCase()}${p.slice(1)}.`);

@@ -39,6 +39,7 @@ export default function RecipeDetail() {
   const isSaved = state.savedIds.includes(recipe.id);
 
   function runRemix(option) {
+    // Simulated remix logic — replace with a real LLM call for genuine rewrites.
     let note = '';
     switch (option) {
       case 'Make it vegetarian':

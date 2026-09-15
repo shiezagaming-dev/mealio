@@ -54,6 +54,8 @@ export function AppProvider({ children }) {
     if (loaded) setState((s) => ({ ...s, ...loaded }));
   }, []);
 
+  // Pull real meals + real photos from TheMealDB on startup.
+  // Falls back to the local mock recipes (no photos) if offline or blocked.
   useEffect(() => {
     let cancelled = false;
     setLiveLoading(true);
@@ -82,6 +84,8 @@ export function AppProvider({ children }) {
   }
 
   function allRecipes() {
+    // Live (real photo) recipes first, then the user's own, then the
+    // built-in offline fallback set — de-duped just in case of overlap.
     const combined = [...liveRecipes, ...state.userRecipes, ...seedRecipes];
     const seen = new Set();
     return combined.filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true)));

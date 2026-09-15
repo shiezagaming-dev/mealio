@@ -30,7 +30,7 @@ export default function Search() {
           setLiveSearching(false);
         }
       });
-    }, 400);
+    }, 400); // debounce
     return () => { cancelled = true; clearTimeout(t); };
   }, [query]);
 

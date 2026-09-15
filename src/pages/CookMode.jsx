@@ -26,6 +26,7 @@ export default function CookMode() {
   const wakeLockRef = useRef(null);
 
   useEffect(() => {
+    // Keep the screen awake while cooking, when supported.
     if ('wakeLock' in navigator) {
       navigator.wakeLock.request('screen').then((wl) => (wakeLockRef.current = wl)).catch(() => {});
     }

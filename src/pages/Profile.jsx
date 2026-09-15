@@ -19,7 +19,7 @@ export default function Profile() {
   const p = state.profile;
 
   const cuisineCount = new Set(state.cuisinesCooked).size;
-  const totalMinutes = state.mealsCooked * 22;
+  const totalMinutes = state.mealsCooked * 22; // rough estimate for the stats tile
 
   return (
     <div className="screen">

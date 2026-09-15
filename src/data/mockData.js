@@ -1,3 +1,6 @@
+// Mock/demo data. Replace with real API calls (recipe DB, image recognition, LLM)
+// once you wire up a backend. See README for integration notes.
+
 export const recipes = [
   {
     id: 'r1',

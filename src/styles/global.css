@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root{
+  /* --- color tokens --- */
   --cream: #FAF6EF;
   --cream-deep: #F1EADC;
   --ink: #2A2420;
@@ -13,12 +14,17 @@
   --paper: #FFFFFF;
   --line: #E7DFD1;
   --danger: #C4432B;
+
+  /* --- type --- */
   --display: 'Fraunces', serif;
   --body: 'Inter', sans-serif;
+
+  /* --- radii (varied by hierarchy, not uniform) --- */
   --r-hero: 28px;
   --r-card: 18px;
   --r-chip: 999px;
   --r-small: 10px;
+
   color-scheme: light;
 }
 
@@ -75,6 +81,7 @@ input, textarea, select{ font-family: inherit; }
   overflow-y: auto;
 }
 
+/* --- top bar --- */
 .topbar{
   display: flex;
   align-items: center;
@@ -96,6 +103,7 @@ input, textarea, select{ font-family: inherit; }
   cursor: pointer;
 }
 
+/* --- bottom nav --- */
 .bottom-nav{
   position: sticky;
   bottom: 0;
@@ -136,6 +144,7 @@ input, textarea, select{ font-family: inherit; }
 .nav-item.fab .nav-icon{ font-size: 22px; }
 .nav-item.fab span:last-child{ display:none; }
 
+/* --- buttons --- */
 .btn{
   display: inline-flex;
   align-items: center;
@@ -158,6 +167,7 @@ input, textarea, select{ font-family: inherit; }
 .btn-block{ width: 100%; }
 .btn-sm{ padding: 8px 14px; font-size: 13px; }
 
+/* --- cards --- */
 .card{
   background: var(--paper);
   border-radius: var(--r-card);

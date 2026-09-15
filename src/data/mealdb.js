@@ -1,5 +1,11 @@
+// Free, no-API-key-required recipe database with real photos.
+// Docs: https://www.themealdb.com/api.php
+// Rate/feature limits apply on the free "test" key ("1") — for production,
+// consider a paid key or self-hosting a recipe dataset.
+
 const BASE = 'https://www.themealdb.com/api/json/v1/1';
 
+// Turn a TheMealDB "meal" object into our app's recipe shape.
 export function mapMealDbToRecipe(meal) {
   if (!meal) return null;
 
@@ -30,7 +36,7 @@ export function mapMealDbToRecipe(meal) {
     image: meal.strMealThumb,
     emoji: '🍽️',
     color: '#F3E9D2',
-    time: 30,
+    time: 30, // TheMealDB doesn't provide cook time; shown as an estimate
     difficulty: 'Medium',
     servings: 4,
     cuisine: meal.strArea || 'International',
@@ -59,6 +65,7 @@ export async function fetchRandomMeals(count = 8) {
   const requests = Array.from({ length: count }, () => safeFetchJson(`${BASE}/random.php`));
   const results = await Promise.all(requests);
   const meals = results.map((r) => r?.meals?.[0]).filter(Boolean);
+  // de-dupe by id
   const seen = new Set();
   return meals.filter((m) => (seen.has(m.idMeal) ? false : (seen.add(m.idMeal), true))).map(mapMealDbToRecipe);
 }
@@ -70,6 +77,7 @@ export async function searchMealsByName(query) {
 
 export async function filterByIngredient(ingredient) {
   const data = await safeFetchJson(`${BASE}/filter.php?i=${encodeURIComponent(ingredient)}`);
+  // filter.php returns partial meal objects (id, name, thumb only) — needs a lookup for full detail.
   return data?.meals || [];
 }
 
@@ -83,11 +91,13 @@ export async function fetchMealsByCategory(category) {
   return data?.meals || [];
 }
 
+// Given a comma-separated ingredient list, find real recipes that use the
+// first ingredient, then rank by how many of the other ingredients they share.
 export async function findMealsByIngredients(ingredientList) {
   if (!ingredientList.length) return [];
   const partials = await filterByIngredient(ingredientList[0]);
   const top = partials.slice(0, 8);
-  const detailed = await Promise.all(top.map((m) => lookupMealById(m.id)));
+  const detailed = await Promise.all(top.map((m) => lookupMealById(m.idMeal)));
   const have = ingredientList.map((i) => i.toLowerCase());
   return detailed
     .filter(Boolean)

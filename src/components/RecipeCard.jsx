@@ -5,20 +5,18 @@ export default function RecipeCard({ recipe, matchPct, wide, grid }) {
   if (!recipe) return null;
 
   const style = grid ? { minWidth: 'auto', maxWidth: 'none' } : undefined;
-  const title = recipe.title || recipe.name;
-  const time = recipe.prepTime + recipe.cookTime || recipe.time;
 
   return (
     <div className={`recipe-card ${wide ? 'wide' : ''}`} style={style} onClick={() => navigate(`/recipe/${recipe.id}`)}>
       <div className="thumb" style={{ background: recipe.color }}>
         {recipe.image ? (
-          <img src={recipe.image} alt={title} loading="lazy" />
+          <img src={recipe.image} alt={recipe.name} loading="lazy" />
         ) : recipe.emoji}
       </div>
       <div className="body">
-        <div className="name">{title}</div>
+        <div className="name">{recipe.name}</div>
         <div className="meta">
-          <span>⏱️ {time}m</span>
+          <span>⏱️ {recipe.time}m</span>
           <span>👨‍🍳 {recipe.difficulty}</span>
         </div>
         {matchPct != null && (
