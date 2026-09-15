@@ -1,0 +1,6 @@
+{
+  "appId": "com.mealio.app",
+  "appName": "Mealio",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
