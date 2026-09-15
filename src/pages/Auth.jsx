@@ -31,7 +31,11 @@ export default function Auth() {
   return (
     <div className="screen" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
-        <div style={{ fontSize: 64 }}>🍳</div>
+        <img 
+          src="/logo.png" 
+          alt="Mealio Logo" 
+          style={{ width: '120px', height: 'auto', marginBottom: '16px' }} 
+        />
         <h1 style={{ marginTop: 16 }}>{mode === 'login' ? 'Welcome Back' : 'Join Mealio'}</h1>
         <p className="sub">Your personal AI sous-chef</p>
       </div>
