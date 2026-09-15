@@ -9,13 +9,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Image manquante' }, { status: 400 });
     }
 
-    // 1. Identification visuelle avec Llava
+    // Utilisation du nouveau AIService qui passe par le Worker
     const identification = await AIService.analyzeImage(
-      image.split(',')[1], // On retire le préfixe data:image/...
+      image.split(',')[1] || image, 
       "Identify this food dish. Tell me the name of the dish and the main ingredients you see. Be concise."
     );
 
-    // 2. Génération de la recette complète avec Gemma 4
     const recipe = await AIService.generateRecipe(
       `Create a professional recipe for: ${identification}. Include title, description, prepTime, cookTime, difficulty, servings, ingredients (array of {item, amount, unit}), and instructions (array of {step, text}).`
     );

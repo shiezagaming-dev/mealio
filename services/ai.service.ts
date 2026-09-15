@@ -1,49 +1,32 @@
-export class AIService {
-  private static OLLAMA_URL = process.env.OLLAMA_URL || 'http://localhost:11434/api';
+import { MealioAPI } from '../src/services/api';
 
+export class AIService {
   /**
-   * Analyse l'image via un modèle de vision (ex: llava)
+   * Analyse l'image via le backend Cloudflare Worker -> OpenRouter
    */
   static async analyzeImage(imageBase64: string, prompt: string): Promise<string> {
     try {
-      const response = await fetch(`${this.OLLAMA_URL}/generate`, {
-        method: 'POST',
-        body: JSON.stringify({
-          model: 'llava', // Modèle de vision requis
-          prompt: prompt,
-          images: [imageBase64],
-          stream: false,
-        }),
-      });
-
-      const data = await response.json();
-      return data.response;
-    } catch (error) {
-      console.error("Ollama Vision Error:", error);
-      throw new Error("L'analyse d'image a échoué. Assurez-vous qu'Ollama et le modèle llava sont installés.");
+      const result = await MealioAPI.analyzeImage(imageBase64, prompt);
+      // OpenRouter retourne un format chat completion
+      return result.choices[0].message.content;
+    } catch (error: any) {
+      console.error("AI Service Vision Error:", error);
+      throw new Error(error.message || "L'analyse d'image a échoué.");
     }
   }
 
   /**
-   * Génère ou remixe une recette via Gemma 4
+   * Génère ou remixe une recette via le backend Cloudflare Worker -> OpenRouter
    */
   static async generateRecipe(prompt: string): Promise<any> {
     try {
-      const response = await fetch(`${this.OLLAMA_URL}/generate`, {
-        method: 'POST',
-        body: JSON.stringify({
-          model: 'gemma4:31b-cloud',
-          prompt: `You are a professional chef. Please provide a structured recipe in JSON format. ${prompt}`,
-          format: 'json',
-          stream: false,
-        }),
-      });
-
-      const data = await response.json();
-      return JSON.parse(data.response);
-    } catch (error) {
-      console.error("Ollama LLM Error:", error);
-      throw new Error("La génération de la recette a échoué.");
+      const result = await MealioAPI.generateRecipe(prompt);
+      // Le Worker retourne déjà le JSON parsé du contenu de la réponse
+      const recipeJson = JSON.parse(result.choices[0].message.content);
+      return recipeJson;
+    } catch (error: any) {
+      console.error("AI Service LLM Error:", error);
+      throw new Error(error.message || "La génération de la recette a échoué.");
     }
   }
 }

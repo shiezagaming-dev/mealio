@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Camera, Refrigerator, Loader2, X, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
+import { AIService } from '@/services/ai.service';
 
 export default function FridgeScanPage() {
   const [image, setImage] = useState<string | null>(null);
@@ -22,16 +23,39 @@ export default function FridgeScanPage() {
   const handleScan = async () => {
     if (!image) return;
     setLoading(true);
-    // Simulation appel AIService.scanFridge
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setDetectedIngredients(["Tomates", "Œufs", "Fromage", "Lait", "Épinards", "Oignons"]);
-    setLoading(false);
+    try {
+      const prompt = "List only the food ingredients you see in this fridge. Return them as a comma-separated list. Be concise.";
+      const result = await AIService.analyzeImage(image, prompt);
+      
+      // Nettoyage simple de la réponse pour obtenir un tableau
+      const ingredients = result.split(',').map(i => i.trim()).filter(i => i.length > 0);
+      setDetectedIngredients(ingredients);
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const toggleIngredient = (ing: string) => {
     setSelectedIngredients(prev => 
       prev.includes(ing) ? prev.filter(i => i !== ing) : [...prev, ing]
     );
+  };
+
+  const handleGenerateIdeas = async () => {
+    if (selectedIngredients.length === 0) return;
+    setLoading(true);
+    try {
+      const prompt = `I have these ingredients: ${selectedIngredients.join(', ')}. Suggest 3 meal ideas.`;
+      const result = await AIService.generateRecipe(prompt);
+      alert(`Suggestions: ${result.title || 'Voir les idées générées'}`);
+      // Ici on pourrait rediriger vers une page de résultats
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -109,8 +133,12 @@ export default function FridgeScanPage() {
             <p className="text-sm text-blue-600/80 dark:text-blue-400/80">
               L'IA va vous proposer des plats utilisant vos {selectedIngredients.length} ingrédients sélectionnés.
             </p>
-            <button className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors">
-              Générer des idées
+            <button 
+              onClick={handleGenerateIdeas}
+              disabled={loading || selectedIngredients.length === 0}
+              className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors disabled:opacity-50"
+            >
+              {loading ? <Loader2 className="animate-spin mx-auto" /> : "Générer des idées"}
             </button>
           </div>
         </div>

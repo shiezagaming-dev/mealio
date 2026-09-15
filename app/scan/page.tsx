@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Camera, Upload, Loader2, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { AIService } from '@/services/ai.service';
 
 export default function ScanPage() {
   const [image, setImage] = useState<string | null>(null);
@@ -25,18 +26,17 @@ export default function ScanPage() {
     setLoading(true);
     
     try {
-      const response = await fetch('/api/scan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image }),
-      });
+      // 1. Identification visuelle via le service AI (Worker)
+      const identification = await AIService.analyzeImage(
+        image, 
+        "Identify this food dish. Tell me the name of the dish and the main ingredients you see. Be concise."
+      );
 
-      if (!response.ok) throw new Error('Erreur lors de l\'analyse');
-
-      const recipeData = await response.json();
+      // 2. Génération de la recette complète
+      const recipeData = await AIService.generateRecipe(
+        `Create a professional recipe for: ${identification}. Include title, description, prepTime, cookTime, difficulty, servings, ingredients (array of {item, amount, unit}), and instructions (array of {step, text}).`
+      );
       
-      // On redirige vers la page recette avec l'ID (ici on simule l'ID ou on pourrait sauvegarder en DB d'abord)
-      // Pour l'exemple, on imagine que l'API nous renvoie un ID de recette créée en DB
       router.push(`/recipe/${recipeData.id || 'ai-generated'}`);
     } catch (error: any) {
       alert(error.message);
