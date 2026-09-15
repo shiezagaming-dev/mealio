@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
 import { findMealsByIngredients } from '../data/mealdb';
+import { askAI } from '../data/aiService';
 
 const TABS = [
   { id: 'scan', label: '📸 Snap' },
@@ -10,6 +11,34 @@ const TABS = [
   { id: 'ingredients', label: '🥕 Ingredients' },
   { id: 'own', label: '🧑‍🍳 Create' },
 ];
+
+// Utilitaire pour compresser l'image avant l'envoi
+async function compressImage(file, maxWidth = 800) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = (maxWidth / width) * height;
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+    };
+  });
+}
 
 export default function CreateScan() {
   const [params] = useSearchParams();
@@ -38,20 +67,42 @@ function SnapMeal() {
   const fileRef = useRef(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [aiSource, setAiSource] = useState(null);
 
-  function handleFile(e) {
+  async function handleFile(e) {
     const file = e.target.files?.[0];
     if (!file) return;
     setLoading(true);
     setResult(null);
-    // Simulated recognition — swap this for a real vision model call (see README).
-    setTimeout(() => {
+    setAiSource(null);
+
+    try {
+      const base64 = await compressImage(file);
+      const { text, source } = await askAI(
+        [{ role: 'user', content: 'Identify this food dish. Return ONLY the short name of the dish (e.g. "Creamy Tomato Pasta"), nothing else.' }],
+        { vision: true, imageBase64: base64 }
+      );
+      
+      setAiSource(source);
+      const dishName = text.trim();
       const pool = allRecipes();
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      setResult(pick);
-      logScan(`Scanned ${pick.name}`);
+      
+      // Recherche du match le plus proche dans le pool local
+      const match = pool.find(r => dishName.toLowerCase().includes(r.name.toLowerCase()) || r.name.toLowerCase().includes(dishName.toLowerCase()));
+      
+      if (match) {
+        setResult(match);
+      } else {
+        // Si pas de match exact, on crée un objet temporaire pour l'affichage
+        setResult({ name: dishName, emoji: '🍽️', color: '#F3E9D2', ingredients: [], steps: [], time: '?', difficulty: '?', servings: '?' });
+      }
+      
+      logScan(`Scanned ${dishName}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
       setLoading(false);
-    }, 1100);
+    }
   }
 
   return (
@@ -72,7 +123,10 @@ function SnapMeal() {
 
       {result && (
         <div className="section">
-          <p style={{ fontStyle: 'italic', color: 'var(--ink-soft)' }}>“This looks like {result.name}.”</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p style={{ fontStyle: 'italic', color: 'var(--ink-soft)' }}>“This looks like {result.name}.”</p>
+            {aiSource && <span className="sub" style={{ fontSize: 10, opacity: 0.6 }}>via {aiSource}</span>}
+          </div>
           <div style={{ marginTop: 12 }}>
             <RecipeCard recipe={result} />
           </div>
@@ -87,28 +141,35 @@ function FridgeScan() {
   const fileRef = useRef(null);
   const [found, setFound] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [aiSource, setAiSource] = useState(null);
 
-  const sampleSets = [
-    ['🥚 Eggs', '🧀 Cheese', '🍅 Tomatoes', '🍗 Chicken', '🥬 Lettuce'],
-    ['🍚 Rice', '🍗 Chicken', '🧅 Onion', '🍅 Tomatoes'],
-    ['🍝 Pasta', '🧄 Garlic', '🍅 Canned tomatoes', '🧀 Parmesan'],
-  ];
-
-  function handleFile(e) {
+  async function handleFile(e) {
     const file = e.target.files?.[0];
     if (!file) return;
     setLoading(true);
     setFound(null);
-    setTimeout(() => {
-      const items = sampleSets[Math.floor(Math.random() * sampleSets.length)];
-      const pool = allRecipes()
-        .map((r) => ({ r, match: Math.floor(60 + Math.random() * 40) }))
-        .sort((a, b) => b.match - a.match)
-        .slice(0, 3);
-      setFound({ items, matches: pool });
+    setAiSource(null);
+
+    try {
+      const base64 = await compressImage(file);
+      const { text, source } = await askAI(
+        [{ role: 'user', content: 'List the visible food ingredients in this photo as a short comma-separated list. Return ONLY the list.' }],
+        { vision: true, imageBase64: base64 }
+      );
+      
+      setAiSource(source);
+      const ingredients = text.split(',').map(i => i.trim()).filter(Boolean);
+      
+      // Utilisation de la logique de matching réelle de mealdb.js
+      const matches = await findMealsByIngredients(ingredients);
+      
+      setFound({ items: ingredients, matches });
       logScan('Scanned the fridge', '🧊');
+    } catch (error) {
+      console.error(error);
+    } finally {
       setLoading(false);
-    }, 1100);
+    }
   }
 
   return (
@@ -130,18 +191,26 @@ function FridgeScan() {
       {found && (
         <>
           <div className="section">
-            <div className="section-head"><h3>We found</h3></div>
+            <div className="section-head">
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                We found {aiSource && <span className="sub" style={{ fontSize: 12, opacity: 0.6 }}>via {aiSource}</span>}
+              </h3>
+            </div>
             <div className="chip-row">
               {found.items.map((i) => <span key={i} className="chip">{i}</span>)}
             </div>
           </div>
           <div className="section">
             <div className="section-head"><h3>Meals you can make</h3></div>
-            {found.matches.map(({ r, match }) => (
-              <div key={r.id} style={{ marginBottom: 10 }}>
-                <RecipeCard recipe={r} matchPct={match} wide />
-              </div>
-            ))}
+            {found.matches.length > 0 ? (
+              found.matches.map(({ r, pct }) => (
+                <div key={r.id} style={{ marginBottom: 10 }}>
+                  <RecipeCard recipe={r} matchPct={pct} wide />
+                </div>
+              ))
+            ) : (
+              <p className="sub">No exact matches found, but try searching for these ingredients manually!</p>
+            )}
           </div>
         </>
       )}
@@ -160,7 +229,6 @@ function FromIngredients() {
     if (!have.length) return;
     setLoading(true);
 
-    // Local mock-data match (always available, works offline).
     const localScored = allRecipes().map((r) => {
       const ingredientNames = r.ingredients.map((i) => i.name.toLowerCase());
       const hits = have.filter((h) => ingredientNames.some((n) => n.includes(h) || h.includes(n)));
@@ -168,7 +236,6 @@ function FromIngredients() {
       return { r, pct: Math.min(100, Math.max(pct, hits.length ? 45 : 10)) };
     }).filter((m) => m.pct > 0);
 
-    // Real recipes with real photos, matched by first ingredient via TheMealDB.
     const liveScored = await findMealsByIngredients(have);
 
     const combined = [...liveScored, ...localScored]
@@ -220,18 +287,36 @@ function CreateOwnRecipe() {
   const [difficulty, setDifficulty] = useState('Easy');
   const [servings, setServings] = useState(2);
   const [structured, setStructured] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  function cleanUpWithAI() {
+  async function cleanUpWithAI() {
     if (!notes.trim()) return;
-    // Simulated "messy notes -> structured recipe" transform.
-    // Swap for a real LLM call (Ollama / OpenRouter) — see README.
-    const parts = notes.split(',').map((p) => p.trim()).filter(Boolean);
-    const ingredients = parts.slice(0, Math.ceil(parts.length / 2)).map((p) => ({ name: p, qty: 1, unit: '' }));
-    const steps = parts.slice(Math.ceil(parts.length / 2)).map((p) => `${p.charAt(0).toUpperCase()}${p.slice(1)}.`);
-    setStructured({
-      ingredients: ingredients.length ? ingredients : [{ name: 'Main ingredient', qty: 1, unit: '' }],
-      steps: steps.length ? steps : ['Combine everything and cook until done.'],
-    });
+    setLoading(true);
+    try {
+      const { text } = await askAI(
+        [{ role: 'system', content: 'You are a recipe assistant. Convert rough notes into a structured JSON recipe. Return ONLY JSON.' },
+         { role: 'user', content: `Convert these notes into JSON with "ingredients" (array of {name, qty, unit}) and "steps" (array of strings): ${notes}` }],
+        { response_format: { type: 'json_object' } }
+      );
+      
+      const parsed = JSON.parse(text);
+      setStructured({
+        ingredients: parsed.ingredients || [],
+        steps: parsed.steps || [],
+      });
+    } catch (error) {
+      console.error(error);
+      // Fallback to comma-split logic
+      const parts = notes.split(',').map((p) => p.trim()).filter(Boolean);
+      const ingredients = parts.slice(0, Math.ceil(parts.length / 2)).map((p) => ({ name: p, qty: 1, unit: '' }));
+      const steps = parts.slice(Math.ceil(parts.length / 2)).map((p) => `${p.charAt(0).toUpperCase()}${p.slice(1)}.`);
+      setStructured({
+        ingredients: ingredients.length ? ingredients : [{ name: 'Main ingredient', qty: 1, unit: '' }],
+        steps: steps.length ? steps : ['Combine everything and cook until done.'],
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
   function saveRecipe() {
@@ -283,8 +368,8 @@ function CreateOwnRecipe() {
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
       />
-      <button className="btn btn-secondary btn-block" style={{ marginTop: 10 }} onClick={cleanUpWithAI}>
-        ✨ Tidy up with Mealio
+      <button className="btn btn-secondary btn-block" style={{ marginTop: 10 }} onClick={cleanUpWithAI} disabled={loading}>
+        {loading ? 'Tidying...' : '✨ Tidy up with Mealio'}
       </button>
 
       {structured && (
