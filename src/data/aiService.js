@@ -3,10 +3,9 @@ import { MealioAPI } from '../services/api';
 /**
  * Service AI unifié pour Mealio.
  * Architecture de production : Cloudflare Worker -> OpenRouter -> Gemini.
- * Aucun fallback vers Ollama en production.
  */
 export async function askAI(messages, options = {}) {
-  const { vision = false, imageBase64 = null } = options;
+  const { vision = false, imageBase64 = null, response_format = null } = options;
 
   try {
     if (vision) {
@@ -26,9 +25,6 @@ export async function askAI(messages, options = {}) {
     }
   } catch (error) {
     console.error("AI Service Error:", error);
-    return {
-      text: "Je suis momentanément indisponible. Veuillez réessayer plus tard.",
-      source: 'fallback'
-    };
+    throw new Error("L'IA est momentanément indisponible. Veuillez réessayer.");
   }
 }

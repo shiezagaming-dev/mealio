@@ -7,7 +7,7 @@ export default function AIChef() {
   const { allRecipes } = useApp();
   const navigate = useNavigate();
   const [messages, setMessages] = useState([
-    { role: 'ai', text: "Hey, I'm your AI Chef 👋 Ask me what to cook, for substitutions, or how to adapt a recipe." },
+    { role: 'ai', text: "Bonjour ! Je suis votre Chef IA 👋 Je peux vous aider à trouver des idées de repas, suggérer des substitutions ou adapter vos recettes. Que voulez-vous cuisiner ?" },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,48 +32,49 @@ export default function AIChef() {
         .join('\n');
 
       const systemPrompt = `You are Mealio, a friendly and concise AI chef. 
-      Available recipes:
+      Available recipes in the app:
       ${recipeSummary}
-      Answer in 1-3 short sentences. Be warm and practical.`;
+      Answer in 1-3 short sentences. Be warm, practical, and helpful. 
+      If the user asks for a recipe, suggest one from the list if it fits.`;
 
       const history = messages.map(m => ({ 
         role: m.role === 'ai' ? 'assistant' : 'user', 
         content: m.text 
       }));
 
-      const { text, source } = await askAI([
+      const { text } = await askAI([
         { role: 'system', content: systemPrompt },
         ...history,
         { role: 'user', content: userText }
       ]);
 
-      setMessages((m) => [...m, { role: 'ai', text: `${text} (via ${source})` }]);
+      setMessages((m) => [...m, { role: 'ai', text }]);
     } catch (e) {
-      setMessages((m) => [...m, { role: 'ai', text: "I'm having trouble connecting to my chef brain. Please try again!" }]);
+      setMessages((m) => [...m, { role: 'ai', text: "Désolé, j'ai un petit problème de connexion avec mon cerveau de chef. Réessayez dans un instant !" }]);
     } finally {
       setLoading(false);
     }
   }
 
   const suggestions = [
-    'I have chicken, rice and two tomatoes.',
-    "What can I substitute for butter?",
-    'I only have 20 minutes.',
-    'What should I cook tonight?',
+    'Idée de dîner rapide',
+    'Remplacer le beurre',
+    'Recette avec poulet et riz',
+    'Recette végétarienne',
   ];
 
   return (
-    <div className="screen" style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className="screen" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div className="back-row" style={{ padding: 0, marginBottom: 6 }}>
         <button className="icon-btn" onClick={() => navigate(-1)}>←</button>
         <h1 style={{ marginLeft: 12 }}>AI Chef</h1>
       </div>
 
-      <div className="chat-col" style={{ flex: 1, marginTop: 10 }}>
+      <div className="chat-col" style={{ flex: 1, marginTop: 10, overflowY: 'auto', paddingBottom: '20px' }}>
         {messages.map((m, i) => (
           <div key={i} className={`chat-bubble ${m.role}`}>{m.text}</div>
         ))}
-        {loading && <div className="chat-bubble ai" style={{ opacity: 0.6 }}>Typing...</div>}
+        {loading && <div className="chat-bubble ai" style={{ opacity: 0.6 }}>Le Chef réfléchit...</div>}
         <div ref={endRef} />
       </div>
 
@@ -83,14 +84,14 @@ export default function AIChef() {
         ))}
       </div>
 
-      <div className="search-bar" style={{ marginTop: 12 }}>
+      <div className="search-bar" style={{ marginTop: 12, marginBottom: 'env(safe-area-inset-bottom)' }}>
         <input
-          placeholder="Ask Mealio anything…"
+          placeholder="Posez-moi une question..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
         />
-        <button className="btn btn-ghost" onClick={send} disabled={loading}>Send</button>
+        <button className="btn btn-ghost" onClick={send} disabled={loading}>Envoyer</button>
       </div>
     </div>
   );
