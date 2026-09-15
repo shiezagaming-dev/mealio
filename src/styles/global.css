@@ -40,7 +40,10 @@
 }
 
 *{ box-sizing: border-box; }
-html, body, #root{ height: 100%; }
+html, body, #root{ 
+  height: 100%; 
+  overflow: hidden;
+}
 body{
   margin: 0;
   background: var(--cream);
@@ -68,17 +71,21 @@ input, textarea, select{ font-family: inherit; }
 .app-shell{
   max-width: 480px;
   margin: 0 auto;
-  min-height: 100vh;
+  height: 100vh;
+  height: 100dvh;
   background: var(--cream);
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
 }
 
 .screen{
   flex: 1;
+  min-height: 0;
   padding: 18px 18px 96px;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* --- top bar --- */
@@ -105,8 +112,6 @@ input, textarea, select{ font-family: inherit; }
 
 /* --- bottom nav --- */
 .bottom-nav{
-  position: sticky;
-  bottom: 0;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -441,5 +446,5 @@ textarea.input{ resize: vertical; min-height: 90px; }
 .ingredient-row:last-child{ border-bottom: none; }
 
 @media (min-width: 481px){
-  .app-shell{ box-shadow: 0 0 0 1px var(--line); border-radius: 24px; margin: 20px auto; min-height: calc(100vh - 40px); overflow: hidden; }
+  .app-shell{ box-shadow: 0 0 0 1px var(--line); border-radius: 24px; margin: 20px auto; height: calc(100vh - 40px); overflow: hidden; }
 }
