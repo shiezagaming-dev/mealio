@@ -14,7 +14,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import Link from 'next/link';
-import { Recipe, Ingredient } from '@/types';
+import { Recipe } from '@/types';
 
 export default function RecipePage() {
   const { id } = useParams();
@@ -23,31 +23,31 @@ export default function RecipePage() {
   const [originalServings, setOriginalServings] = useState(2);
 
   useEffect(() => {
-    // Simulation de fetch de données
+    // Simulation de fetch de données - À remplacer par un appel API réel
     const mockRecipe: Recipe = {
       id: id as string,
-      title: "Risotto aux Champignons Crémeux",
-      description: "Un classique italien réconfortant avec des champignons sauvages et du parmesan fraîchement râpé.",
+      title: "Creamy Mushroom Risotto",
+      description: "A comforting Italian classic with wild mushrooms and freshly grated parmesan.",
       image: "https://images.unsplash.com/photo-1454946478264-17336233333d?q=80&w=800",
       prepTime: 10,
       cookTime: 30,
       difficulty: "Medium",
       servings: 2,
-      cuisine: "Italienne",
-      category: "Plat Principal",
+      cuisine: "Italian",
+      category: "Main Course",
       rating: 4.8,
       ingredients: [
-        { item: "Riz Arborio", amount: 200, unit: "g" },
-        { item: "Champignons", amount: 300, unit: "g" },
-        { item: "Bouillon de légumes", amount: 700, unit: "ml" },
-        { item: "Beurre", amount: 30, unit: "g" },
+        { item: "Arborio Rice", amount: 200, unit: "g" },
+        { item: "Mushrooms", amount: 300, unit: "g" },
+        { item: "Vegetable Broth", amount: 700, unit: "ml" },
+        { item: "Butter", amount: 30, unit: "g" },
         { item: "Parmesan", amount: 50, unit: "g" },
       ],
       instructions: [
-        { step: 1, text: "Faire revenir les champignons dans un peu de beurre jusqu'à ce qu'ils soient dorés." },
-        { step: 2, text: "Ajouter le riz et nacrer pendant 2 minutes." },
-        { step: 3, text: "Ajouter le bouillon louche après louche en remuant constamment." },
-        { step: 4, text: "Incorporer le beurre et le parmesan hors du feu pour l'onctuosité." },
+        { step: 1, text: "Sauté the mushrooms in a bit of butter until golden brown." },
+        { step: 2, text: "Add the rice and toast for about 2 minutes." },
+        { step: 3, text: "Add the broth one ladle at a time, stirring constantly." },
+        { step: 4, text: "Stir in the butter and parmesan off the heat for creaminess." },
       ],
       createdAt: new Date(),
     };
@@ -56,7 +56,7 @@ export default function RecipePage() {
     setOriginalServings(mockRecipe.servings);
   }, [id]);
 
-  if (!recipe) return <div className="flex justify-center items-center h-screen">Chargement...</div>;
+  if (!recipe) return <div className="flex justify-center items-center h-screen">Loading...</div>;
 
   const scaleAmount = (amount: number) => {
     return (amount * servings) / originalServings;
@@ -118,10 +118,10 @@ export default function RecipePage() {
         <div className="mt-8 space-y-8">
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Ingrédients</h2>
+              <h2 className="text-xl font-bold">Ingredients</h2>
               <button className="flex items-center space-x-1 text-sm text-brand-500 font-medium">
                 <ShoppingBag size={16} />
-                <span>Ajouter à la liste</span>
+                <span>Add to list</span>
               </button>
             </div>
             <div className="space-y-3">
@@ -160,7 +160,7 @@ export default function RecipePage() {
           </button>
           <Link href={`/recipe/${id}/cook`} className="py-4 bg-brand-500 text-white rounded-2xl font-bold shadow-lg shadow-brand-500/30 flex items-center justify-center space-x-2">
             <PlayCircle size={20} />
-            <span>Mode Cuisine</span>
+            <span>Cook Mode</span>
           </Link>
         </div>
       </div>
