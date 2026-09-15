@@ -3,7 +3,7 @@ export default {
     const origin = request.headers.get('Origin');
     
     // CORS Security
-    if (origin && origin !== env.FRONTEND_ORIGIN) {
+    if (origin && origin !== env.FRONTEND_ORIGIN && env.FRONTEND_ORIGIN !== '*') {
       return new Response('Forbidden: Invalid Origin', { status: 403 });
     }
 
@@ -95,7 +95,6 @@ async function handleRecipe(request, env, corsHeaders) {
 async function handleAnalyze(request, env, corsHeaders) {
   const { image, prompt } = await request.json();
   
-  // Vision check: Gemini 2.0 Flash supports vision
   const visionModels = ['google/gemini', 'openai/gpt-4-vision', 'anthropic/claude-3'];
   const isVisionCapable = visionModels.some(m => env.OPENROUTER_MODEL.includes(m));
 
