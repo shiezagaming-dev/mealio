@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
+import { useMemo } from 'react';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -107,7 +108,7 @@ export default function Home() {
       <Section title="⚡ Rapide (moins de 20 min)" recipes={quick} />
 
       <div className="section">
-        <div className="section-head"><h3 style={{ marginBottom: 10 }}>🌱 Régimes</div></h3>
+        <div className="section-head"><h3 style={{ marginBottom: 10 }}>🌱 Régimes</h3></div>
         <div className="chip-row">
           {['Vegetarian', 'Vegan', 'Gluten-free', 'Budget'].map((d) => (
             <span key={d} className="chip" onClick={() => navigate(`/search?tag=${d.toLowerCase()}`)}>{d}</span>
