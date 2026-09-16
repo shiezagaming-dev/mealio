@@ -1,0 +1,14 @@
+  async function runRemix(option) {
+    setLoadingAI(true);
+    try {
+      const prompt = `Recipe: ${recipe.name}. Ingredients: ${recipe.ingredients.map(i => i.name).join(', ')}. 
+      Request: ${option}. Provide a concise rewritten suggestion (2-4 sentences) on how to adapt this recipe.`;
+      
+      const { text } = await askAI([{ role: 'user', content: prompt }]);
+      setRemixResult(text);
+    } catch (e) {
+      setRemixResult("I couldn't rewrite this right now, but try swapping the main protein for a similar alternative!");
+    } finally {
+      setLoadingAI(false);
+    }
+  }

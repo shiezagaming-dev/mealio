@@ -1,0 +1,16 @@
+  async function askCustom() {
+    if (!customAsk.trim()) return;
+    setLoadingAI(true);
+    try {
+      const prompt = `Recipe: ${recipe.name}. User question: ${customAsk}. 
+      Provide a concise, helpful answer (2-4 sentences).`;
+      
+      const { text } = await askAI([{ role: 'user', content: prompt }]);
+      setRemixResult(text);
+    } catch (e) {
+      setRemixResult("I'm having trouble answering that. Try checking the ingredients list!");
+    } finally {
+      setLoadingAI(false);
+      setCustomAsk('');
+    }
+  }

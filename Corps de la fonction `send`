@@ -1,0 +1,38 @@
+  async function send() {
+    if (!input.trim()) return;
+    const userText = input.trim();
+    const userMsg = { role: 'user', text: userText };
+    setMessages((m) => [...m, userMsg]);
+    setInput('');
+    setLoading(true);
+
+    try {
+      const recipeSummary = allRecipes()
+        .slice(0, 15)
+        .map((r) => `- ${r.name} (${r.time}min, ${r.difficulty}, ${r.cuisine})`)
+        .join('\n');
+
+      const systemPrompt = `You are Mealio, a friendly and concise AI chef. 
+      Available recipes in the app:
+      ${recipeSummary}
+      Answer in 1-3 short sentences. Be warm, practical, and helpful. 
+      If the user asks for a recipe, suggest one from the list if it fits.`;
+
+      const history = messages.map(m => ({ 
+        role: m.role === 'ai' ? 'assistant' : 'user', 
+        content: m.text 
+      }));
+
+      const { text } = await askAI([
+        { role: 'system', content: systemPrompt },
+        ...history,
+        { role: 'user', content: userText }
+      ]);
+
+      setMessages((m) => [...m, { role: 'ai', text }]);
+    } catch (e) {
+      setMessages((m) => [...m, { role: 'ai', text: "Désolé, j'ai un petit problème de connexion avec mon cerveau de chef. Réessayez dans un instant !" }]);
+    } finally {
+      setLoading(false);
+    }
+  }
