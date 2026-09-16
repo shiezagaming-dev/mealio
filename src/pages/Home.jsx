@@ -23,26 +23,18 @@ export default function Home() {
       <div className="greeting-eyebrow">Ravi de vous revoir</div>
       <h1>{state.profile.username.split(' ')[0]}, on cuisine quoi ?</h1>
 
-      {/* AI CHEF PROMINENT CARD */}
-      <div className="card section" style={{ 
-        background: 'linear-gradient(135deg, var(--brand-color), #ff6b6b)', 
-        color: 'white', 
-        padding: '24px', 
-        cursor: 'pointer',
-        border: 'none',
-        boxShadow: '0 8px 20px rgba(255, 107, 107, 0.3)'
-      }} onClick={() => navigate('/ai-chef')}>
-        <div style={{ fontSize: '2rem', marginBottom: '8px' }}>✨ AI Chef</div>
-        <h2 style={{ color: 'white', marginBottom: '8px' }}>Besoin d'inspiration ?</h2>
-        <p style={{ color: 'rgba(255,255,255,0.9)', fontSize: '14px', marginBottom: '16px' }}>
-          Demandez au Chef IA des idées, des substitutions ou des recettes personnalisées.
-        </p>
+      {/* AI CHEF HERO CARD */}
+      <div className="ai-hero-card section" onClick={() => navigate('/ai-chef')}>
+        <div className="eyebrow">✨ AI Chef</div>
+        <h2>Que voulez-vous cuisiner aujourd'hui ?</h2>
+        <p>Demandez au Chef IA des idées, des recettes, des substitutions et des conseils.</p>
         <div className="btn btn-primary" style={{ 
           background: 'white', 
-          color: 'var(--brand-color)', 
+          color: '#4F46E5', 
           width: 'fit-content', 
           padding: '8px 16px',
-          fontSize: '14px'
+          fontSize: '14px',
+          marginTop: '16px'
         }}>
           Interroger le Chef →
         </div>
