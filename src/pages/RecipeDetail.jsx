@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { askAI } from '../data/aiService';
@@ -11,12 +11,27 @@ const REMIX_OPTIONS = [
 export default function RecipeDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getRecipe, toggleSave, state, addToShoppingList } = useApp();
-  const recipe = getRecipe(id);
-  const [servings, setServings] = useState(recipe?.servings || 2);
+  const { getOrFetchFullRecipe, toggleSave, state, addToShoppingList } = useApp();
+  
+  const [recipe, setRecipe] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [servings, setServings] = useState(2);
   const [remixResult, setRemixResult] = useState(null);
   const [customAsk, setCustomAsk] = useState('');
   const [loadingAI, setLoadingAI] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true);
+      const r = await getOrFetchFullRecipe(id);
+      if (r) {
+        setRecipe(r);
+        setServings(r.servings || 2);
+      }
+      setLoading(false);
+    }
+    load();
+  }, [id, getOrFetchFullRecipe]);
 
   const scale = recipe ? servings / recipe.servings : 1;
 
@@ -24,6 +39,14 @@ export default function RecipeDetail() {
     if (!recipe) return [];
     return recipe.ingredients.map((i) => ({ ...i, qty: Math.round(i.qty * scale * 100) / 100 }));
   }, [recipe, scale]);
+
+  if (loading) {
+    return (
+      <div className="screen" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <div className="loading-spinner">Chargement de la recette... 🍳</div>
+      </div>
+    );
+  }
 
   if (!recipe) {
     return (

@@ -82,13 +82,20 @@ export async function filterByIngredient(ingredient) {
 }
 
 export async function lookupMealById(id) {
-  const data = await safeFetchJson(`${BASE}/lookup.php?i=${id}`);
+  // TheMealDB uses idMeal, we use mdb_idMeal.
+  const mealId = id.replace('mdb_', '');
+  const data = await safeFetchJson(`${BASE}/lookup.php?i=${mealId}`);
   return mapMealDbToRecipe(data?.meals?.[0]);
 }
 
 export async function fetchMealsByCategory(category) {
   const data = await safeFetchJson(`${BASE}/filter.php?c=${encodeURIComponent(category)}`);
   return data?.meals || [];
+}
+
+export async function fetchAllCategories() {
+  const data = await safeFetchJson(`${BASE}/categories.php`);
+  return (data?.categories || []).map(c => c.strCategory);
 }
 
 // Given a comma-separated ingredient list, find real recipes that use the

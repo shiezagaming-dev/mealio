@@ -4,8 +4,26 @@ import RecipeCard from '../components/RecipeCard';
 
 export default function Home() {
   const navigate = useNavigate();
-  const { allRecipes, state, liveLoading } = useApp();
-  const recipes = allRecipes();
+  const { allRecipes, state, liveLoading, catalog, categories } = useApp();
+  
+  // Combine fully loaded recipes and the lightweight catalog for browsing
+  const recipes = useMemo(() => {
+    const seen = new Set();
+    const combined = [
+      ...allRecipes(),
+      ...catalog.map(m => ({
+        id: `mdb_${m.idMeal}`,
+        name: m.strMeal,
+        image: m.strMealThumb,
+        time: 30,
+        difficulty: 'Medium',
+        tags: [],
+        cuisine: ''
+      }))
+    ];
+    return combined.filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true)));
+  }, [allRecipes, catalog]);
+
   const livePhotoCount = recipes.filter((r) => r.image).length;
 
   const trending = recipes.slice(0, 5);
@@ -61,6 +79,17 @@ export default function Home() {
         </div>
       </div>
 
+      {categories.length > 0 && (
+        <div className="section">
+          <div className="section-head"><h3>Explorez par catégorie</h3></div>
+          <div className="chip-row">
+            {categories.map(cat => (
+              <span key={cat} className="chip" onClick={() => navigate(`/search?tag=${cat.toLowerCase()}`)}>{cat}</span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {liveLoading && (
         <div className="section" style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ink-soft)', fontSize: 13 }}>
           <span>🔄</span> Chargement des recettes réelles…
@@ -68,7 +97,7 @@ export default function Home() {
       )}
       {!liveLoading && livePhotoCount > 0 && (
         <div className="section" style={{ color: 'var(--ink-soft)', fontSize: 12.5 }}>
-          {livePhotoCount} recettes réelles disponibles via TheMealDB.
+          {livePhotoCount} recettes disponibles via TheMealDB.
         </div>
       )}
 

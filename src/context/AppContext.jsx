@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { recipes as seedRecipes, achievementDefs, defaultFolders, weekDays } from '../data/mockData';
-import { fetchRandomMeals, searchMealsByName } from '../data/mealdb';
+import { fetchRandomMeals, searchMealsByName, fetchAllCategories, fetchMealsByCategory, lookupMealById } from '../data/mealdb';
 
 const AppCtx = createContext(null);
 
@@ -52,17 +52,38 @@ export function AppProvider({ children }) {
   });
   const [toast, setToast] = useState(null);
   const [liveRecipes, setLiveRecipes] = useState([]);
+  const [catalog, setCatalog] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [liveLoading, setLiveLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     setLiveLoading(true);
-    fetchRandomMeals(12).then((meals) => {
-      if (!cancelled) {
-        setLiveRecipes(meals);
-        setLiveLoading(false);
+    
+    async function initLibrary() {
+      try {
+        // 1. Fetch random meals for the home screen
+        const randoms = await fetchRandomMeals(12);
+        
+        // 2. Fetch all categories and their partial meals for the catalog
+        const cats = await fetchAllCategories();
+        const catalogPromises = cats.map(cat => fetchMealsByCategory(cat));
+        const catalogResults = await Promise.all(catalogPromises);
+        const allPartialMeals = catalogResults.flat();
+
+        if (!cancelled) {
+          setLiveRecipes(randoms);
+          setCategories(cats);
+          setCatalog(allPartialMeals);
+          setLiveLoading(false);
+        }
+      } catch (e) {
+        console.error("Failed to initialize library", e);
+        if (!cancelled) setLiveLoading(false);
       }
-    });
+    }
+
+    initLibrary();
     return () => { cancelled = true; };
   }, []);
 
@@ -89,6 +110,14 @@ export function AppProvider({ children }) {
     }));
   }
 
+  function registerLiveRecipes(newRecipes) {
+    setLiveRecipes(prev => {
+      const seen = new Set(prev.map(r => r.id));
+      const unique = newRecipes.filter(r => !seen.has(r.id));
+      return [...prev, ...unique];
+    });
+  }
+
   function allRecipes() {
     const combined = [...liveRecipes, ...state.userRecipes, ...seedRecipes];
     const seen = new Set();
@@ -97,6 +126,28 @@ export function AppProvider({ children }) {
 
   function getRecipe(id) {
     return allRecipes().find((r) => r.id === id);
+  }
+
+  async function getOrFetchFullRecipe(id) {
+    // 1. Check if already fully loaded
+    const existing = getRecipe(id);
+    if (existing) return existing;
+
+    // 2. Check if it's in the catalog (partial)
+    const partial = catalog.find(m => `mdb_${m.idMeal}` === id);
+    if (!partial) return null;
+
+    // 3. Fetch full details
+    try {
+      const full = await lookupMealById(id);
+      if (full) {
+        registerLiveRecipes([full]);
+        return full;
+      }
+    } catch (e) {
+      console.error("Error fetching full recipe", e);
+    }
+    return null;
   }
 
   function toggleTheme() {
@@ -233,6 +284,10 @@ export function AppProvider({ children }) {
     setState,
     allRecipes,
     getRecipe,
+    getOrFetchFullRecipe,
+    registerLiveRecipes,
+    catalog,
+    categories,
     toggleTheme,
     toggleSave,
     createFolder,

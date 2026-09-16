@@ -6,7 +6,7 @@ import RecipeCard from '../components/RecipeCard';
 const FILTERS = ['Under 15 min', 'Under 30 min', 'Easy', 'Vegetarian', 'Vegan', 'Gluten-free', 'Budget'];
 
 export default function Search() {
-  const { allRecipes, logSearch, state, searchOnline } = useApp();
+  const { allRecipes, logSearch, state, searchOnline, registerLiveRecipes, catalog, categories } = useApp();
   const [params] = useSearchParams();
   const [query, setQuery] = useState('');
   const [activeFilters, setActiveFilters] = useState(params.get('tag') ? [params.get('tag')] : []);
@@ -27,6 +27,7 @@ export default function Search() {
       searchOnline(query).then((r) => {
         if (!cancelled) {
           setLiveResults(r);
+          registerLiveRecipes(r); // FIX ISSUE 2: Register results globally
           setLiveSearching(false);
         }
       });
@@ -36,9 +37,25 @@ export default function Search() {
 
   const results = useMemo(() => {
     const seen = new Set();
-    const all = [...liveResults, ...allRecipes()].filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true)));
-    return all.filter((r) => {
-      const text = `${r.name} ${r.tags.join(' ')} ${r.cuisine}`.toLowerCase();
+    // Combine live search results, the global list, and the lightweight catalog
+    const combined = [
+      ...liveResults, 
+      ...allRecipes(), 
+      ...catalog.map(m => ({
+        id: `mdb_${m.idMeal}`,
+        name: m.strMeal,
+        image: m.strMealThumb,
+        time: 30,
+        difficulty: 'Medium',
+        tags: [],
+        cuisine: ''
+      }))
+    ];
+    
+    const unique = combined.filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true)));
+
+    return unique.filter((r) => {
+      const text = `${r.name} ${r.tags?.join(' ') || ''} ${r.cuisine || ''}`.toLowerCase();
       const matchesQuery = query.trim() === '' || text.includes(query.toLowerCase());
       const matchesFilters = activeFilters.every((f) => {
         const fl = f.toLowerCase();
@@ -49,7 +66,7 @@ export default function Search() {
       });
       return matchesQuery && matchesFilters;
     });
-  }, [query, activeFilters, allRecipes, liveResults]);
+  }, [query, activeFilters, allRecipes, liveResults, catalog]);
 
   function toggleFilter(f) {
     setActiveFilters((cur) => (cur.includes(f) ? cur.filter((x) => x !== f) : [...cur, f]));
@@ -85,6 +102,17 @@ export default function Search() {
           ))}
         </div>
       </div>
+
+      {categories.length > 0 && (
+        <div className="section">
+          <div className="section-head"><h3>Categories</h3></div>
+          <div className="chip-row">
+            {categories.map((cat) => (
+              <span key={cat} className="chip" onClick={() => setQuery(cat)}>{cat}</span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {query.trim() === '' && recent.length > 0 && (
         <div className="section">
