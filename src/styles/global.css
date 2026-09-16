@@ -80,12 +80,33 @@ input, textarea, select{ font-family: inherit; }
   overflow: hidden;
 }
 
+@media (min-width: 700px) {
+  .app-shell {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .app-shell {
+    max-width: 900px;
+  }
+}
+
 .screen{
   flex: 1;
   min-height: 0;
   padding: 18px 18px 96px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 700px) {
+  .screen {
+    padding: 24px 32px 110px;
+  }
+  h1 { font-size: 30px; }
+  .recipe-card .name { font-size: 15px; }
+  .btn { font-size: 16px; padding: 15px 24px; }
 }
 
 /* --- top bar --- */
@@ -117,7 +138,6 @@ input, textarea, select{ font-family: inherit; }
   align-items: center;
   background: var(--paper);
   padding: 10px 6px calc(10px + env(safe-area-inset-bottom));
-  max-width: 440px;
   margin: 0 auto 20px;
   width: calc(100% - 32px);
   border-radius: 999px;
@@ -265,6 +285,20 @@ input, textarea, select{ font-family: inherit; }
   gap: 12px;
 }
 
+@media (min-width: 700px) {
+  .grid-2 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .grid-2 {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+}
+
 .chip{
   display: inline-flex;
   align-items: center;
@@ -385,7 +419,6 @@ textarea.input{ resize: vertical; min-height: 90px; }
   background: var(--basil-light);
   display: flex; align-items: center; justify-content: center;
   font-size: 26px;
-  flex-shrink: 0;
 }
 
 .progress-track{
@@ -470,5 +503,11 @@ textarea.input{ resize: vertical; min-height: 90px; }
 .ingredient-row:last-child{ border-bottom: none; }
 
 @media (min-width: 481px){
-  .app-shell{ box-shadow: 0 0 0 1px var(--line); border-radius: 24px; margin: 20px auto; height: calc(100vh - 40px); overflow: hidden; }
+  .app-shell{ 
+    box-shadow: 0 0 0 1px var(--line); 
+    border-radius: 24px; 
+    margin: 20px auto; 
+    height: calc(100vh - 40px); 
+    overflow: hidden; 
+  }
 }
