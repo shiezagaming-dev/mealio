@@ -75,6 +75,7 @@ export function AppProvider({ children }) {
           setLiveRecipes(randoms);
           setCategories(cats);
           setCatalog(allPartialMeals);
+          console.log('CATALOG SIZE:', allPartialMeals.length);
           setLiveLoading(false);
         }
       } catch (e) {
