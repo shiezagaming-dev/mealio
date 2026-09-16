@@ -3,5 +3,5 @@ main = "src/index.js"
 compatibility_date = "2024-01-01"
 
 [vars]
-OPENROUTER_MODEL = "google/gemini-2.0-flash-001"
-FRONTEND_ORIGIN = "https://mealio.pages.dev"
+OPENROUTER_MODEL = "inclusionai/ling-3.0-flash-vl:free"
+FRONTEND_ORIGIN = "https://mealio.ishimweshiza324.workers.dev"
