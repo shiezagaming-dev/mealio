@@ -4,8 +4,7 @@ import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
 import { findMealsByIngredients } from '../data/mealdb';
 import { askAI } from '../data/aiService';
-import { Camera, CameraRoll } from '@capacitor/camera';
-import { IonicException } from '@capacitor/core';
+import { Camera } from '@capacitor/camera';
 
 const TABS = [
   { id: 'scan', label: '📸 Snap' },
@@ -110,7 +109,7 @@ function SnapMeal() {
       
       logScan(`Scanned ${dishName}`);
     } catch (error) {
-      if (error instanceof IonicException && error.message === 'User cancelled photos app') {
+      if (error?.message && error.message.includes('cancelled')) {
         console.log('User cancelled');
       } else {
         console.error("Camera Error:", error);

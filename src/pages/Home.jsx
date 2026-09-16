@@ -107,7 +107,7 @@ export default function Home() {
       <Section title="⚡ Rapide (moins de 20 min)" recipes={quick} />
 
       <div className="section">
-        <div className="section-head"><h3 style={{ marginBottom: 10 }}>🌱 Régimes</div></h3>
+        <div className="section-head"><h3 style={{ marginBottom: 10 }}>🌱 Régimes</h3></div>
         <div className="chip-row">
           {['Vegetarian', 'Vegan', 'Gluten-free', 'Budget'].map((d) => (
             <span key={d} className="chip" onClick={() => navigate(`/search?tag=${d.toLowerCase()}`)}>{d}</span>
