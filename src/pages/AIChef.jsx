@@ -11,18 +11,24 @@ export default function AIChef() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const endRef = useRef(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, error]);
 
-  async function send() {
-    if (!input.trim()) return;
-    const userText = input.trim();
-    const userMsg = { role: 'user', text: userText };
-    setMessages((m) => [...m, userMsg]);
-    setInput('');
+  async function send(textOverride = null) {
+    const textToSend = textOverride || input.trim();
+    if (!textToSend) return;
+
+    if (!textOverride) {
+      const userMsg = { role: 'user', text: textToSend };
+      setMessages((m) => [...m, userMsg]);
+      setInput('');
+    }
+    
+    setError(null);
     setLoading(true);
 
     try {
@@ -45,12 +51,12 @@ export default function AIChef() {
       const { text } = await askAI([
         { role: 'system', content: systemPrompt },
         ...history,
-        { role: 'user', content: userText }
+        { role: 'user', content: textToSend }
       ]);
 
       setMessages((m) => [...m, { role: 'ai', text }]);
     } catch (e) {
-      setMessages((m) => [...m, { role: 'ai', text: "Désolé, j'ai un petit problème de connexion avec mon cerveau de chef. Réessayez dans un instant !" }]);
+      setError(textToSend);
     } finally {
       setLoading(false);
     }
@@ -75,6 +81,21 @@ export default function AIChef() {
           <div key={i} className={`chat-bubble ${m.role}`}>{m.text}</div>
         ))}
         {loading && <div className="chat-bubble ai" style={{ opacity: 0.6 }}>Le Chef réfléchit...</div>}
+        
+        {error && (
+          <div className="chat-bubble ai" style={{ border: '1px solid var(--danger)', backgroundColor: 'var(--basil-light)' }}>
+            <p style={{ color: 'var(--danger)', fontWeight: '600', marginBottom: '8px' }}>
+              Mealio's AI is having trouble right now — try again?
+            </p>
+            <button 
+              className="btn btn-primary btn-sm" 
+              onClick={() => send(error)}
+              style={{ padding: '4px 12px', fontSize: '12px' }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 
@@ -91,7 +112,7 @@ export default function AIChef() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
         />
-        <button className="btn btn-ghost" onClick={send} disabled={loading}>Envoyer</button>
+        <button className="btn btn-ghost" onClick={() => send()} disabled={loading}>Envoyer</button>
       </div>
     </div>
   );

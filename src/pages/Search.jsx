@@ -4,6 +4,8 @@ import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
 
 const FILTERS = ['Under 15 min', 'Under 30 min', 'Easy', 'Vegetarian', 'Vegan', 'Gluten-free', 'Budget'];
+const COMMON_INGREDIENTS = ['Chicken', 'Egg', 'Pasta', 'Apple', 'Tomato', 'Beef'];
+const CATEGORIES_LIST = ['Breakfast', 'Lunch', 'Dinner', 'Dessert', 'Drinks', 'Appetizers'];
 
 export default function Search() {
   const { allRecipes, logSearch, state, searchOnline, registerLiveRecipes, catalog, categories } = useApp();
@@ -27,17 +29,16 @@ export default function Search() {
       searchOnline(query).then((r) => {
         if (!cancelled) {
           setLiveResults(r);
-          registerLiveRecipes(r); // FIX ISSUE 2: Register results globally
+          registerLiveRecipes(r);
           setLiveSearching(false);
         }
       });
-    }, 400); // debounce
+    }, 400);
     return () => { cancelled = true; clearTimeout(t); };
   }, [query]);
 
   const results = useMemo(() => {
     const seen = new Set();
-    // Combine live search results, the global list, and the lightweight catalog
     const combined = [
       ...liveResults, 
       ...allRecipes(), 
@@ -79,12 +80,21 @@ export default function Search() {
     setRecent((r) => [{ label: `Searched "${query.trim()}"` }, ...r].slice(0, 5));
   }
 
+  // Helper to find a representative image for a category
+  const getCategoryImage = (cat) => {
+    const match = catalog.find(m => 
+      m.strMeal.toLowerCase().includes(cat.toLowerCase()) || 
+      (m.strCategory && m.strCategory.toLowerCase() === cat.toLowerCase())
+    );
+    return match ? match.strMealThumb : null;
+  };
+
   return (
     <div className="screen">
-      <h1>Search recipes</h1>
+      <h1 style={{ fontSize: '28px', fontWeight: '800' }}>Search recipes</h1>
       <form onSubmit={submitSearch} style={{ marginTop: 14 }}>
         <div className="search-bar">
-          <span>🔎</span>
+          <span style={{ fontSize: '18px' }}>🔎</span>
           <input
             placeholder="Try “chicken pasta” or “chicken, tomato, cheese”"
             value={query}
@@ -92,6 +102,85 @@ export default function Search() {
           />
         </div>
       </form>
+
+      {/* SECTION 1: Ingredients Photo Tiles */}
+      <div className="section">
+        <div className="section-head">
+          <h3 style={{ fontWeight: '700' }}>Search by ingredient</h3>
+          <span className="see-all">VIEW ALL</span>
+        </div>
+        <div className="h-scroll" style={{ gap: '20px', paddingBottom: '15px' }}>
+          {COMMON_INGREDIENTS.map((ing) => (
+            <div 
+              key={ing} 
+              onClick={() => setQuery(ing)} 
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', width: '80px' }}
+            >
+              <div style={{ 
+                width: '72px', 
+                height: '72px', 
+                borderRadius: '50%', 
+                overflow: 'hidden', 
+                border: '3px solid var(--line)',
+                backgroundColor: 'var(--paper)'
+              }}>
+                <img 
+                  src={`https://www.themealdb.com/images/ingredients/${ing}.png`} 
+                  alt={ing} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  onError={(e) => { e.target.src = 'https://via.placeholder.com/72?text=🥘'; }}
+                />
+              </div>
+              <span style={{ fontSize: '12px', fontWeight: '700', marginTop: '8px', textAlign: 'center' }}>{ing}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* SECTION 2: Category Photo Cards */}
+      <div className="section">
+        <div className="section-head">
+          <h3 style={{ fontWeight: '700' }}>Search by meal</h3>
+        </div>
+        <div className="grid-2">
+          {CATEGORIES_LIST.map((cat) => {
+            const img = getCategoryImage(cat);
+            return (
+              <div 
+                key={cat} 
+                onClick={() => setQuery(cat)}
+                style={{ 
+                  height: '150px', 
+                  borderRadius: 'var(--r-card)', 
+                  position: 'relative', 
+                  overflow: 'hidden', 
+                  cursor: 'pointer',
+                  backgroundColor: 'var(--cream-deep)'
+                }}
+              >
+                {img ? (
+                  <img src={img} alt={cat} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', backgroundColor: 'var(--mustard)', opacity: 0.5 }} />
+                )}
+                <div style={{ 
+                  position: 'absolute', 
+                  bottom: 0, 
+                  left: 0, 
+                  right: 0, 
+                  padding: '12px', 
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+                  color: 'white',
+                  fontWeight: '700',
+                  fontSize: '15px'
+                }}>
+                  {cat}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="section">
         <div className="chip-row">
@@ -103,20 +192,9 @@ export default function Search() {
         </div>
       </div>
 
-      {categories.length > 0 && (
-        <div className="section">
-          <div className="section-head"><h3>Categories</h3></div>
-          <div className="chip-row">
-            {categories.map((cat) => (
-              <span key={cat} className="chip" onClick={() => setQuery(cat)}>{cat}</span>
-            ))}
-          </div>
-        </div>
-      )}
-
       {query.trim() === '' && recent.length > 0 && (
         <div className="section">
-          <div className="section-head"><h3>Recent searches</h3></div>
+          <div className="section-head"><h3 style={{ fontWeight: '700' }}>Recent searches</h3></div>
           <ul>
             {recent.map((r, i) => (
               <li key={i} className="list-row">
@@ -130,7 +208,7 @@ export default function Search() {
 
       <div className="section">
         <div className="section-head">
-          <h3>{results.length} results</h3>
+          <h3 style={{ fontWeight: '700' }}>{results.length} results</h3>
           {liveSearching && <span className="see-all" style={{ color: 'var(--ink-soft)' }}>Searching live…</span>}
         </div>
         {results.length === 0 ? (

@@ -40,30 +40,46 @@ export default {
 };
 
 async function callOpenRouter(payload, env) {
-  if (!env.OPENROUTER_API_KEY) {
-    throw new Error('Server configuration error: OPENROUTER_API_KEY is missing');
+  if (!env.OPENROUTER_MODELS) {
+    throw new Error('Server configuration error: OPENROUTER_MODELS is missing');
   }
 
-  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${env.OPENROUTER_API_KEY}`,
-      'HTTP-Referer': 'https://mealio.app', 
-      'X-Title': 'Mealio AI',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: env.OPENROUTER_MODEL,
-      ...payload,
-    }),
-  });
+  const models = env.OPENROUTER_MODELS.split(',');
+  const errors = [];
 
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`OpenRouter API error: ${err}`);
+  for (const model of models) {
+    try {
+      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.OPENROUTER_API_KEY}`,
+          'HTTP-Referer': 'https://mealio.app', 
+          'X-Title': 'Mealio AI',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: model.trim(),
+          ...payload,
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errText}`);
+      }
+
+      const data = await response.json();
+      // On injecte le modèle qui a répondu pour le debug
+      data._servedBy = model.trim();
+      return data;
+
+    } catch (e) {
+      console.error(`Model ${model} failed: ${e.message}`);
+      errors.push(`${model.trim()} (${e.message})`);
+    }
   }
 
-  return await response.json();
+  throw new Error(`All AI models failed. Tried: ${errors.join('; ')}`);
 }
 
 async function handleChat(request, env, corsHeaders) {
@@ -95,9 +111,6 @@ async function handleRecipe(request, env, corsHeaders) {
 async function handleAnalyze(request, env, corsHeaders) {
   const { image, prompt } = await request.json();
   
-  // Gemini 2.0 Flash (configured in wrangler.toml) supports vision.
-  // We remove the restrictive check and rely on the model's capability.
-
   const result = await callOpenRouter({
     messages: [
       {

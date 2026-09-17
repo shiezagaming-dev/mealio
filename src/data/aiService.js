@@ -13,18 +13,21 @@ export async function askAI(messages, options = {}) {
       const result = await MealioAPI.analyzeImage(imageBase64, messages[messages.length - 1].content);
       return {
         text: result.choices[0].message.content,
-        source: 'openrouter'
+        source: 'openrouter',
+        model: result._servedBy
       };
     } else {
       // Chat texte via le Worker
       const result = await MealioAPI.chat(messages);
       return {
         text: result.choices[0].message.content,
-        source: 'openrouter'
+        source: 'openrouter',
+        model: result._servedBy
       };
     }
   } catch (error) {
     console.error("AI Service Error:", error);
-    throw new Error("L'IA est momentanément indisponible. Veuillez réessayer.");
+    // On propage l'erreur pour que l'UI puisse afficher le bouton Retry
+    throw error;
   }
 }
