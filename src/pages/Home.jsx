@@ -13,78 +13,254 @@ export default function Home() {
   const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
 
   return (
-    <div className="screen" style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+    <div className="screen" style={{ 
+      maxWidth: '800px', 
+      margin: '0 auto', 
+      width: '100%', 
+      backgroundColor: '#171512', 
+      color: '#F4EBDD',
+      minHeight: '100vh',
+      paddingBottom: '100px'
+    }}>
       {/* TOP AREA */}
-      <div style={{ marginBottom: 'var(--space-xl)', padding: '0 var(--space-md)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
+      <div style={{ padding: '32px 24px 0', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
           <div style={{ 
-            width: '48px', height: '48px', borderRadius: '50%', 
-            background: 'var(--accent-soft)', display: 'flex', 
-            alignItems: 'center', justifyContent: 'center', fontSize: '24px' 
+            width: '56px', height: '56px', borderRadius: '50%', 
+            background: '#3A211C', display: 'flex', 
+            alignItems: 'center', justifyContent: 'center', fontSize: '32px',
+            border: '2px solid #F04A32'
           }}>
             {state.profile.avatar || '🧑‍🍳'}
           </div>
           <div>
-            <h1 style={{ fontSize: '24px', lineHeight: '1.2', margin: 0 }}>{greeting}, {state.profile.username || 'Chef'} 👋</h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px', margin: 0 }}>Qu'avez-vous envie de cuisiner aujourd'hui ?</p>
+            <h1 style={{ 
+              fontSize: '28px', 
+              fontFamily: 'Fraunces, serif', 
+              lineHeight: '1.2', 
+              margin: 0,
+              fontWeight: '700' 
+            }}>
+              {greeting}, {state.profile.username || 'Chef'} 👋
+            </h1>
+            <p style={{ color: '#AAA39A', fontSize: '15px', margin: 0, fontFamily: 'DM Sans, sans-serif' }}>
+              Qu'avez-vous envie de cuisiner aujourd'hui ?
+            </p>
           </div>
         </div>
 
-        <div className="search-bar-premium">
-          <span style={{ color: 'var(--text-muted)' }}>🔍</span>
+        <div style={{ 
+          position: 'relative', 
+          backgroundColor: '#211E19', 
+          borderRadius: '16px', 
+          padding: '12px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          border: '1px solid #3A211C',
+          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+        }}>
+          <span style={{ color: '#AAA39A', marginRight: '12px', fontSize: '20px' }}>🔍</span>
           <input 
             placeholder="Rechercher une recette, un ingrédient..." 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && navigate(`/search?q=${search}`)}
+            style={{ 
+              backgroundColor: 'transparent', 
+              border: 'none', 
+              outline: 'none', 
+              color: '#F4EBDD', 
+              fontSize: '16px', 
+              width: '100%',
+              fontFamily: 'DM Sans, sans-serif'
+            }}
           />
         </div>
       </div>
 
-      {/* AI CHEF HERO */}
-      <div className="ai-chef-hero" onClick={() => navigate('/ai-chef')} style={{ margin: '0 var(--space-md)', borderRadius: 'var(--r-lg)' }}>
-        <div style={{ position: 'relative', zIndex: 2 }}>
-          <div style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', marginBottom: '8px', opacity: 0.9 }}>✨ Rencontrez votre Chef IA</div>
-          <h2 style={{ color: 'white', fontSize: '22px', marginBottom: '8px' }}>Pas d'idées pour le repas ?</h2>
-          <p style={{ color: 'white', opacity: 0.9, fontSize: '14px', marginBottom: '16px' }}>Dites à Mealio ce qu'il reste dans votre frigo et obtenez une recette personnalisée instantanément.</p>
-          <button className="btn-premium btn-white">Demander au Chef IA →</button>
+      {/* SIGNATURE FEATURES */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+        gap: '20px', 
+        padding: '0 24px',
+        marginBottom: '40px' 
+      }}>
+        {/* AI Chef Card */}
+        <div 
+          onClick={() => navigate('/ai-chef')} 
+          style={{ 
+            backgroundColor: '#211E19', 
+            borderRadius: '24px', 
+            padding: '24px', 
+            border: '1px solid #3A211C', 
+            cursor: 'pointer',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'transform 0.2s ease'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+        >
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{ 
+              color: '#F04A32', 
+              fontSize: '12px', 
+              fontWeight: '800', 
+              textTransform: 'uppercase', 
+              marginBottom: '8px', 
+              letterSpacing: '1px' 
+            }}>✨ Assistant IA</div>
+            <h2 style={{ 
+              color: '#F4EBDD', 
+              fontSize: '22px', 
+              fontFamily: 'Fraunces, serif', 
+              marginBottom: '12px',
+              fontWeight: '700' 
+            }}>
+              Pas d'idées pour le repas ?
+            </h2>
+            <p style={{ color: '#AAA39A', fontSize: '14px', marginBottom: '20px', lineHeight: '1.5', fontFamily: 'DM Sans, sans-serif' }}>
+              Dites à Mealio ce qu'il reste dans votre frigo et obtenez une recette personnalisée.
+            </p>
+            <button style={{ 
+              backgroundColor: '#F04A32', 
+              color: '#F4EBDD', 
+              border: 'none', 
+              padding: '10px 20px', 
+              borderRadius: '12px', 
+              fontWeight: '700', 
+              cursor: 'pointer',
+              fontFamily: 'DM Sans, sans-serif'
+            }}>
+              Demander au Chef IA →
+            </button>
+          </div>
+          <div style={{ 
+            position: 'absolute', right: '-20px', bottom: '-20px', 
+            fontSize: '100px', opacity: 0.1, transform: 'rotate(-15deg)', pointerEvents: 'none' 
+          }}>🍳</div>
         </div>
-        <div style={{ 
-          position: 'absolute', right: '-20px', bottom: '-20px', 
-          fontSize: '120px', opacity: 0.2, transform: 'rotate(-15deg)', pointerEvents: 'none' 
-        }}>🍳</div>
+
+        {/* Scan Card */}
+        <div 
+          onClick={() => navigate('/create?tab=scan')} 
+          style={{ 
+            backgroundColor: '#211E19', 
+            borderRadius: '24px', 
+            padding: '24px', 
+            border: '1px solid #3A211C', 
+            cursor: 'pointer',
+            position: 'relative',
+            overflow: 'hidden',
+            transition: 'transform 0.2s ease'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+          onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+        >
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <div style={{ 
+              color: '#F04A32', 
+              fontSize: '12px', 
+              fontWeight: '800', 
+              textTransform: 'uppercase', 
+              marginBottom: '8px', 
+              letterSpacing: '1px' 
+            }}>📸 Vision Intelligente</div>
+            <h2 style={{ 
+              color: '#F4EBDD', 
+              fontSize: '22px', 
+              fontFamily: 'Fraunces, serif', 
+              marginBottom: '12px',
+              fontWeight: '700' 
+            }}>
+              Identifiez un plat
+            </h2>
+            <p style={{ color: '#AAA39A', fontSize: '14px', marginBottom: '20px', lineHeight: '1.5', fontFamily: 'DM Sans, sans-serif' }}>
+              Prenez une photo d'un plat et Mealio retrouve la recette pour vous.
+            </p>
+            <button style={{ 
+              backgroundColor: 'transparent', 
+              color: '#F4EBDD', 
+              border: '1px solid #F04A32', 
+              padding: '10px 20px', 
+              borderRadius: '12px', 
+              fontWeight: '700', 
+              cursor: 'pointer',
+              fontFamily: 'DM Sans, sans-serif'
+            }}>
+              Ouvrir la caméra →
+            </button>
+          </div>
+          <div style={{ 
+            position: 'absolute', right: '-20px', bottom: '-20px', 
+            fontSize: '100px', opacity: 0.1, transform: 'rotate(15deg)', pointerEvents: 'none' 
+          }}>📷</div>
+        </div>
       </div>
 
-      {/* RECIPE DISCOVERY */}
-      <div className="section" style={{ marginTop: 'var(--space-xl)', padding: '0 var(--space-md)' }}>
-        <div className="section-header-premium">
-          <h3 style={{ fontSize: '18px' }}>Recettes Populaires</h3>
-          <span className="see-all" onClick={() => navigate('/search')}>Voir tout</span>
+      {/* RECIPE SECTIONS */}
+      <div style={{ padding: '0 24px' }}>
+        <div style={{ marginBottom: '40px' }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            marginBottom: '20px' 
+          }}>
+            <h3 style={{ 
+              fontSize: '22px', 
+              fontFamily: 'Fraunces, serif', 
+              fontWeight: '700', 
+              color: '#F4EBDD' 
+            }}>Recettes Populaires</h3>
+            <span 
+              onClick={() => navigate('/search')} 
+              style={{ color: '#F04A32', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+            >
+              Voir tout
+            </span>
+          </div>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', 
+            gap: '20px' 
+          }}>
+            {recipes.map((r, i) => (
+              <RecipeCard key={r.id || i} recipe={r} />
+            ))}
+          </div>
         </div>
-        <div className="recipe-grid" style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', 
-          gap: '16px' 
-        }}>
-          {recipes.map((r, i) => (
-            <RecipeCard key={r.id || i} recipe={r} />
-          ))}
-        </div>
-      </div>
 
-      <div className="section" style={{ marginTop: 'var(--space-xl)', padding: '0 var(--space-md)', marginBottom: '80px' }}>
-        <div className="section-header-premium">
-          <h3 style={{ fontSize: '18px' }}>Rapide & Facile</h3>
-          <span className="see-all" onClick={() => navigate('/search')}>Explorer</span>
-        </div>
-        <div className="recipe-grid" style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', 
-          gap: '16px' 
-        }}>
-          {recipes.slice().reverse().map((r, i) => (
-            <RecipeCard key={r.id || i} recipe={r} />
-          ))}
+        <div style={{ marginBottom: '80px' }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            marginBottom: '20px' 
+          }}>
+            <h3 style={{ 
+              fontSize: '22px', 
+              fontFamily: 'Fraunces, serif', 
+              fontWeight: '700', 
+              color: '#F4EBDD' 
+            }}>Rapide & Facile</h3>
+            <span 
+              onClick={() => navigate('/search')} 
+              style={{ color: '#F04A32', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+            >
+              Explorer
+            </span>
+          </div>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', 
+            gap: '20px' 
+          }}>
+            {recipes.slice().reverse().map((r, i) => (
+              <RecipeCard key={r.id || i} recipe={r} />
+            ))}
+          </div>
         </div>
       </div>
     </div>
