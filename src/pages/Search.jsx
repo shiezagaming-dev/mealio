@@ -131,7 +131,7 @@ export default function Search() {
           display: 'flex', gap: 'var(--space-lg)', overflowX: 'auto', 
           paddingBottom: 'var(--space-md)', scrollbarWidth: 'none',
           width: '100%',
-          -webkitOverflowScrolling: 'touch'
+          WebkitOverflowScrolling: 'touch'
         }}>
           {COMMON_INGREDIENTS.map((ing) => (
             <div 
