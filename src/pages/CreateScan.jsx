@@ -41,34 +41,52 @@ export default function CreateScan() {
   const [tab, setTab] = useState(params.get('tab') || 'scan');
 
   return (
-    <div className="screen">
-      <h1 style={{ fontSize: '32px', marginBottom: 'var(--space-lg)' }}>Créer & Scanner</h1>
-      <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
-        <div style={{ 
-          background: 'var(--bg-card)', padding: '6px', borderRadius: 'var(--r-pill)', 
-          border: '1px solid var(--border-color)', display: 'flex', gap: '4px',
-          boxShadow: 'var(--shadow-sm)'
-        }}>
-          {TABS.map((t) => (
-            <button 
-              key={t.id} 
-              className="btn-premium" 
-              style={{ 
-                flex: 1, border: 'none', background: tab === t.id ? 'var(--accent)' : 'transparent', 
-                color: tab === t.id ? 'white' : 'var(--text-secondary)', 
-                borderRadius: 'var(--r-pill)', fontSize: '13px', padding: '8px 0' 
-              }} 
-              onClick={() => setTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
+    <div className="screen" style={{ 
+      maxWidth: '800px', 
+      margin: '0 auto', 
+      width: '100%', 
+      backgroundColor: '#171512', 
+      color: '#F4EBDD',
+      minHeight: '100vh',
+      paddingBottom: '100px'
+    }}>
+      <div style={{ padding: '32px 24px 0' }}>
+        <h1 style={{ 
+          fontSize: '36px', 
+          fontFamily: 'Fraunces, serif', 
+          fontWeight: '700', 
+          marginBottom: '32px' 
+        }}>Créer & Scanner</h1>
+        
+        <div className="section" style={{ marginBottom: '40px' }}>
+          <div style={{ 
+            background: '#211E19', padding: '6px', borderRadius: '20px', 
+            border: '1px solid #3A211C', display: 'flex', gap: '4px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+          }}>
+            {TABS.map((t) => (
+              <button 
+                key={t.id} 
+                style={{ 
+                  flex: 1, border: 'none', background: tab === t.id ? '#F04A32' : 'transparent', 
+                  color: tab === t.id ? 'white' : '#AAA39A', 
+                  borderRadius: '16px', fontSize: '13px', padding: '10px 0',
+                  fontWeight: '600', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+                  transition: 'all 0.2s ease'
+                }} 
+                onClick={() => setTab(t.id)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
+        
+        {tab === 'scan' && <SnapMeal />}
+        {tab === 'fridge' && <FridgeScan />}
+        {tab === 'ingredients' && <FromIngredients />}
+        {tab === 'own' && <CreateOwnRecipe />}
       </div>
-      {tab === 'scan' && <SnapMeal />}
-      {tab === 'fridge' && <FridgeScan />}
-      {tab === 'ingredients' && <FromIngredients />}
-      {tab === 'own' && <CreateOwnRecipe />}
     </div>
   );
 }
@@ -135,30 +153,52 @@ function SnapMeal() {
   }
 
   return (
-    <div className="section">
-      <div className="recipe-card-premium" style={{ padding: 'var(--space-xl)', textAlign: 'center', cursor: 'default' }}>
-        <div style={{ fontSize: '64px', marginBottom: 'var(--space-md)' }}>📸</div>
-        <h3 style={{ fontSize: '22px', marginBottom: 'var(--space-sm)' }}>Prendre un plat en photo</h3>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '15px', marginBottom: 'var(--space-lg)', lineHeight: '1.6' }}>
+    <div className="section" style={{ padding: '0 24px' }}>
+      <div style={{ 
+        backgroundColor: '#211E19', padding: '40px 24px', textAlign: 'center', 
+        borderRadius: '32px', border: '1px solid #3A211C', boxShadow: '0 12px 32px rgba(0,0,0,0.3)' 
+      }}>
+        <div style={{ fontSize: '64px', marginBottom: '24px' }}>📸</div>
+        <h3 style={{ fontSize: '24px', fontFamily: 'Fraunces, serif', fontWeight: '700', marginBottom: '12px', color: '#F4EBDD' }}>Prendre un plat en photo</h3>
+        <p style={{ color: '#AAA39A', fontSize: '16px', marginBottom: '32px', lineHeight: '1.6', fontFamily: 'DM Sans, sans-serif' }}>
           Prenez une photo d'un plat et Mealio l'identifiera pour vous grâce à l'IA.
         </p>
-        <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center' }}>
-          <button className="btn-premium btn-primary" onClick={() => captureImage('camera')}>
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+          <button 
+            onClick={() => captureImage('camera')}
+            style={{ 
+              backgroundColor: '#F04A32', color: '#F4EBDD', border: 'none', 
+              padding: '12px 24px', borderRadius: '16px', fontWeight: '700', 
+              cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' 
+            }}
+          >
             📷 Caméra
           </button>
-          <button className="btn-premium btn-secondary" onClick={() => captureImage('gallery')}>
+          <button 
+            onClick={() => captureImage('gallery')}
+            style={{ 
+              backgroundColor: 'transparent', color: '#F4EBDD', border: '1px solid #3A211C', 
+              padding: '12px 24px', borderRadius: '16px', fontWeight: '700', 
+              cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' 
+            }}
+          >
             🖼️ Galerie
           </button>
         </div>
       </div>
 
-      {loading && <div className="empty-state"><div className="glyph">🔍</div><p>Identification du plat en cours…</p></div>}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '60px 0', color: '#AAA39A', fontFamily: 'DM Sans, sans-serif' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+          <p>Identification du plat en cours…</p>
+        </div>
+      )}
 
       {result && (
-        <div className="section" style={{ marginTop: 'var(--space-xl)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
-            <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)' }}>“Ceci ressemble à {result.name}.”</p>
-            {aiSource && <span style={{ fontSize: '10px', opacity: 0.6, fontWeight: '700' }}>via {aiSource}</span>}
+        <div className="section" style={{ marginTop: '40px', padding: '0 24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <p style={{ fontStyle: 'italic', color: '#AAA39A', fontFamily: 'DM Sans, sans-serif' }}>“Ceci ressemble à {result.name}.”</p>
+            {aiSource && <span style={{ fontSize: '10px', opacity: 0.6, fontWeight: '700', color: '#AAA39A' }}>via {aiSource}</span>}
           </div>
           <RecipeCard recipe={result} />
         </div>
@@ -218,56 +258,84 @@ function FridgeScan() {
   }
 
   return (
-    <div className="section">
-      <div className="recipe-card-premium" style={{ padding: 'var(--space-xl)', textAlign: 'center', cursor: 'default' }}>
-        <div style={{ fontSize: '64px', marginBottom: 'var(--space-md)' }}>🧊</div>
-        <h3 style={{ fontSize: '22px', marginBottom: 'var(--space-sm)' }}>Qu'y a-t-il dans mon frigo ?</h3>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '15px', marginBottom: 'var(--space-lg)', lineHeight: '1.6' }}>
+    <div className="section" style={{ padding: '0 24px' }}>
+      <div style={{ 
+        backgroundColor: '#211E19', padding: '40px 24px', textAlign: 'center', 
+        borderRadius: '32px', border: '1px solid #3A211C', boxShadow: '0 12px 32px rgba(0,0,0,0.3)' 
+      }}>
+        <div style={{ fontSize: '64px', marginBottom: '24px' }}>🧊</div>
+        <h3 style={{ fontSize: '24px', fontFamily: 'Fraunces, serif', fontWeight: '700', marginBottom: '12px', color: '#F4EBDD' }}>Qu'y a-t-il dans mon frigo ?</h3>
+        <p style={{ color: '#AAA39A', fontSize: '16px', marginBottom: '32px', lineHeight: '1.6', fontFamily: 'DM Sans, sans-serif' }}>
           Photographiez votre frigo et nous trouverons quoi cuisiner avec vos restes.
         </p>
-        <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center' }}>
-          <button className="btn-premium btn-primary" onClick={() => captureImage('camera')}>
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+          <button 
+            onClick={() => captureImage('camera')}
+            style={{ 
+              backgroundColor: '#F04A32', color: '#F4EBDD', border: 'none', 
+              padding: '12px 24px', borderRadius: '16px', fontWeight: '700', 
+              cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' 
+            }}
+          >
             📷 Caméra
           </button>
-          <button className="btn-premium btn-secondary" onClick={() => captureImage('gallery')}>
+          <button 
+            onClick={() => captureImage('gallery')}
+            style={{ 
+              backgroundColor: 'transparent', color: '#F4EBDD', border: '1px solid #3A211C', 
+              padding: '12px 24px', borderRadius: '16px', fontWeight: '700', 
+              cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' 
+            }}
+          >
             🖼️ Galerie
           </button>
         </div>
       </div>
 
-      {loading && <div className="empty-state"><div className="glyph">🔍</div><p>Analyse du frigo…</p></div>}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '60px 0', color: '#AAA39A', fontFamily: 'DM Sans, sans-serif' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+          <p>Analyse du frigo…</p>
+        </div>
+      )}
 
       {found && (
         <>
-          <div className="section" style={{ marginTop: 'var(--space-xl)' }}>
-            <div className="section-header-premium">
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                Ingrédients trouvés {aiSource && <span style={{ fontSize: '12px', opacity: 0.6, fontWeight: '400' }}>via {aiSource}</span>}
+          <div className="section" style={{ marginTop: '40px', padding: '0 24px' }}>
+            <div style={{ 
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' 
+            }}>
+              <h3 style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: '600', color: '#F4EBDD' }}>
+                Ingrédients trouvés {aiSource && <span style={{ fontSize: '12px', opacity: 0.6, fontWeight: '400', color: '#AAA39A' }}>via {aiSource}</span>}
               </h3>
             </div>
-            <div style={{ display: 'flex', gap: 'var(--space-sm)', overflowX: 'auto', paddingBottom: 'var(--space-sm)' }}>
+            <div style={{ 
+              display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '12px', 
+              scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' 
+            }}>
               {found.items.map((i) => (
                 <span key={i} style={{ 
-                  padding: '6px 14px', borderRadius: 'var(--r-pill)', 
-                  background: 'var(--bg-card)', border: '1px solid var(--border-color)', 
-                  fontSize: '13px', fontWeight: '500', whiteSpace: 'nowrap' 
+                  padding: '8px 16px', borderRadius: '20px', 
+                  background: '#211E19', border: '1px solid #3A211C', 
+                  fontSize: '13px', fontWeight: '500', whiteSpace: 'nowrap',
+                  color: '#F4EBDD', fontFamily: 'DM Sans, sans-serif'
                 }}>{i}</span>
               ))}
             </div>
           </div>
-          <div className="section" style={{ marginTop: 'var(--space-md)' }}>
-            <div className="section-header-premium">
-              <h3>Plats suggérés</h3>
-            </div>
-            <div className="recipe-grid" style={{ gridTemplateColumns: '1fr' }}>
+          <div className="section" style={{ marginTop: '32px', padding: '0 24px' }}>
+            <h3 style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: '600', marginBottom: '20px', color: '#F4EBDD' }}>Plats suggérés</h3>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', 
+              gap: '20px' 
+            }}>
               {found.matches.length > 0 ? (
                 found.matches.map(({ r, pct }) => (
-                  <div key={r.id} style={{ marginBottom: 'var(--space-md)' }}>
-                    <RecipeCard recipe={r} wide />
-                  </div>
+                  <RecipeCard key={r.id} recipe={r} matchPct={pct} />
                 ))
               ) : (
-                <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Aucun match exact trouvé, essayez une recherche manuelle !</p>
+                <p style={{ color: '#AAA39A', fontSize: '14px', fontFamily: 'DM Sans, sans-serif' }}>Aucun match exact trouvé, essayez une recherche manuelle !</p>
               )}
             </div>
           </div>
@@ -307,33 +375,56 @@ function FromIngredients() {
   }
 
   return (
-    <div className="section">
-      <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>Listez vos ingrédients, séparés par des virgules.</p>
-      <div style={{ marginBottom: 'var(--space-md)' }}>
-        <div className="search-bar-premium">
+    <div className="section" style={{ padding: '0 24px' }}>
+      <p style={{ fontSize: '15px', color: '#AAA39A', marginBottom: '24px', fontFamily: 'DM Sans, sans-serif' }}>Listez vos ingrédients, séparés par des virgules.</p>
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{ 
+          position: 'relative', backgroundColor: '#211E19', borderRadius: '16px', 
+          padding: '12px 20px', display: 'flex', alignItems: 'center',
+          border: '1px solid #3A211C', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+        }}>
+          <span style={{ color: '#AAA39A', marginRight: '12px', fontSize: '20px' }}>🥕</span>
           <input
             placeholder="Poulet, riz, tomates, fromage..."
             value={text}
             onChange={(e) => setText(e.target.value)}
+            style={{ 
+              backgroundColor: 'transparent', border: 'none', outline: 'none', 
+              color: '#F4EBDD', fontSize: '16px', width: '100%',
+              fontFamily: 'DM Sans, sans-serif'
+            }}
           />
         </div>
       </div>
-      <button className="btn-premium btn-primary btn-block" style={{ width: '100%', marginBottom: 'var(--space-xl)' }} onClick={findMatches}>
+      <button 
+        onClick={findMatches}
+        style={{ 
+          width: '100%', padding: '14px', borderRadius: '16px', 
+          backgroundColor: '#F04A32', color: '#F4EBDD', border: 'none', 
+          fontWeight: '700', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+          marginBottom: '40px', transition: 'all 0.2s ease'
+        }}
+      >
         Trouver des plats
       </button>
 
-      {loading && <div className="empty-state"><div className="glyph">🔍</div><p>Recherche de recettes réelles…</p></div>}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '60px 0', color: '#AAA39A', fontFamily: 'DM Sans, sans-serif' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+          <p>Recherche de recettes réelles…</p>
+        </div>
+      )}
 
       {matches && !loading && (
         <div className="section">
-          <div className="section-header-premium">
-            <h3>Suggestions</h3>
-          </div>
-          <div className="recipe-grid" style={{ gridTemplateColumns: '1fr' }}>
+          <h3 style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: '600', marginBottom: '20px', color: '#F4EBDD' }}>Suggestions</h3>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', 
+            gap: '20px' 
+          }}>
             {matches.map(({ r, pct }) => (
-              <div key={r.id} style={{ marginBottom: 'var(--space-md)' }}>
-                <RecipeCard recipe={r} wide />
-              </div>
+              <RecipeCard key={r.id} recipe={r} matchPct={pct} />
             ))}
           </div>
         </div>
@@ -399,41 +490,60 @@ function CreateOwnRecipe() {
   }
 
   return (
-    <div className="section">
-      <div style={{ marginBottom: 'var(--space-md)' }}>
-        <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>Nom de la recette</label>
-        <div className="search-bar-premium" style={{ marginTop: 'var(--space-xs)' }}>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Les pâtes de Grand-mère" />
+    <div className="section" style={{ padding: '0 24px' }}>
+      <div style={{ marginBottom: '24px' }}>
+        <label style={{ fontSize: '13px', fontWeight: '600', color: '#AAA39A', display: 'block', marginBottom: '8px', fontFamily: 'DM Sans, sans-serif' }}>Nom de la recette</label>
+        <div style={{ 
+          position: 'relative', backgroundColor: '#211E19', borderRadius: '16px', 
+          padding: '12px 20px', display: 'flex', alignItems: 'center',
+          border: '1px solid #3A211C', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+        }}>
+          <input 
+            value={name} 
+            onChange={(e) => setName(e.target.value)} 
+            placeholder="Les pâtes de Grand-mère" 
+            style={{ 
+              backgroundColor: 'transparent', border: 'none', outline: 'none', 
+              color: '#F4EBDD', fontSize: '16px', width: '100%',
+              fontFamily: 'DM Sans, sans-serif'
+            }}
+          />
         </div>
       </div>
 
-      <div className="recipe-grid" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: 'var(--space-md)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
         <div>
-          <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>Temps (min)</label>
-          <div className="search-bar-premium" style={{ marginTop: 'var(--space-xs)' }}>
-            <input type="number" value={time} onChange={(e) => setTime(e.target.value)} />
+          <label style={{ fontSize: '13px', fontWeight: '600', color: '#AAA39A', display: 'block', marginBottom: '8px', fontFamily: 'DM Sans, sans-serif' }}>Temps (min)</label>
+          <div style={{ 
+            position: 'relative', backgroundColor: '#211E19', borderRadius: '16px', 
+            padding: '12px 20px', border: '1px solid #3A211C'
+          }}>
+            <input type="number" value={time} onChange={(e) => setTime(e.target.value)} style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#F4EBDD', width: '100%', fontFamily: 'DM Sans, sans-serif' }} />
           </div>
         </div>
         <div>
-          <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>Portions</label>
-          <div className="search-bar-premium" style={{ marginTop: 'var(--space-xs)' }}>
-            <input type="number" value={servings} onChange={(e) => setServings(e.target.value)} />
+          <label style={{ fontSize: '13px', fontWeight: '600', color: '#AAA39A', display: 'block', marginBottom: '8px', fontFamily: 'DM Sans, sans-serif' }}>Portions</label>
+          <div style={{ 
+            position: 'relative', backgroundColor: '#211E19', borderRadius: '16px', 
+            padding: '12px 20px', border: '1px solid #3A211C'
+          }}>
+            <input type="number" value={servings} onChange={(e) => setServings(e.target.value)} style={{ backgroundColor: 'transparent', border: 'none', outline: 'none', color: '#F4EBDD', width: '100%', fontFamily: 'DM Sans, sans-serif' }} />
           </div>
         </div>
       </div>
 
-      <div style={{ marginBottom: 'var(--space-md)' }}>
-        <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)', display: 'block', marginBottom: 'var(--space-xs)' }}>Difficulté</label>
-        <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+      <div style={{ marginBottom: '24px' }}>
+        <label style={{ fontSize: '13px', fontWeight: '600', color: '#AAA39A', display: 'block', marginBottom: '12px', fontFamily: 'DM Sans, sans-serif' }}>Difficulté</label>
+        <div style={{ display: 'flex', gap: '8px' }}>
           {['Easy', 'Medium', 'Hard'].map((d) => (
             <span 
               key={d} 
-              className="chip" 
               style={{ 
-                padding: '8px 16px', borderRadius: 'var(--r-pill)', 
-                background: difficulty === d ? 'var(--accent)' : 'var(--bg-card)', 
-                color: difficulty === d ? 'white' : 'var(--text-secondary)',
-                border: '1px solid var(--border-color)', cursor: 'pointer', fontSize: '13px'
+                flex: 1, textAlign: 'center', padding: '10px', borderRadius: '12px', cursor: 'pointer', 
+                fontSize: '13px', fontFamily: 'DM Sans, sans-serif', transition: 'all 0.2s ease',
+                backgroundColor: difficulty === d ? '#F04A32' : '#211E19',
+                color: difficulty === d ? '#F4EBDD' : '#AAA39A',
+                border: '1px solid #3A211C'
               }} 
               onClick={() => setDifficulty(d)}
             >
@@ -443,42 +553,63 @@ function CreateOwnRecipe() {
         </div>
       </div>
 
-      <div style={{ height: '1px', background: 'var(--border-color)', margin: 'var(--space-lg) 0' }} />
+      <div style={{ height: '1px', background: '#3A211C', margin: '32px 0' }} />
 
-      <div style={{ marginBottom: 'var(--space-md)' }}>
-        <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>Notes brutes (Mealio va les organiser)</label>
-        <div className="search-bar-premium" style={{ marginTop: 'var(--space-xs)', padding: 'var(--space-sm)' }}>
+      <div style={{ marginBottom: '24px' }}>
+        <label style={{ fontSize: '13px', fontWeight: '600', color: '#AAA39A', display: 'block', marginBottom: '12px', fontFamily: 'DM Sans, sans-serif' }}>Notes brutes (Mealio va les organiser)</label>
+        <div style={{ 
+          position: 'relative', backgroundColor: '#211E19', borderRadius: '16px', 
+          padding: '16px', border: '1px solid #3A211C', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+        }}>
           <textarea
-            style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none', fontFamily: 'inherit', fontSize: '15px', minHeight: '100px', resize: 'none' }}
+            style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none', fontFamily: 'DM Sans, sans-serif', fontSize: '15px', minHeight: '120px', resize: 'none', color: '#F4EBDD' }}
             placeholder="Poulet, ail, poêle, cuire, ajouter tomate, pâtes…"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
         </div>
       </div>
-      <button className="btn-premium btn-secondary btn-block" style={{ width: '100%', marginBottom: 'var(--space-xl)' }} onClick={cleanUpWithAI} disabled={loading}>
+      <button 
+        className="btn-premium btn-secondary btn-block" 
+        style={{ 
+          width: '100%', padding: '14px', borderRadius: '16px', 
+          backgroundColor: 'transparent', color: '#F4EBDD', border: '1px solid #3A211C', 
+          fontWeight: '700', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+          marginBottom: '40px', transition: 'all 0.2s ease'
+        }} 
+        onClick={cleanUpWithAI} disabled={loading}
+      >
         {loading ? 'Organisation...' : '✨ Organiser avec Mealio'}
       </button>
 
       {structured && (
-        <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
-          <div className="section-header-premium">
-            <h3>Aperçu</h3>
-          </div>
-          <div className="recipe-card-premium" style={{ padding: 'var(--space-md)', cursor: 'default' }}>
-            <strong style={{ fontSize: '15px', marginBottom: 'var(--space-sm)', display: 'block' }}>Ingrédients</strong>
-            <ul style={{ paddingLeft: 'var(--space-md)', fontSize: '14px', color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
-              {structured.ingredients.map((i, idx) => <li key={idx} style={{ marginBottom: '4px' }}>• {i.name}</li>)}
+        <div className="section" style={{ marginBottom: '40px' }}>
+          <h3 style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: '600', marginBottom: '16px', color: '#F4EBDD' }}>Aperçu</h3>
+          <div style={{ 
+            backgroundColor: '#211E19', padding: '24px', borderRadius: '24px', 
+            border: '1px solid #3A211C', color: '#F4EBDD' 
+          }}>
+            <strong style={{ fontSize: '15px', marginBottom: '12px', display: 'block', color: '#F04A32', fontFamily: 'DM Sans, sans-serif' }}>Ingrédients</strong>
+            <ul style={{ paddingLeft: '20px', fontSize: '14px', color: '#AAA39A', marginBottom: '24px', fontFamily: 'DM Sans, sans-serif', lineHeight: '1.6' }}>
+              {structured.ingredients.map((i, idx) => <li key={idx} style={{ marginBottom: '4px' }}>• {i.name} {i.qty && `${i.qty}${i.unit}`}</li>)}
             </ul>
-            <strong style={{ fontSize: '15px', marginBottom: 'var(--space-sm)', display: 'block' }}>Étapes</strong>
-            <ol style={{ paddingLeft: 'var(--space-md)', fontSize: '14px', color: 'var(--text-secondary)' }}>
+            <strong style={{ fontSize: '15px', marginBottom: '12px', display: 'block', color: '#F04A32', fontFamily: 'DM Sans, sans-serif' }}>Étapes</strong>
+            <ol style={{ paddingLeft: '20px', fontSize: '14px', color: '#AAA39A', fontFamily: 'DM Sans, sans-serif', lineHeight: '1.6' }}>
               {structured.steps.map((s, idx) => <li key={idx} style={{ marginBottom: '8px' }}>{s}</li>)}
             </ol>
           </div>
         </div>
       )}
 
-      <button className="btn-premium btn-primary btn-block" style={{ width: '100%', marginBottom: 'var(--space-xl)' }} onClick={saveRecipe}>
+      <button 
+        style={{ 
+          width: '100%', padding: '16px', borderRadius: '16px', 
+          backgroundColor: '#F04A32', color: '#F4EBDD', border: 'none', 
+          fontWeight: '700', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif',
+          fontSize: '16px', marginBottom: '40px', transition: 'all 0.2s ease'
+        }} 
+        onClick={saveRecipe}
+      >
         Enregistrer la recette
       </button>
     </div>
