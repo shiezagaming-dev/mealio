@@ -109,9 +109,9 @@ export default function Search() {
   };
 
   return (
-    <div className="screen">
-      <h1 style={{ fontSize: 'clamp(28px, 8vw, 36px)', marginBottom: 'var(--space-lg)' }}>{t('search.title')}</h1>
-      <form onSubmit={submitSearch} style={{ marginBottom: 'var(--space-xl)' }}>
+    <div className="screen" style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+      <h1 style={{ fontSize: 'clamp(24px, 5vw, 32px)', marginBottom: 'var(--space-lg)', padding: '0 var(--space-md)' }}>{t('search.title')}</h1>
+      <form onSubmit={submitSearch} style={{ marginBottom: 'var(--space-xl)', padding: '0 var(--space-md)' }}>
         <div className="search-bar-premium">
           <span style={{ color: 'var(--text-muted)' }}>🔍</span>
           <input
@@ -122,13 +122,13 @@ export default function Search() {
         </div>
       </form>
 
-      <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
+      <div className="section" style={{ marginBottom: 'var(--space-xl)', padding: '0 var(--space-md)' }}>
         <div className="section-header-premium">
-          <h3 style={{ fontWeight: '700' }}>{t('search.byIngredients')}</h3>
+          <h3 style={{ fontWeight: '700', fontSize: '16px' }}>{t('search.byIngredients')}</h3>
           <span className="see-all">{t('common.viewAll')}</span>
         </div>
         <div style={{ 
-          display: 'flex', gap: 'var(--space-lg)', overflowX: 'auto', 
+          display: 'flex', gap: 'var(--space-md)', overflowX: 'auto', 
           paddingBottom: 'var(--space-md)', scrollbarWidth: 'none',
           width: '100%',
           WebkitOverflowScrolling: 'touch'
@@ -137,10 +137,10 @@ export default function Search() {
             <div 
               key={ing.name} 
               onClick={() => setQuery(ing.name)} 
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', width: '80px', flexShrink: 0 }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', width: '72px', flexShrink: 0 }}
             >
               <div style={{ 
-                width: '72px', height: '72px', borderRadius: '50%', 
+                width: '64px', height: '64px', borderRadius: '50%', 
                 overflow: 'hidden', border: '2px solid var(--border-color)',
                 backgroundColor: 'var(--bg-card)', boxShadow: 'var(--shadow-sm)'
               }}>
@@ -151,17 +151,21 @@ export default function Search() {
                   onError={(e) => { e.target.src = 'https://via.placeholder.com/72?text=🥘'; }}
                 />
               </div>
-              <span style={{ fontSize: '12px', fontWeight: '600', marginTop: '8px', textAlign: 'center', color: 'var(--text-main)' }}>{ing.name}</span>
+              <span style={{ fontSize: '11px', fontWeight: '600', marginTop: '8px', textAlign: 'center', color: 'var(--text-main)' }}>{ing.name}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
+      <div className="section" style={{ marginBottom: 'var(--space-xl)', padding: '0 var(--space-md)' }}>
         <div className="section-header-premium">
-          <h3 style={{ fontWeight: '700' }}>{t('search.byMeal')}</h3>
+          <h3 style={{ fontWeight: '700', fontSize: '16px' }}>{t('search.byMeal')}</h3>
         </div>
-        <div className="recipe-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
+        <div className="recipe-grid" style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', 
+          gap: '12px' 
+        }}>
           {CATEGORIES_LIST.map((cat) => {
             const img = getCategoryImage(cat);
             return (
@@ -169,7 +173,7 @@ export default function Search() {
                 key={cat} 
                 onClick={() => setQuery(cat)}
                 style={{ 
-                  height: '150px', borderRadius: 'var(--r-lg)', 
+                  height: '120px', borderRadius: 'var(--r-lg)', 
                   position: 'relative', overflow: 'hidden', cursor: 'pointer',
                   backgroundColor: 'var(--bg-card)', boxShadow: 'var(--shadow-sm)'
                 }}
@@ -181,8 +185,8 @@ export default function Search() {
                 )}
                 <div style={{ 
                   position: 'absolute', bottom: 0, left: 0, right: 0, 
-                  padding: '12px', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
-                  color: 'white', fontWeight: '600', fontSize: '15px'
+                  padding: '8px', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+                  color: 'white', fontWeight: '600', fontSize: '13px', textAlign: 'center'
                 }}>
                   {cat}
                 </div>
@@ -192,17 +196,17 @@ export default function Search() {
         </div>
       </div>
 
-      <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
+      <div className="section" style={{ marginBottom: 'var(--space-xl)', padding: '0 var(--space-md)' }}>
         <div className="chip-row" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', width: '100%' }}>
           {FILTERS.map((f) => (
             <span 
               key={f} 
               className="chip" 
               style={{ 
-                padding: '8px 16px', borderRadius: 'var(--r-pill)', 
+                padding: '6px 12px', borderRadius: 'var(--r-pill)', 
                 background: activeFilters.includes(f) ? 'var(--accent)' : 'var(--bg-card)', 
                 color: activeFilters.includes(f) ? 'white' : 'var(--text-secondary)',
-                border: '1px solid var(--border-color)', cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap'
+                border: '1px solid var(--border-color)', cursor: 'pointer', fontSize: '12px', whiteSpace: 'nowrap'
               }} 
               onClick={() => toggleFilter(f)}
             >
@@ -213,8 +217,8 @@ export default function Search() {
       </div>
 
       {query.trim() === '' && recent.length > 0 && (
-        <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
-          <div className="section-header-premium"><h3 style={{ fontWeight: '700' }}>Recherches récentes</h3></div>
+        <div className="section" style={{ marginBottom: 'var(--space-xl)', padding: '0 var(--space-md)' }}>
+          <div className="section-header-premium"><h3 style={{ fontWeight: '700', fontSize: '16px' }}>Recherches récentes</h3></div>
           <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: 0, listStyle: 'none' }}>
             {recent.map((r, i) => (
               <li key={i} style={{ 
@@ -230,9 +234,9 @@ export default function Search() {
         </div>
       )}
 
-      <div className="section">
+      <div className="section" style={{ padding: '0 var(--space-md)', marginBottom: '80px' }}>
         <div className="section-header-premium">
-          <h3 style={{ fontWeight: '700' }}>{results.length} {t('search.results')}</h3>
+          <h3 style={{ fontWeight: '700', fontSize: '16px' }}>{results.length} {t('search.results')}</h3>
           {liveSearching && <span className="see-all" style={{ color: 'var(--text-muted)' }}>Recherche en cours…</span>}
         </div>
         {results.length === 0 ? (
@@ -241,7 +245,11 @@ export default function Search() {
             <p>{t('search.noResults')}</p>
           </div>
         ) : (
-          <div className="recipe-grid">
+          <div className="recipe-grid" style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', 
+            gap: '16px' 
+          }}>
             {results.map((r) => <RecipeCard key={r.id} recipe={r} />)}
           </div>
         )}

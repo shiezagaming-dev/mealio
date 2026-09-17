@@ -26,15 +26,40 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="bottom-nav-premium">
+    <nav className="bottom-nav-premium" style={{ 
+      position: 'fixed', 
+      bottom: 0, 
+      left: '50%', 
+      transform: 'translateX(-50%)', 
+      width: '100%', 
+      maxWidth: '600px', 
+      zIndex: 1000,
+      backgroundColor: 'var(--bg-card)',
+      borderTop: '1px solid var(--border-color)',
+      display: 'flex',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      padding: '8px 0',
+      boxShadow: '0 -2px 10px rgba(0,0,0,0.05)'
+    }}>
       {items.map((it) => (
         <button
           key={it.path}
           className={`nav-item-premium ${it.fab ? 'fab' : ''} ${pathname === it.path ? 'active' : ''}`}
           onClick={() => navigate(it.path)}
+          style={{ 
+            border: 'none', 
+            background: 'transparent', 
+            cursor: 'pointer', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            gap: '4px',
+            flex: 1
+          }}
         >
-          <span className="icon">{it.icon}</span>
-          {!it.fab && <span style={{ fontSize: '10px' }}>{t(it.labelKey)}</span>}
+          <span className="icon" style={{ fontSize: '20px' }}>{it.icon}</span>
+          {!it.fab && <span style={{ fontSize: '10px', fontWeight: '500', color: pathname === it.path ? 'var(--accent)' : 'var(--text-secondary)' }}>{t(it.labelKey)}</span>}
         </button>
       ))}
     </nav>
