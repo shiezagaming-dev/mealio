@@ -110,7 +110,7 @@ export default function Search() {
 
   return (
     <div className="screen">
-      <h1 style={{ fontSize: '32px', marginBottom: 'var(--space-lg)' }}>{t('search.title')}</h1>
+      <h1 style={{ fontSize: 'clamp(28px, 8vw, 36px)', marginBottom: 'var(--space-lg)' }}>{t('search.title')}</h1>
       <form onSubmit={submitSearch} style={{ marginBottom: 'var(--space-xl)' }}>
         <div className="search-bar-premium">
           <span style={{ color: 'var(--text-muted)' }}>🔍</span>
@@ -129,13 +129,15 @@ export default function Search() {
         </div>
         <div style={{ 
           display: 'flex', gap: 'var(--space-lg)', overflowX: 'auto', 
-          paddingBottom: 'var(--space-md)', scrollbarWidth: 'none' 
+          paddingBottom: 'var(--space-md)', scrollbarWidth: 'none',
+          width: '100%',
+          -webkitOverflowScrolling: 'touch'
         }}>
           {COMMON_INGREDIENTS.map((ing) => (
             <div 
               key={ing.name} 
               onClick={() => setQuery(ing.name)} 
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', width: '80px' }}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', width: '80px', flexShrink: 0 }}
             >
               <div style={{ 
                 width: '72px', height: '72px', borderRadius: '50%', 
@@ -159,7 +161,7 @@ export default function Search() {
         <div className="section-header-premium">
           <h3 style={{ fontWeight: '700' }}>{t('search.byMeal')}</h3>
         </div>
-        <div className="recipe-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <div className="recipe-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))' }}>
           {CATEGORIES_LIST.map((cat) => {
             const img = getCategoryImage(cat);
             return (
@@ -191,7 +193,7 @@ export default function Search() {
       </div>
 
       <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
-        <div className="chip-row" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px' }}>
+        <div className="chip-row" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', width: '100%' }}>
           {FILTERS.map((f) => (
             <span 
               key={f} 
@@ -200,7 +202,7 @@ export default function Search() {
                 padding: '8px 16px', borderRadius: 'var(--r-pill)', 
                 background: activeFilters.includes(f) ? 'var(--accent)' : 'var(--bg-card)', 
                 color: activeFilters.includes(f) ? 'white' : 'var(--text-secondary)',
-                border: '1px solid var(--border-color)', cursor: 'pointer', fontSize: '13px'
+                border: '1px solid var(--border-color)', cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap'
               }} 
               onClick={() => toggleFilter(f)}
             >
@@ -213,7 +215,7 @@ export default function Search() {
       {query.trim() === '' && recent.length > 0 && (
         <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
           <div className="section-header-premium"><h3 style={{ fontWeight: '700' }}>Recherches récentes</h3></div>
-          <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: 0, listStyle: 'none' }}>
             {recent.map((r, i) => (
               <li key={i} style={{ 
                 display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', 
