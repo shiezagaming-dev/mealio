@@ -45,9 +45,10 @@ export default function CreateScan() {
     <div className="screen">
       <h1 style={{ fontSize: '32px', marginBottom: 'var(--space-lg)' }}>Créer & Scanner</h1>
       <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
-        <div className="tabs" style={{ 
+        <div style={{ 
           background: 'var(--bg-card)', padding: '6px', borderRadius: 'var(--r-pill)', 
-          border: '1px solid var(--border-color)', display: 'flex', gap: '4px' 
+          border: '1px solid var(--border-color)', display: 'flex', gap: '4px',
+          boxShadow: 'var(--shadow-sm)'
         }}>
           {TABS.map((t) => (
             <button 
