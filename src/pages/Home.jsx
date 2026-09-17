@@ -1,144 +1,83 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
-import { useMemo } from 'react';
 
 export default function Home() {
+  const { state, allRecipes } = useApp();
   const navigate = useNavigate();
-  const { allRecipes, state, liveLoading, catalog, categories } = useApp();
-  
-  // Combine fully loaded recipes and the lightweight catalog for browsing
-  const recipes = useMemo(() => {
-    const seen = new Set();
-    const combined = [
-      ...allRecipes(),
-      ...catalog.map(m => ({
-        id: `mdb_${m.idMeal}`,
-        name: m.strMeal,
-        image: m.strMealThumb,
-        time: 30,
-        difficulty: 'Medium',
-        tags: [],
-        cuisine: ''
-      }))
-    ];
-    return combined.filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true)));
-  }, [allRecipes, catalog]);
+  const [search, setSearch] = useState('');
 
-  const livePhotoCount = recipes.filter((r) => r.image).length;
-
-  const trending = recipes.slice(0, 5);
-  const popular = [...recipes].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 5);
-  const quick = recipes.filter((r) => r.time <= 20);
-  const recommended = recipes.filter((r) => state.profile.cuisines.includes(r.cuisine)).slice(0, 5);
-
-  function surpriseMe() {
-    const pick = recipes[Math.floor(Math.random() * recipes.length)];
-    navigate(`/recipe/${pick.id}`);
-  }
+  const recipes = allRecipes().slice(0, 6);
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
 
   return (
     <div className="screen">
-      <div className="greeting-eyebrow">Ravi de vous revoir</div>
-      <h1>{state.profile.username.split(' ')[0]}, on cuisine quoi ?</h1>
-
-      {/* AI CHEF HERO CARD */}
-      <div className="ai-hero-card section" onClick={() => navigate('/ai-chef')}>
-        <div className="eyebrow">✨ AI Chef</div>
-        <h2>Que voulez-vous cuisiner aujourd'hui ?</h2>
-        <p>Demandez au Chef IA des idées, des recettes, des substitutions et des conseils.</p>
-        <div className="btn btn-primary" style={{ 
-          background: 'white', 
-          color: '#4F46E5', 
-          width: 'fit-content', 
-          padding: '8px 16px',
-          fontSize: '14px',
-          marginTop: '16px'
-        }}>
-          Interroger le Chef →
-        </div>
-      </div>
-
-      <div className="hero-card section" onClick={() => navigate('/create')}>
-        <h2 style={{ marginBottom: '8px' }}>📸 Scanner un plat</h2>
-        <p>Prenez une photo d'un plat et Mealio identifiera la recette pour vous.</p>
-        <button className="btn btn-secondary" style={{ marginTop: 14, background: 'white', color: 'var(--chili)' }}>
-          Ouvrir la caméra
-        </button>
-      </div>
-
-      <div className="grid-2 section">
-        <div className="card" style={{ padding: 16, cursor: 'pointer' }} onClick={() => navigate('/create?tab=ingredients')}>
-          <div style={{ fontSize: 26 }}>🥕</div>
-          <div style={{ fontWeight: 700, marginTop: 8 }}>Par ingrédients</div>
-          <div style={{ fontSize: 12.5, color: 'var(--ink-soft)', marginTop: 2 }}>Dites-nous ce que vous avez</div>
-        </div>
-        <div className="card" style={{ padding: 16, cursor: 'pointer' }} onClick={() => navigate('/create?tab=fridge')}>
-          <div style={{ fontSize: 26 }}>🧊</div>
-          <div style={{ fontWeight: 700, marginTop: 8 }}>Scan Frigo</div>
-          <div style={{ fontSize: 12.5, color: 'var(--ink-soft)', marginTop: 2 }}>Photographiez votre frigo</div>
-        </div>
-      </div>
-
-      {categories.length > 0 && (
-        <div className="section">
-          <div className="section-head"><h3>Explorez par catégorie</h3></div>
-          <div className="chip-row">
-            {categories.map(cat => (
-              <span key={cat} className="chip" onClick={() => navigate(`/search?tag=${cat.toLowerCase()}`)}>{cat}</span>
-            ))}
+      {/* TOP AREA */}
+      <div style={{ marginBottom: 'var(--space-xl)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
+          <div style={{ 
+            width: '48px', height: '48px', borderRadius: '50%', 
+            background: 'var(--accent-soft)', display: 'flex', 
+            alignItems: 'center', justifyContent: 'center', fontSize: '24px' 
+          }}>
+            {state.profile.avatar || '🧑‍🍳'}
+          </div>
+          <div>
+            <h1 style={{ fontSize: '24px', lineHeight: '1.2' }}>{greeting}, {state.profile.username || 'Chef'} 👋</h1>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Qu'avez-vous envie de cuisiner aujourd'hui ?</p>
           </div>
         </div>
-      )}
 
-      {liveLoading && (
-        <div className="section" style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--ink-soft)', fontSize: 13 }}>
-          <span>🔄</span> Chargement des recettes réelles…
+        <div className="search-bar-premium">
+          <span style={{ color: 'var(--text-muted)' }}>🔍</span>
+          <input 
+            placeholder="Rechercher une recette, un ingrédient..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && navigate(`/search?q=${search}`)}
+          />
         </div>
-      )}
-      {!liveLoading && livePhotoCount > 0 && (
-        <div className="section" style={{ color: 'var(--ink-soft)', fontSize: 12.5 }}>
-          {livePhotoCount} recettes disponibles via TheMealDB.
+      </div>
+
+      {/* AI CHEF HERO */}
+      <div className="ai-chef-hero" onClick={() => navigate('/ai-chef')}>
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', marginBottom: '8px', opacity: 0.9 }}>✨ Rencontrez votre Chef IA</div>
+          <h2 style={{ color: 'white' }}>Pas d'idées pour le repas ?</h2>
+          <p style={{ color: 'white', opacity: 0.9 }}>Dites à Mealio ce qu'il reste dans votre frigo et obtenez une recette personnalisée instantanément.</p>
+          <button className="btn-premium btn-white">Demander au Chef IA →</button>
         </div>
-      )}
+        <div style={{ 
+          position: 'absolute', right: '-20px', bottom: '-20px', 
+          fontSize: '120px', opacity: 0.2, transform: 'rotate(-15deg)', pointerEvents: 'none' 
+        }}>🍳</div>
+      </div>
 
-      <Section title="🔥 Tendances" recipes={trending} />
-      <Section title="⭐ Les plus populaires" recipes={popular} />
-      {recommended.length > 0 && <Section title="🎯 Pour vous" recipes={recommended} />}
-      <Section title="⚡ Rapide (moins de 20 min)" recipes={quick} />
-
-      <div className="section">
-        <div className="section-head"><h3 style={{ marginBottom: 10 }}>🌱 Régimes</h3></div>
-        <div className="chip-row">
-          {['Vegetarian', 'Vegan', 'Gluten-free', 'Budget'].map((d) => (
-            <span key={d} className="chip" onClick={() => navigate(`/search?tag=${d.toLowerCase()}`)}>{d}</span>
+      {/* RECIPE DISCOVERY */}
+      <div className="section" style={{ marginTop: 'var(--space-xl)' }}>
+        <div className="section-header-premium">
+          <h3>Recettes Populaires</h3>
+          <span className="see-all" onClick={() => navigate('/search')}>Voir tout</span>
+        </div>
+        <div className="recipe-grid">
+          {recipes.map((r, i) => (
+            <RecipeCard key={r.id || i} recipe={r} />
           ))}
         </div>
       </div>
 
-      <div className="section">
-        <div className="section-head"><h3 style={{ marginBottom: 10 }}>🍰 Catégories</h3></div>
-        <div className="chip-row">
-          {['Breakfast', 'Pasta', 'Pizza', 'Salads', 'Desserts', 'Dinner'].map((c) => (
-            <span key={c} className="chip" onClick={() => navigate(`/search?tag=${c.toLowerCase()}`)}>{c}</span>
+      <div className="section" style={{ marginTop: 'var(--space-xl)' }}>
+        <div className="section-header-premium">
+          <h3>Rapide & Facile</h3>
+          <span className="see-all" onClick={() => navigate('/search')}>Explorer</span>
+        </div>
+        <div className="recipe-grid">
+          {recipes.slice().reverse().map((r, i) => (
+            <RecipeCard key={r.id || i} recipe={r} />
           ))}
         </div>
-      </div>
-
-      <div className="section" style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <button className="btn btn-basil" onClick={surpriseMe}>🎲 Surprise-moi !</button>
-      </div>
-    </div>
-  );
-}
-
-function Section({ title, recipes }) {
-  if (!recipes.length) return null;
-  return (
-    <div className="section">
-      <div className="section-head"><h3 style={{ marginBottom: 10 }}>{title}</h3></div>
-      <div className="h-scroll">
-        {recipes.map((r) => <RecipeCard key={r.id} recipe={r} />)}
       </div>
     </div>
   );
