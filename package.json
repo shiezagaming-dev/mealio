@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "npm run build && wrangler dev",
     "cap:sync": "npm run build && npx cap sync android",
-    "cap:open": "npx cap open android"
+    "cap:open": "npx cap open android",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@capacitor/android": "^6.0.0",
@@ -21,7 +22,9 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^6.0.0",
+    "@cloudflare/vite-plugin": "^1.54.10",
     "@vitejs/plugin-react": "^6.1.1",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "wrangler": "^4.133.0"
   }
 }

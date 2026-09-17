@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
+import { useMemo } from 'react';
 
 export default function Home() {
   const navigate = useNavigate();
