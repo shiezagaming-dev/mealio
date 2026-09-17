@@ -11,18 +11,24 @@ export default function AIChef() {
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const endRef = useRef(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, error]);
 
-  async function send() {
-    if (!input.trim()) return;
-    const userText = input.trim();
-    const userMsg = { role: 'user', text: userText };
-    setMessages((m) => [...m, userMsg]);
-    setInput('');
+  async function send(textOverride = null) {
+    const textToSend = textOverride || input.trim();
+    if (!textToSend) return;
+
+    if (!textOverride) {
+      const userMsg = { role: 'user', text: textToSend };
+      setMessages((m) => [...m, userMsg]);
+      setInput('');
+    }
+    
+    setError(null);
     setLoading(true);
 
     try {
@@ -45,12 +51,12 @@ export default function AIChef() {
       const { text } = await askAI([
         { role: 'system', content: systemPrompt },
         ...history,
-        { role: 'user', content: userText }
+        { role: 'user', content: textToSend }
       ]);
 
       setMessages((m) => [...m, { role: 'ai', text }]);
     } catch (e) {
-      setMessages((m) => [...m, { role: 'ai', text: "Désolé, j'ai un petit problème de connexion avec mon cerveau de chef. Réessayez dans un instant !" }]);
+      setError(textToSend);
     } finally {
       setLoading(false);
     }
@@ -64,34 +70,68 @@ export default function AIChef() {
   ];
 
   return (
-    <div className="screen" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div className="back-row" style={{ padding: 0, marginBottom: 6 }}>
-        <button className="icon-btn" onClick={() => navigate(-1)}>←</button>
-        <h1 style={{ marginLeft: 12 }}>AI Chef</h1>
+    <div className="screen" style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: 'var(--space-lg) var(--space-lg) calc(100px + env(safe-area-inset-bottom))' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
+        <button 
+          className="btn-premium btn-secondary" 
+          style={{ width: '40px', height: '40px', borderRadius: '50%', padding: 0 }} 
+          onClick={() => navigate(-1)}
+        >
+          ←
+        </button>
+        <h1 style={{ fontSize: '24px' }}>✨ AI Chef</h1>
       </div>
 
-      <div className="chat-col" style={{ flex: 1, marginTop: 10, overflowY: 'auto', paddingBottom: '20px' }}>
+      <div className="chat-col" style={{ flex: 1, overflowY: 'auto', paddingBottom: 'var(--space-md)' }}>
         {messages.map((m, i) => (
           <div key={i} className={`chat-bubble ${m.role}`}>{m.text}</div>
         ))}
         {loading && <div className="chat-bubble ai" style={{ opacity: 0.6 }}>Le Chef réfléchit...</div>}
+        
+        {error && (
+          <div className="chat-bubble ai" style={{ border: '1px solid var(--danger)', backgroundColor: 'var(--accent-soft)' }}>
+            <p style={{ color: 'var(--danger)', fontWeight: '600', marginBottom: '8px' }}>
+              Mealio's AI is having trouble right now — try again?
+            </p>
+            <button 
+              className="btn-premium btn-primary" 
+              onClick={() => send(error)}
+              style={{ padding: '6px 12px', fontSize: '12px' }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 
-      <div className="chip-row" style={{ margin: '12px -18px 0', padding: '0 18px' }}>
+      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: 'var(--space-md)', scrollbarWidth: 'none' }}>
         {suggestions.map((s) => (
-          <span key={s} className="chip" onClick={() => setInput(s)}>{s}</span>
+          <span 
+            key={s} 
+            className="chip" 
+            style={{ 
+              padding: '8px 16px', borderRadius: 'var(--r-pill)', 
+              background: 'var(--bg-card)', border: '1px solid var(--border-color)', 
+              fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' 
+            }} 
+            onClick={() => setInput(s)}
+          >
+            {s}
+          </span>
         ))}
       </div>
 
-      <div className="search-bar" style={{ marginTop: 12, marginBottom: 'env(safe-area-inset-bottom)' }}>
+      <div className="search-bar-premium" style={{ marginTop: 'var(--space-md)', marginBottom: 'env(safe-area-inset-bottom)' }}>
         <input
           placeholder="Posez-moi une question..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
         />
-        <button className="btn btn-ghost" onClick={send} disabled={loading}>Envoyer</button>
+        <button className="btn-premium btn-primary" onClick={() => send()} disabled={loading} style={{ padding: '8px 16px' }}>
+          Envoyer
+        </button>
       </div>
     </div>
   );
