@@ -1,23 +1,36 @@
 import { useNavigate } from 'react-router-dom';
 
-export default function RecipeCard({ recipe, matchPct, wide, grid }) {
+export default function RecipeCard({ recipe, matchPct, wide }) {
   const navigate = useNavigate();
   if (!recipe) return null;
 
   return (
     <div 
-      className={`recipe-card-premium ${wide ? 'wide' : ''}`} 
       onClick={() => navigate(`/recipe/${recipe.id}`)}
       style={{ 
         display: 'flex', 
         flexDirection: wide ? 'row' : 'column',
+        backgroundColor: '#211E19',
+        borderRadius: '24px',
         overflow: 'hidden',
-        height: 'fit-content'
+        cursor: 'pointer',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+        border: '1px solid #3A211C',
+        height: 'fit-content',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-4px)';
+        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.3)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
       }}
     >
-      <div className="image-container" style={{ 
+      <div style={{ 
         position: 'relative', 
-        width: wide ? '120px' : '100%', 
+        width: wide ? '140px' : '100%', 
         aspectRatio: wide ? '1/1' : '4/3',
         overflow: 'hidden' 
       }}>
@@ -26,43 +39,45 @@ export default function RecipeCard({ recipe, matchPct, wide, grid }) {
           alt={recipe.title || recipe.name} 
           loading="lazy"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          onError={(e) => { e.target.src = 'https://via.placeholder.com/400x300?text=Delicious+Food'; }}
         />
-        <button className="save-btn">
-          <span style={{ fontSize: '18px' }}>♡</span>
-        </button>
+        {matchPct != null && (
+          <div style={{ 
+            position: 'absolute', top: '12px', left: '12px', 
+            backgroundColor: '#F04A32', color: '#F4EBDD', 
+            fontSize: '10px', fontWeight: '800', padding: '4px 8px', 
+            borderRadius: '8px', textTransform: 'uppercase' 
+          }}>
+            {matchPct}% Match
+          </div>
+        )}
       </div>
-      <div className="content" style={{ padding: '12px', flex: 1 }}>
-        <div className="title" style={{ 
-          fontSize: '16px', 
-          fontWeight: '600', 
-          marginBottom: '4px', 
-          lineHeight: '1.2',
+      <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ 
+          fontSize: '18px', 
+          fontWeight: '700', 
+          color: '#F4EBDD',
+          marginBottom: '6px', 
+          lineHeight: '1.3',
+          fontFamily: 'Fraunces, serif',
           display: '-webkit-box',
           WebkitLineClamp: 2,
           WebkitBoxOrient: 'vertical',
           overflow: 'hidden'
-        }}>{recipe.title || recipe.name}</div>
-        <div className="meta" style={{ 
+        }}>
+          {recipe.title || recipe.name}
+        </div>
+        <div style={{ 
           fontSize: '13px', 
-          color: 'var(--text-secondary)', 
+          color: '#AAA39A', 
           display: 'flex', 
-          gap: '8px', 
-          alignItems: 'center' 
+          gap: '12px', 
+          alignItems: 'center',
+          fontFamily: 'DM Sans, sans-serif'
         }}>
           <span>⏱️ {recipe.time || recipe.prepTime || '20'} min</span>
           <span>•</span>
           <span>{recipe.difficulty || 'Medium'}</span>
         </div>
-        {matchPct != null && (
-          <div style={{ marginTop: 8 }}>
-            <span style={{ 
-              background: 'var(--accent-soft)', color: 'var(--accent)', 
-              fontSize: '11px', fontWeight: '700', padding: '2px 8px', 
-              borderRadius: 'var(--r-pill)' 
-            }}>{matchPct}% match</span>
-          </div>
-        )}
       </div>
     </div>
   );
