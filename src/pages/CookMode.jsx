@@ -4,13 +4,13 @@ import { useApp } from '../context/AppContext';
 import { askAI } from '../data/aiService';
 
 const HOW_TO_KEYWORDS = {
-  saute: 'Sauté means cooking food quickly in a small amount of fat over fairly high heat, stirring often.',
-  simmer: 'Simmer means keeping a liquid just below boiling, with small gentle bubbles.',
-  fold: 'Folding means gently combining ingredients with a spatula to keep air in the mixture.',
-  dice: 'Dicing means cutting food into small, even cubes.',
-  mince: 'Mincing means chopping food into very fine pieces, usually for garlic or herbs.',
-  whisk: 'Whisking means beating ingredients briskly to mix them or add air.',
-  knead: 'Kneading means working dough with your hands to build gluten structure.',
+  saute: 'Sauté signifie cuire les aliments rapidement dans un peu de matière grasse à feu vif, en remuant souvent.',
+  simmer: 'Mijoter signifie maintenir un liquide juste en dessous du point d\'ébullition, avec de petites bulles douces.',
+  fold: 'Incorporer délicatement signifie mélanger les ingrédients avec une spatule pour garder l\'air dans le mélange.',
+  dice: 'Couper en dés signifie couper les aliments en petits cubes réguliers.',
+  mince: 'Hacher finement signifie couper les aliments en morceaux très fins, généralement pour l\'ail ou les herbes.',
+  whisk: 'Fouetter signifie battre les ingrédients vigoureusement pour les mélanger ou incorporer de l\'air.',
+  knead: 'Pétrir signifie travailler la pâte avec les mains pour développer la structure du gluten.',
 };
 
 export default function CookMode() {
@@ -44,7 +44,7 @@ export default function CookMode() {
           if (t <= 1) {
             clearInterval(intervalRef.current);
             setRunning(false);
-            showToast('⏰ Timer done!');
+            showToast('⏰ Minuteur terminé !');
             return 0;
           }
           return t - 1;
@@ -57,7 +57,7 @@ export default function CookMode() {
   if (!recipe) {
     return (
       <div className="screen">
-        <div className="empty-state"><div className="glyph">🤷</div><p>Recipe not found.</p></div>
+        <div className="empty-state"><div className="glyph">🤷</div><p>Recette non trouvée.</p></div>
       </div>
     );
   }
@@ -82,7 +82,7 @@ export default function CookMode() {
   function next() {
     if (isLast) {
       markCooked(recipe);
-      showToast('Nice work — meal logged! 🎉');
+      showToast('Bravo — repas enregistré ! 🎉');
       navigate(`/recipe/${recipe.id}`);
       return;
     }
@@ -116,7 +116,7 @@ export default function CookMode() {
       const { text } = await askAI([{ role: 'user', content: prompt }]);
       setAnswer(text);
     } catch (e) {
-      setAnswer(`I'm not sure about that, but try checking the ingredient list or a cooking guide!`);
+      setAnswer(`Je ne suis pas sûr de cela, mais essayez de vérifier la liste des ingrédients ou un guide de cuisine !`);
     } finally {
       setLoadingAI(false);
       setQuestion('');
@@ -124,60 +124,76 @@ export default function CookMode() {
   }
 
   return (
-    <div className="screen">
-      <div className="back-row" style={{ padding: 0, marginBottom: 8 }}>
-        <button className="icon-btn" onClick={() => navigate(-1)}>←</button>
-        <h3 style={{ margin: '0 auto 0 12px' }}>{recipe.name}</h3>
+    <div className="screen" style={{ padding: 'var(--space-lg) var(--space-lg) 120px' }}>
+      <div className="back-row" style={{ marginBottom: 'var(--space-md)' }}>
+        <button className="btn-premium btn-secondary" style={{ width: '40px', height: '40px', borderRadius: '50%', padding: 0 }} onClick={() => navigate(-1)}>←</button>
+        <h3 style={{ marginLeft: 'var(--space-md)' }}>{recipe.name}</h3>
       </div>
 
-      <div className="progress-track" style={{ marginTop: 6 }}>
-        <div className="progress-fill" style={{ width: `${((stepIdx + 1) / total) * 100}%` }} />
+      <div style={{ height: '8px', background: 'var(--border-color)', borderRadius: 'var(--r-pill)', overflow: 'hidden', marginBottom: 'var(--space-xl)' }}>
+        <div style={{ height: '100%', background: 'var(--accent)', width: `${((stepIdx + 1) / total) * 100}%`, transition: 'width 0.3s ease' }} />
       </div>
 
-      <div className="step-panel section">
-        <div className="step-count">STEP {stepIdx + 1} / {total}</div>
-        <div className="step-text">{step}</div>
-        <button className="btn btn-ghost" onClick={() => speak(step)}>🔊 Read aloud</button>
+      <div style={{ 
+        background: 'var(--bg-card)', borderRadius: 'var(--r-lg)', padding: 'var(--space-xl)', 
+        boxShadow: 'var(--shadow-md)', textAlign: 'center', marginBottom: 'var(--space-xl)' 
+      }}>
+        <div style={{ color: 'var(--accent)', fontWeight: '800', fontSize: '14px', textTransform: 'uppercase', marginBottom: 'var(--space-md)' }}>
+          Étape {stepIdx + 1} sur {total}
+        </div>
+        <div style={{ fontSize: '24px', fontWeight: '600', lineHeight: '1.4', marginBottom: 'var(--space-xl)', color: 'var(--text-main)' }}>
+          {step}
+        </div>
+        
+        <button className="btn-premium btn-secondary" style={{ marginBottom: 'var(--space-xl)', width: '100%', justifyContent: 'center' }} onClick={() => speak(step)}>
+          🔊 Lire à haute voix
+        </button>
 
         {timerSec == null ? (
-          <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 6, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'center', flexWrap: 'wrap' }}>
             {[1, 3, 5, 10].map((m) => (
-              <span key={m} className="chip" onClick={() => startTimer(m)}>{m} min timer</span>
+              <button key={m} className="btn-premium btn-secondary" style={{ fontSize: '13px' }} onClick={() => startTimer(m)}>{m} min</button>
             ))}
           </div>
         ) : (
-          <div style={{ marginTop: 10 }}>
-            <div style={{ fontSize: 28, fontFamily: 'var(--display)', fontWeight: 700 }}>
+          <div style={{ marginBottom: 'var(--space-xl)' }}>
+            <div style={{ fontSize: '48px', fontFamily: 'var(--font-display)', fontWeight: '700', color: 'var(--text-main)' }}>
               {String(Math.floor(timerSec / 60)).padStart(2, '0')}:{String(timerSec % 60).padStart(2, '0')}
             </div>
-            <button className="btn btn-secondary btn-sm" style={{ marginTop: 6 }} onClick={() => setRunning((r) => !r)}>
-              {running ? 'Pause' : 'Resume'}
+            <button className="btn-premium btn-primary" style={{ marginTop: 'var(--space-sm)' }} onClick={() => setRunning((r) => !r)}>
+              {running ? 'Pause' : 'Reprendre'}
             </button>
           </div>
         )}
 
-        <div className="step-nav">
-          <button className="btn btn-secondary" style={{ flex: 1 }} onClick={prev} disabled={stepIdx === 0}>← Previous</button>
-          <button className="btn btn-primary" style={{ flex: 1 }} onClick={next}>{isLast ? 'Finish 🎉' : 'Next →'}</button>
+        <div style={{ display: 'flex', gap: 'var(--space-md)', marginTop: 'var(--space-xl)' }}>
+          <button className="btn-premium btn-secondary" style={{ flex: 1 }} onClick={prev} disabled={stepIdx === 0}>Précédent</button>
+          <button className="btn-premium btn-primary" style={{ flex: 1 }} onClick={next}>{isLast ? 'Terminer 🎉' : 'Suivant →'}</button>
         </div>
       </div>
 
       <div className="section">
-        <div className="section-head"><h3>Ask Mealio</h3></div>
-        <div className="search-bar">
+        <div className="section-header-premium">
+          <h3>Besoin d'aide ?</h3>
+        </div>
+        <div className="search-bar-premium">
           <input
-            placeholder="“Mealio, what does sauté mean?”"
+            placeholder="Ex: Que signifie 'Sauter' ?"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && askMealio()}
           />
-          <button className="btn btn-ghost" onClick={askMealio} disabled={loadingAI}>
-            {loadingAI ? '...' : 'Ask'}
+          <button className="btn-premium btn-primary" style={{ padding: '8px 16px' }} onClick={askMealio} disabled={loadingAI}>
+            {loadingAI ? '...' : 'Demander'}
           </button>
         </div>
         {answer && (
-          <div className="card" style={{ padding: 14, marginTop: 10, background: 'var(--basil-light)', border: 'none' }}>
-            <p style={{ fontSize: 14 }}>{answer}</p>
+          <div style={{ 
+            padding: 'var(--space-md)', borderRadius: 'var(--r-lg)', 
+            background: 'var(--accent-soft)', borderLeft: '4px solid var(--accent)', 
+            marginTop: 'var(--space-md)', fontSize: '15px', color: 'var(--text-main)' 
+          }}>
+            {answer}
           </div>
         )}
       </div>

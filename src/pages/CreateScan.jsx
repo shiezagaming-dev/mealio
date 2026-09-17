@@ -43,11 +43,25 @@ export default function CreateScan() {
 
   return (
     <div className="screen">
-      <h1 style={{ marginBottom: 10 }}>Créer & Scanner</h1>
-      <div className="section">
-        <div className="tabs">
+      <h1 style={{ fontSize: '32px', marginBottom: 'var(--space-lg)' }}>Créer & Scanner</h1>
+      <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
+        <div className="tabs" style={{ 
+          background: 'var(--bg-card)', padding: '6px', borderRadius: 'var(--r-pill)', 
+          border: '1px solid var(--border-color)', display: 'flex', gap: '4px' 
+        }}>
           {TABS.map((t) => (
-            <button key={t.id} className={tab === t.id ? 'active' : ''} onClick={() => setTab(t.id)}>{t.label}</button>
+            <button 
+              key={t.id} 
+              className="btn-premium" 
+              style={{ 
+                flex: 1, border: 'none', background: tab === t.id ? 'var(--accent)' : 'transparent', 
+                color: tab === t.id ? 'white' : 'var(--text-secondary)', 
+                borderRadius: 'var(--r-pill)', fontSize: '13px', padding: '8px 0' 
+              }} 
+              onClick={() => setTab(t.id)}
+            >
+              {t.label}
+            </button>
           ))}
         </div>
       </div>
@@ -122,17 +136,17 @@ function SnapMeal() {
 
   return (
     <div className="section">
-      <div className="card" style={{ padding: 22, textAlign: 'center' }}>
-        <div style={{ fontSize: 40 }}>📸</div>
-        <h3 style={{ marginTop: 10 }}>Prendre un plat en photo</h3>
-        <p style={{ fontSize: 13.5, color: 'var(--ink-soft)', marginTop: 6 }}>
-          Prenez une photo d'un plat et Mealio l'identifiera pour vous.
+      <div className="recipe-card-premium" style={{ padding: 'var(--space-xl)', textAlign: 'center', cursor: 'default' }}>
+        <div style={{ fontSize: '64px', marginBottom: 'var(--space-md)' }}>📸</div>
+        <h3 style={{ fontSize: '22px', marginBottom: 'var(--space-sm)' }}>Prendre un plat en photo</h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '15px', marginBottom: 'var(--space-lg)', lineHeight: '1.6' }}>
+          Prenez une photo d'un plat et Mealio l'identifiera pour vous grâce à l'IA.
         </p>
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
-          <button className="btn btn-primary" onClick={() => captureImage('camera')}>
+        <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center' }}>
+          <button className="btn-premium btn-primary" onClick={() => captureImage('camera')}>
             📷 Caméra
           </button>
-          <button className="btn btn-secondary" onClick={() => captureImage('gallery')}>
+          <button className="btn-premium btn-secondary" onClick={() => captureImage('gallery')}>
             🖼️ Galerie
           </button>
         </div>
@@ -141,14 +155,12 @@ function SnapMeal() {
       {loading && <div className="empty-state"><div className="glyph">🔍</div><p>Identification du plat en cours…</p></div>}
 
       {result && (
-        <div className="section">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <p style={{ fontStyle: 'italic', color: 'var(--ink-soft)' }}>“Ceci ressemble à {result.name}.”</p>
-            {aiSource && <span className="sub" style={{ fontSize: 10, opacity: 0.6 }}>via {aiSource}</span>}
+        <div className="section" style={{ marginTop: 'var(--space-xl)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+            <p style={{ fontStyle: 'italic', color: 'var(--text-secondary)' }}>“Ceci ressemble à {result.name}.”</p>
+            {aiSource && <span style={{ fontSize: '10px', opacity: 0.6, fontWeight: '700' }}>via {aiSource}</span>}
           </div>
-          <div style={{ marginTop: 12 }}>
-            <RecipeCard recipe={result} />
-          </div>
+          <RecipeCard recipe={result} />
         </div>
       )}
     </div>
@@ -207,17 +219,17 @@ function FridgeScan() {
 
   return (
     <div className="section">
-      <div className="card" style={{ padding: 22, textAlign: 'center' }}>
-        <div style={{ fontSize: 40 }}>🧊</div>
-        <h3 style={{ marginTop: 10 }}>Qu'y a-t-il dans mon frigo ?</h3>
-        <p style={{ fontSize: 13.5, color: 'var(--ink-soft)', marginTop: 6 }}>
-          Photographiez votre frigo et nous trouverons quoi cuisiner.
+      <div className="recipe-card-premium" style={{ padding: 'var(--space-xl)', textAlign: 'center', cursor: 'default' }}>
+        <div style={{ fontSize: '64px', marginBottom: 'var(--space-md)' }}>🧊</div>
+        <h3 style={{ fontSize: '22px', marginBottom: 'var(--space-sm)' }}>Qu'y a-t-il dans mon frigo ?</h3>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '15px', marginBottom: 'var(--space-lg)', lineHeight: '1.6' }}>
+          Photographiez votre frigo et nous trouverons quoi cuisiner avec vos restes.
         </p>
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 16 }}>
-          <button className="btn btn-primary" onClick={() => captureImage('camera')}>
+        <div style={{ display: 'flex', gap: 'var(--space-md)', justifyContent: 'center' }}>
+          <button className="btn-premium btn-primary" onClick={() => captureImage('camera')}>
             📷 Caméra
           </button>
-          <button className="btn btn-secondary" onClick={() => captureImage('gallery')}>
+          <button className="btn-premium btn-secondary" onClick={() => captureImage('gallery')}>
             🖼️ Galerie
           </button>
         </div>
@@ -227,27 +239,37 @@ function FridgeScan() {
 
       {found && (
         <>
-          <div className="section">
-            <div className="section-head">
-              <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                Ingrédients trouvés {aiSource && <span className="sub" style={{ fontSize: 12, opacity: 0.6 }}>via {aiSource}</span>}
+          <div className="section" style={{ marginTop: 'var(--space-xl)' }}>
+            <div className="section-header-premium">
+              <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                Ingrédients trouvés {aiSource && <span style={{ fontSize: '12px', opacity: 0.6, fontWeight: '400' }}>via {aiSource}</span>}
               </h3>
             </div>
-            <div className="chip-row">
-              {found.items.map((i) => <span key={i} className="chip">{i}</span>)}
+            <div style={{ display: 'flex', gap: 'var(--space-sm)', overflowX: 'auto', paddingBottom: 'var(--space-sm)' }}>
+              {found.items.map((i) => (
+                <span key={i} style={{ 
+                  padding: '6px 14px', borderRadius: 'var(--r-pill)', 
+                  background: 'var(--bg-card)', border: '1px solid var(--border-color)', 
+                  fontSize: '13px', fontWeight: '500', whiteSpace: 'nowrap' 
+                }}>{i}</span>
+              ))}
             </div>
           </div>
-          <div className="section">
-            <div className="section-head"><h3>Plats suggérés</h3></div>
-            {found.matches.length > 0 ? (
-              found.matches.map(({ r, pct }) => (
-                <div key={r.id} style={{ marginBottom: 10 }}>
-                  <RecipeCard recipe={r} matchPct={pct} wide />
-                </div>
-              ))
-            ) : (
-              <p className="sub">Aucun match exact trouvé, essayez une recherche manuelle !</p>
-            )}
+          <div className="section" style={{ marginTop: 'var(--space-md)' }}>
+            <div className="section-header-premium">
+              <h3>Plats suggérés</h3>
+            </div>
+            <div className="recipe-grid" style={{ gridTemplateColumns: '1fr' }}>
+              {found.matches.length > 0 ? (
+                found.matches.map(({ r, pct }) => (
+                  <div key={r.id} style={{ marginBottom: 'var(--space-md)' }}>
+                    <RecipeCard recipe={r} wide />
+                  </div>
+                ))
+              ) : (
+                <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Aucun match exact trouvé, essayez une recherche manuelle !</p>
+              )}
+            </div>
           </div>
         </>
       )}
@@ -286,16 +308,17 @@ function FromIngredients() {
 
   return (
     <div className="section">
-      <p style={{ fontSize: 13.5, color: 'var(--ink-soft)' }}>Listez vos ingrédients, séparés par des virgules.</p>
-      <div style={{ marginTop: 10 }}>
-        <input
-          className="input"
-          placeholder="Poulet, riz, tomates, fromage"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
+      <p style={{ fontSize: '15px', color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>Listez vos ingrédients, séparés par des virgules.</p>
+      <div style={{ marginBottom: 'var(--space-md)' }}>
+        <div className="search-bar-premium">
+          <input
+            placeholder="Poulet, riz, tomates, fromage..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+        </div>
       </div>
-      <button className="btn btn-primary btn-block" style={{ marginTop: 12 }} onClick={findMatches}>
+      <button className="btn-premium btn-primary btn-block" style={{ width: '100%', marginBottom: 'var(--space-xl)' }} onClick={findMatches}>
         Trouver des plats
       </button>
 
@@ -303,12 +326,16 @@ function FromIngredients() {
 
       {matches && !loading && (
         <div className="section">
-          <div className="section-head"><h3>Suggestions</h3></div>
-          {matches.map(({ r, pct }) => (
-            <div key={r.id} style={{ marginBottom: 10 }}>
-              <RecipeCard recipe={r} matchPct={pct} wide />
-            </div>
-          ))}
+          <div className="section-header-premium">
+            <h3>Suggestions</h3>
+          </div>
+          <div className="recipe-grid" style={{ gridTemplateColumns: '1fr' }}>
+            {matches.map(({ r, pct }) => (
+              <div key={r.id} style={{ marginBottom: 'var(--space-md)' }}>
+                <RecipeCard recipe={r} wide />
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -373,58 +400,85 @@ function CreateOwnRecipe() {
 
   return (
     <div className="section">
-      <label className="sub">Nom de la recette</label>
-      <input className="input" style={{ marginTop: 6 }} value={name} onChange={(e) => setName(e.target.value)} placeholder="Les pâtes de Grand-mère" />
-
-      <div className="grid-2" style={{ marginTop: 12 }}>
-        <div>
-          <label className="sub">Temps (min)</label>
-          <input className="input" style={{ marginTop: 6 }} type="number" value={time} onChange={(e) => setTime(e.target.value)} />
-        </div>
-        <div>
-          <label className="sub">Portions</label>
-          <input className="input" style={{ marginTop: 6 }} type="number" value={servings} onChange={(e) => setServings(e.target.value)} />
+      <div style={{ marginBottom: 'var(--space-md)' }}>
+        <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>Nom de la recette</label>
+        <div className="search-bar-premium" style={{ marginTop: 'var(--space-xs)' }}>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Les pâtes de Grand-mère" />
         </div>
       </div>
 
-      <label className="sub" style={{ display: 'block', marginTop: 12 }}>Difficulté</label>
-      <div className="chip-row" style={{ marginTop: 6 }}>
-        {['Easy', 'Medium', 'Hard'].map((d) => (
-          <span key={d} className={`chip ${difficulty === d ? 'active' : ''}`} onClick={() => setDifficulty(d)}>{d}</span>
-        ))}
+      <div className="recipe-grid" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: 'var(--space-md)' }}>
+        <div>
+          <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>Temps (min)</label>
+          <div className="search-bar-premium" style={{ marginTop: 'var(--space-xs)' }}>
+            <input type="number" value={time} onChange={(e) => setTime(e.target.value)} />
+          </div>
+        </div>
+        <div>
+          <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>Portions</label>
+          <div className="search-bar-premium" style={{ marginTop: 'var(--space-xs)' }}>
+            <input type="number" value={servings} onChange={(e) => setServings(e.target.value)} />
+          </div>
+        </div>
       </div>
 
-      <div className="divider" />
+      <div style={{ marginBottom: 'var(--space-md)' }}>
+        <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)', display: 'block', marginBottom: 'var(--space-xs)' }}>Difficulté</label>
+        <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+          {['Easy', 'Medium', 'Hard'].map((d) => (
+            <span 
+              key={d} 
+              className="chip" 
+              style={{ 
+                padding: '8px 16px', borderRadius: 'var(--r-pill)', 
+                background: difficulty === d ? 'var(--accent)' : 'var(--bg-card)', 
+                color: difficulty === d ? 'white' : 'var(--text-secondary)',
+                border: '1px solid var(--border-color)', cursor: 'pointer', fontSize: '13px'
+              }} 
+              onClick={() => setDifficulty(d)}
+            >
+              {d}
+            </span>
+          ))}
+        </div>
+      </div>
 
-      <label className="sub">Notes brutes (Mealio va les organiser)</label>
-      <textarea
-        className="input"
-        style={{ marginTop: 6 }}
-        placeholder="Poulet, ail, poêle, cuire, ajouter tomate, pâtes…"
-        value={notes}
-        onChange={(e) => setNotes(e.target.value)}
-      />
-      <button className="btn btn-secondary btn-block" style={{ marginTop: 10 }} onClick={cleanUpWithAI} disabled={loading}>
+      <div style={{ height: '1px', background: 'var(--border-color)', margin: 'var(--space-lg) 0' }} />
+
+      <div style={{ marginBottom: 'var(--space-md)' }}>
+        <label style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>Notes brutes (Mealio va les organiser)</label>
+        <div className="search-bar-premium" style={{ marginTop: 'var(--space-xs)', padding: 'var(--space-sm)' }}>
+          <textarea
+            style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none', fontFamily: 'inherit', fontSize: '15px', minHeight: '100px', resize: 'none' }}
+            placeholder="Poulet, ail, poêle, cuire, ajouter tomate, pâtes…"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+          />
+        </div>
+      </div>
+      <button className="btn-premium btn-secondary btn-block" style={{ width: '100%', marginBottom: 'var(--space-xl)' }} onClick={cleanUpWithAI} disabled={loading}>
         {loading ? 'Organisation...' : '✨ Organiser avec Mealio'}
       </button>
 
       {structured && (
-        <div className="section">
-          <div className="section-head"><h3>Aperçu</h3></div>
-          <div className="card" style={{ padding: 14 }}>
-            <strong>Ingrédients</strong>
-            <ul style={{ marginTop: 6 }}>
-              {structured.ingredients.map((i, idx) => <li key={idx} className="sub">• {i.name}</li>)}
+        <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
+          <div className="section-header-premium">
+            <h3>Aperçu</h3>
+          </div>
+          <div className="recipe-card-premium" style={{ padding: 'var(--space-md)', cursor: 'default' }}>
+            <strong style={{ fontSize: '15px', marginBottom: 'var(--space-sm)', display: 'block' }}>Ingrédients</strong>
+            <ul style={{ paddingLeft: 'var(--space-md)', fontSize: '14px', color: 'var(--text-secondary)', marginBottom: 'var(--space-md)' }}>
+              {structured.ingredients.map((i, idx) => <li key={idx} style={{ marginBottom: '4px' }}>• {i.name}</li>)}
             </ul>
-            <strong style={{ display: 'block', marginTop: 10 }}>Étapes</strong>
-            <ol style={{ marginTop: 6, paddingLeft: 18 }}>
-              {structured.steps.map((s, idx) => <li key={idx} className="sub" style={{ marginBottom: 4 }}>{s}</li>)}
+            <strong style={{ fontSize: '15px', marginBottom: 'var(--space-sm)', display: 'block' }}>Étapes</strong>
+            <ol style={{ paddingLeft: 'var(--space-md)', fontSize: '14px', color: 'var(--text-secondary)' }}>
+              {structured.steps.map((s, idx) => <li key={idx} style={{ marginBottom: '8px' }}>{s}</li>)}
             </ol>
           </div>
         </div>
       )}
 
-      <button className="btn btn-primary btn-block" style={{ marginTop: 16 }} onClick={saveRecipe}>
+      <button className="btn-premium btn-primary btn-block" style={{ width: '100%', marginBottom: 'var(--space-xl)' }} onClick={saveRecipe}>
         Enregistrer la recette
       </button>
     </div>

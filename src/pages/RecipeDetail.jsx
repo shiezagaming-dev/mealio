@@ -53,8 +53,8 @@ export default function RecipeDetail() {
       <div className="screen">
         <div className="empty-state">
           <div className="glyph">🤷</div>
-          <p>Recipe not found.</p>
-          <button className="btn btn-secondary" style={{ marginTop: 12 }} onClick={() => navigate('/')}>Go home</button>
+          <p>Recette non trouvée.</p>
+          <button className="btn-premium btn-secondary" style={{ marginTop: 12 }} onClick={() => navigate('/')}>Retour à l'accueil</button>
         </div>
       </div>
     );
@@ -71,7 +71,7 @@ export default function RecipeDetail() {
       const { text } = await askAI([{ role: 'user', content: prompt }]);
       setRemixResult(text);
     } catch (e) {
-      setRemixResult("I couldn't rewrite this right now, but try swapping the main protein for a similar alternative!");
+      setRemixResult("Je n'ai pas pu réécrire la recette pour le moment, mais essayez de remplacer la protéine principale par une alternative similaire !");
     } finally {
       setLoadingAI(false);
     }
@@ -87,7 +87,7 @@ export default function RecipeDetail() {
       const { text } = await askAI([{ role: 'user', content: prompt }]);
       setRemixResult(text);
     } catch (e) {
-      setRemixResult("I'm having trouble answering that. Try checking the ingredients list!");
+      setRemixResult("J'ai du mal à répondre à cela. Essayez de vérifier la liste des ingrédients !");
     } finally {
       setLoadingAI(false);
       setCustomAsk('');
@@ -95,123 +95,150 @@ export default function RecipeDetail() {
   }
 
   return (
-    <div>
-      <div className="back-row">
-        <button className="icon-btn" onClick={() => navigate(-1)}>←</button>
-        <button className="icon-btn" style={{ marginLeft: 'auto' }} onClick={() => toggleSave(recipe.id)}>
+    <div style={{ background: 'var(--bg-warm)', minHeight: '100vh' }}>
+      {/* HERO SECTION */}
+      <div style={{ position: 'relative', height: '40vh', width: '100%', overflow: 'hidden' }}>
+        <img 
+          src={recipe.image || 'https://via.placeholder.com/800x600?text=Delicious+Food'} 
+          alt={recipe.name} 
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        <div style={{ 
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, 
+          background: 'linear-gradient(to top, var(--bg-warm), transparent)' 
+        }} />
+        <div style={{ position: 'absolute', top: 'var(--space-md)', left: 'var(--space-md)' }}>
+          <button 
+            className="btn-premium btn-secondary" 
+            style={{ width: '40px', height: '40px', borderRadius: '50%', padding: 0 }} 
+            onClick={() => navigate(-1)}
+          >
+            ←
+          </button>
+        </div>
+        <button 
+          className="btn-premium btn-secondary" 
+          style={{ 
+            position: 'absolute', top: 'var(--space-md)', right: 'var(--space-md)', 
+            width: '40px', height: '40px', borderRadius: '50%', padding: 0 
+          }} 
+          onClick={() => toggleSave(recipe.id)}
+        >
           {isSaved ? '❤️' : '🤍'}
         </button>
       </div>
 
-      <div className="screen" style={{ paddingTop: 12 }}>
-        <div className="thumb" style={{ background: recipe.color, height: 200, borderRadius: 'var(--r-hero)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 64, overflow: 'hidden' }}>
-          {recipe.image ? (
-            <img src={recipe.image} alt={recipe.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          ) : recipe.emoji}
+      <div className="screen" style={{ paddingTop: 0 }}>
+        <div style={{ marginBottom: 'var(--space-xl)' }}>
+          <h1 style={{ fontSize: '32px', marginBottom: 'var(--space-sm)' }}>{recipe.name}</h1>
+          <div style={{ display: 'flex', gap: 'var(--space-md)', color: 'var(--text-secondary)', fontSize: '14px', fontWeight: '500' }}>
+            <span>⏱️ {recipe.time} min</span>
+            <span>•</span>
+            <span>👨‍🍳 {recipe.difficulty}</span>
+            <span>•</span>
+            <span>🍽️ {servings} portions</span>
+          </div>
         </div>
 
-        <h1 style={{ marginTop: 16 }}>{recipe.name}</h1>
-        {recipe.source && (
-          <a href={recipe.source} target="_blank" rel="noreferrer" className="sub" style={{ color: 'var(--chili)' }}>
-            View original source ↗
-          </a>
-        )}
-        <div className="meta" style={{ display: 'flex', gap: 14, marginTop: 6, color: 'var(--ink-soft)', fontSize: 13.5 }}>
-          <span>⏱️ {recipe.time} min</span>
-          <span>👨‍🍳 {recipe.difficulty}</span>
-          <span>🍽️ {servings} servings</span>
-          {recipe.rating && <span>⭐ {recipe.rating}</span>}
-        </div>
-
-        <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-          <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => navigate(`/cook/${recipe.id}`)}>
-            👨‍🍳 Start Cooking
+        <div style={{ display: 'flex', gap: 'var(--space-md)', marginBottom: 'var(--space-xl)' }}>
+          <button className="btn-premium btn-primary" style={{ flex: 1 }} onClick={() => navigate(`/cook/${recipe.id}`)}>
+            👨‍🍳 Commencer la cuisine
           </button>
-          <button className="btn btn-secondary" onClick={() => toggleSave(recipe.id)}>
-            {isSaved ? 'Saved' : 'Save'}
+          <button className="btn-premium btn-secondary" onClick={() => toggleSave(recipe.id)}>
+            {isSaved ? 'Enregistré' : 'Enregistrer'}
           </button>
         </div>
 
-        <div className="section">
-          <div className="section-head">
-            <h3>Ingredients</h3>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <button className="icon-btn" style={{ width: 30, height: 30 }} onClick={() => setServings((s) => Math.max(1, s - 1))}>−</button>
-              <span style={{ fontSize: 13 }}>{servings} servings</span>
-              <button className="icon-btn" style={{ width: 30, height: 30 }} onClick={() => setServings((s) => s + 1)}>+</button>
+        <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
+          <div className="section-header-premium">
+            <h3>Ingrédients</h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', background: 'var(--bg-card)', padding: '4px 12px', borderRadius: 'var(--r-pill)', border: '1px solid var(--border-color)' }}>
+              <button className="btn-premium" style={{ padding: '2px 8px', fontSize: '16px' }} onClick={() => setServings((s) => Math.max(1, s - 1))}>−</button>
+              <span style={{ fontSize: '13px', fontWeight: '600' }}>{servings} portions</span>
+              <button className="btn-premium" style={{ padding: '2px 8px', fontSize: '16px' }} onClick={() => setServings((s) => s + 1)}>+</button>
             </div>
           </div>
-          <div className="card" style={{ padding: 14 }}>
+          <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--r-lg)', padding: 'var(--space-md)', boxShadow: 'var(--shadow-sm)' }}>
             {scaledIngredients.map((i, idx) => (
-              <div key={idx} className="ingredient-row">
+              <div key={idx} style={{ 
+                display: 'flex', justifyContent: 'space-between', 
+                padding: idx === 0 ? 0 : 'var(--space-sm) 0 var(--space-sm)', 
+                borderTop: idx === 0 ? 'none' : '1px solid var(--border-color)',
+                fontSize: '15px'
+              }}>
                 <span>{i.name}</span>
-                <span className="sub">{i.qty} {i.unit}</span>
+                <span style={{ color: 'var(--text-secondary)', fontWeight: '500' }}>{i.qty} {i.unit}</span>
               </div>
             ))}
           </div>
           <button
-            className="btn btn-secondary btn-block"
-            style={{ marginTop: 10 }}
+            className="btn-premium btn-secondary btn-block"
+            style={{ marginTop: 'var(--space-md)', width: '100%' }}
             onClick={() => addToShoppingList(scaledIngredients)}
           >
-            🛒 Add ingredients to shopping list
+            🛒 Ajouter à la liste de courses
           </button>
         </div>
 
-        <div className="section">
-          <div className="section-head"><h3>Instructions</h3></div>
-          <ol style={{ paddingLeft: 20 }}>
+        <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
+          <div className="section-header-premium">
+            <h3>Instructions</h3>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
             {recipe.steps.map((s, idx) => (
-              <li key={idx} className="sub" style={{ color: 'var(--ink)', marginBottom: 10, lineHeight: 1.5 }}>{s}</li>
+              <div key={idx} style={{ display: 'flex', gap: 'var(--space-md)' }}>
+                <span style={{ 
+                  flexShrink: 0, width: '28px', height: '28px', borderRadius: '50%', 
+                  background: 'var(--accent)', color: 'white', display: 'flex', 
+                  alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '14px' 
+                }}>{idx + 1}</span>
+                <p style={{ fontSize: '16px', color: 'var(--text-main)', lineHeight: '1.6' }}>{s}</p>
+              </div>
             ))}
-          </ol>
+          </div>
         </div>
 
-        {recipe.nutrition && (
-          <div className="section">
-            <div className="section-head"><h3>Nutrition</h3></div>
-            <div className="grid-2">
-              <NutTile label="Calories" value={recipe.nutrition.calories} />
-              <NutTile label="Protein" value={`${recipe.nutrition.protein}g`} />
-              <NutTile label="Carbs" value={`${recipe.nutrition.carbs}g`} />
-              <NutTile label="Fat" value={`${recipe.nutrition.fat}g`} />
-            </div>
+        <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
+          <div className="section-header-premium">
+            <h3>✨ Remix avec l'IA</h3>
           </div>
-        )}
-
-        <div className="section">
-          <div className="section-head"><h3>🔄 Remix This Recipe</h3></div>
-          <div className="remix-grid">
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
             {REMIX_OPTIONS.map((o) => (
-              <span key={o} className="chip" onClick={() => runRemix(o)}>{o}</span>
+              <span 
+                key={o} 
+                className="chip" 
+                style={{ 
+                  padding: '8px 16px', borderRadius: 'var(--r-pill)', 
+                  background: 'var(--bg-card)', border: '1px solid var(--border-color)', 
+                  fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s' 
+                }} 
+                onClick={() => runRemix(o)}
+              >
+                {o}
+              </span>
             ))}
           </div>
-          <textarea
-            className="input"
-            style={{ marginTop: 12, minHeight: 60 }}
-            placeholder={'"I don\'t have milk. What can I use instead?"'}
-            value={customAsk}
-            onChange={(e) => setCustomAsk(e.target.value)}
-          />
-          <button className="btn btn-secondary btn-block" style={{ marginTop: 8 }} onClick={askCustom} disabled={loadingAI}>
-            {loadingAI ? 'Thinking...' : 'Ask Mealio'}
-          </button>
+          <div className="search-bar-premium" style={{ marginBottom: 'var(--space-md)' }}>
+            <input
+              placeholder="Ex: Je n'ai pas de lait, par quoi le remplacer ?"
+              value={customAsk}
+              onChange={(e) => setCustomAsk(e.target.value)}
+            />
+            <button className="btn-premium btn-primary" style={{ padding: '8px 16px' }} onClick={askCustom} disabled={loadingAI}>
+              {loadingAI ? '...' : 'Demander'}
+            </button>
+          </div>
           {remixResult && (
-            <div className="card" style={{ padding: 14, marginTop: 12, background: 'var(--basil-light)', border: 'none' }}>
-              <p style={{ fontSize: 14 }}>{remixResult}</p>
+            <div style={{ 
+              padding: 'var(--space-md)', borderRadius: 'var(--r-lg)', 
+              background: 'var(--accent-soft)', borderLeft: '4px solid var(--accent)',
+              fontSize: '15px', color: 'var(--text-main)', lineHeight: '1.6'
+            }}>
+              {remixResult}
             </div>
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function NutTile({ label, value }) {
-  return (
-    <div className="stat-tile">
-      <div className="num" style={{ fontSize: 20 }}>{value}</div>
-      <div className="label">{label}</div>
     </div>
   );
 }
