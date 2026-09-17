@@ -1,30 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700;900&family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* --- Palette de Couleurs Premium --- */
-  --bg-warm: #FDFCFB;
-  --bg-card: #FFFFFF;
-  --text-main: #1A1A1A;
-  --text-secondary: #666666;
-  --text-muted: #999999;
+  /* --- Palette Identité Mealio (Dark & Warm) --- */
+  --bg-main: #171512;
+  --bg-card: #211E19;
+  --bg-card-alt: #242019;
   
-  --accent: #E67E22; /* Orange culinaire chaleureux */
-  --accent-soft: #FBEEE6;
-  --accent-dark: #D35400;
+  --text-primary: #FDFBFA;
+  --text-secondary: #B4A996;
+  --text-muted: #7A7165;
   
-  --border-color: #EEEEEE;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+  --accent: #F04A32;
+  --accent-soft: rgba(240, 74, 50, 0.15);
+  --accent-dark: #C43A28;
+  
+  --border-color: #2D2924;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.6);
+  --shadow-lg: 0 16px 48px rgba(0,0,0,0.8);
 
   /* --- Typographie --- */
-  --font-display: 'Poppins', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-serif: 'Fraunces', serif;
+  --font-sans: 'Inter', sans-serif;
 
-  /* --- Rayons et Espacements --- */
-  --r-lg: 24px;
+  /* --- Design Tokens --- */
+  --r-sm: 10px;
   --r-md: 16px;
-  --r-sm: 12px;
+  --r-lg: 22px;
   --r-pill: 999px;
   
   --space-xs: 4px;
@@ -33,20 +35,6 @@
   --space-lg: 24px;
   --space-xl: 32px;
 
-  color-scheme: light;
-}
-
-[data-theme="dark"] {
-  --bg-warm: #121212;
-  --bg-card: #1E1E1E;
-  --text-main: #F5F5F5;
-  --text-secondary: #B0B0B0;
-  --text-muted: #777777;
-  --border-color: #2C2C2C;
-  --accent: #F39C12;
-  --accent-soft: #2C241A;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
   color-scheme: dark;
 }
 
@@ -54,18 +42,18 @@
 
 body {
   margin: 0;
-  background: var(--bg-warm);
-  color: var(--text-main);
-  font-family: var(--font-body);
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 h1, h2, h3, h4 {
-  font-family: var(--font-display);
+  font-family: var(--font-serif);
   font-weight: 700;
   margin: 0;
-  color: var(--text-main);
+  color: var(--text-primary);
   letter-spacing: -0.02em;
 }
 
@@ -77,7 +65,7 @@ h1, h2, h3, h4 {
   display: flex;
   flex-direction: column;
   position: relative;
-  background: var(--bg-warm);
+  background: var(--bg-main);
 }
 
 .screen {
@@ -93,6 +81,8 @@ h1, h2, h3, h4 {
   }
 }
 
+/* --- UI Components --- */
+
 .search-bar-premium {
   display: flex;
   align-items: center;
@@ -100,7 +90,7 @@ h1, h2, h3, h4 {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--r-pill);
-  padding: 12px 20px;
+  padding: 14px 20px;
   box-shadow: var(--shadow-sm);
   transition: all 0.2s ease;
 }
@@ -113,9 +103,9 @@ h1, h2, h3, h4 {
 .search-bar-premium input {
   border: none;
   background: transparent;
-  font-family: var(--font-body);
+  font-family: var(--font-sans);
   font-size: 16px;
-  color: var(--text-main);
+  color: var(--text-primary);
   width: 100%;
   outline: none;
 }
@@ -125,7 +115,7 @@ h1, h2, h3, h4 {
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-weight: 600;
   padding: 12px 24px;
   border-radius: var(--r-md);
@@ -146,7 +136,7 @@ h1, h2, h3, h4 {
 
 .btn-secondary {
   background: var(--bg-card);
-  color: var(--text-main);
+  color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
 
@@ -186,12 +176,12 @@ h1, h2, h3, h4 {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.9);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-sm);
-  color: var(--text-main);
+  color: white;
   border: none;
   cursor: pointer;
 }
@@ -201,10 +191,11 @@ h1, h2, h3, h4 {
 }
 
 .recipe-card-premium .title {
-  font-size: 16px;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 18px;
+  font-weight: 700;
   margin-bottom: var(--space-xs);
-  color: var(--text-main);
+  color: var(--text-primary);
 }
 
 .recipe-card-premium .meta {
@@ -226,21 +217,16 @@ h1, h2, h3, h4 {
   left: 20px;
   right: 20px;
   height: 64px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(12px);
+  background: rgba(33, 30, 25, 0.85);
+  backdrop-filter: blur(16px);
   border-radius: 32px;
   display: flex;
   justify-content: space-around;
   align-items: center;
   padding: 0 var(--space-md);
   box-shadow: var(--shadow-lg);
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px solid var(--border-color);
   z-index: 1000;
-}
-
-[data-theme="dark"] .bottom-nav-premium {
-  background: rgba(30,30,30,0.85);
-  border-color: rgba(255,255,255,0.1);
 }
 
 .nav-item-premium {
@@ -256,6 +242,7 @@ h1, h2, h3, h4 {
   border: none;
   background: none;
   transition: color 0.2s ease;
+  flex: 1;
 }
 
 .nav-item-premium.active {
@@ -273,7 +260,7 @@ h1, h2, h3, h4 {
   height: 56px;
   border-radius: 18px;
   margin-top: -30px;
-  box-shadow: 0 8px 20px rgba(230, 126, 34, 0.4);
+  box-shadow: 0 8px 20px rgba(240, 74, 50, 0.4);
   justify-content: center;
 }
 
@@ -282,10 +269,11 @@ h1, h2, h3, h4 {
 }
 
 .ai-chef-hero {
-  background: linear-gradient(135deg, var(--accent) 0%, #F39C12 100%);
+  background: linear-gradient(135deg, var(--bg-card-alt) 0%, #2D2924 100%);
+  border: 1px solid var(--border-color);
   border-radius: var(--r-lg);
   padding: var(--space-xl);
-  color: white;
+  color: var(--text-primary);
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -293,20 +281,20 @@ h1, h2, h3, h4 {
 }
 
 .ai-chef-hero h2 {
-  color: white;
+  font-family: var(--font-serif);
   font-size: 24px;
   margin-bottom: var(--space-sm);
 }
 
 .ai-chef-hero p {
-  opacity: 0.9;
+  color: var(--text-secondary);
   font-size: 15px;
   margin-bottom: var(--space-lg);
 }
 
-.ai-chef-hero .btn-white {
-  background: white;
-  color: var(--accent);
+.ai-chef-hero .btn-accent {
+  background: var(--accent);
+  color: white;
   font-weight: 700;
 }
 
@@ -318,7 +306,8 @@ h1, h2, h3, h4 {
 }
 
 .section-header-premium h3 {
-  font-size: 20px;
+  font-family: var(--font-serif);
+  font-size: 22px;
 }
 
 .section-header-premium .see-all {

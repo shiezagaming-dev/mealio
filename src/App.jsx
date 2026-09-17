@@ -34,7 +34,6 @@ function Shell() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fix Android Hardware Back Button
     const backListener = CapacitorApp.addListener('backButton', (data) => {
       if (window.history.length > 1) {
         navigate(-1);

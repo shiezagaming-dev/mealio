@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
+import { translations } from '../i18n';
 
 const FILTERS = ['Under 15 min', 'Under 30 min', 'Easy', 'Vegetarian', 'Vegan', 'Gluten-free', 'Budget'];
 const COMMON_INGREDIENTS = [
@@ -26,6 +27,16 @@ export default function Search() {
   );
   const [liveResults, setLiveResults] = useState([]);
   const [liveSearching, setLiveSearching] = useState(false);
+
+  const lang = state.language || 'fr';
+  const t = (key) => {
+    const keys = key.split('.');
+    let result = translations[lang];
+    for (const k of keys) {
+      result = result?.[k];
+    }
+    return result || key;
+  };
 
   useEffect(() => {
     if (query.trim().length < 3) {
@@ -99,12 +110,12 @@ export default function Search() {
 
   return (
     <div className="screen">
-      <h1 style={{ fontSize: '32px', marginBottom: 'var(--space-lg)' }}>Recherche</h1>
+      <h1 style={{ fontSize: '32px', marginBottom: 'var(--space-lg)' }}>{t('search.title')}</h1>
       <form onSubmit={submitSearch} style={{ marginBottom: 'var(--space-xl)' }}>
         <div className="search-bar-premium">
           <span style={{ color: 'var(--text-muted)' }}>🔍</span>
           <input
-            placeholder="Essayez “pâtes au poulet” ou “poulet, tomate, fromage”"
+            placeholder={t('search.placeholder')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -113,8 +124,8 @@ export default function Search() {
 
       <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
         <div className="section-header-premium">
-          <h3 style={{ fontWeight: '700' }}>Par ingrédient</h3>
-          <span className="see-all">VOIR TOUT</span>
+          <h3 style={{ fontWeight: '700' }}>{t('search.byIngredients')}</h3>
+          <span className="see-all">{t('common.viewAll')}</span>
         </div>
         <div style={{ 
           display: 'flex', gap: 'var(--space-lg)', overflowX: 'auto', 
@@ -146,7 +157,7 @@ export default function Search() {
 
       <div className="section" style={{ marginBottom: 'var(--space-xl)' }}>
         <div className="section-header-premium">
-          <h3 style={{ fontWeight: '700' }}>Par type de repas</h3>
+          <h3 style={{ fontWeight: '700' }}>{t('search.byMeal')}</h3>
         </div>
         <div className="recipe-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
           {CATEGORIES_LIST.map((cat) => {
@@ -219,13 +230,13 @@ export default function Search() {
 
       <div className="section">
         <div className="section-header-premium">
-          <h3 style={{ fontWeight: '700' }}>{results.length} résultats</h3>
+          <h3 style={{ fontWeight: '700' }}>{results.length} {t('search.results')}</h3>
           {liveSearching && <span className="see-all" style={{ color: 'var(--text-muted)' }}>Recherche en cours…</span>}
         </div>
         {results.length === 0 ? (
           <div className="empty-state">
             <div className="glyph">🍽️</div>
-            <p>Aucun résultat — essayez d'autres ingrédients ou moins de filtres.</p>
+            <p>{t('search.noResults')}</p>
           </div>
         ) : (
           <div className="recipe-grid">
