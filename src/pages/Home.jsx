@@ -211,7 +211,7 @@ export default function Home() {
             <h3 style={{ 
               fontSize: '22px', 
               fontFamily: 'Fraunces, serif', 
-              fontWeight: '700', 
+              fontWeight: 700, 
               color: '#F4EBDD' 
             }}>Recettes Populaires</h3>
             <span 
@@ -242,7 +242,7 @@ export default function Home() {
             <h3 style={{ 
               fontSize: '22px', 
               fontFamily: 'Fraunces, serif', 
-              fontWeight: '700', 
+              fontWeight: 700, 
               color: '#F4EBDD' 
             }}>Rapide & Facile</h3>
             <span 
