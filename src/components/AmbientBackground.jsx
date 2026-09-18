@@ -39,7 +39,7 @@ export default function AmbientBackground() {
         position: 'absolute', top: '10%', left: '10%', 
         width: '350px', height: '350px', 
         borderRadius: '50%', 
-        background: 'radial-gradient(circle, var(--mealio-accent-soft) 0%, transparent 70%)', 
+        background: 'radial-gradient(circle, var(--accent-soft) 0%, transparent 70%)', 
         filter: 'blur(80px)', opacity: 0.4 
       }} />
       
@@ -47,7 +47,7 @@ export default function AmbientBackground() {
         position: 'absolute', bottom: '15%', right: '10%', 
         width: '400px', height: '400px', 
         borderRadius: '50%', 
-        background: 'radial-gradient(circle, var(--mealio-surface-warm) 0%, transparent 70%)', 
+        background: 'radial-gradient(circle, var(--bg-card-alt) 0%, transparent 70%)', 
         filter: 'blur(90px)', opacity: 0.5 
       }} />
       
@@ -55,7 +55,7 @@ export default function AmbientBackground() {
         position: 'absolute', top: '40%', right: '20%', 
         width: '300px', height: '300px', 
         borderRadius: '50%', 
-        background: 'radial-gradient(circle, var(--mealio-accent) 0%, transparent 70%)', 
+        background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)', 
         filter: 'blur(80px)', opacity: 0.3 
       }} />
     </div>
