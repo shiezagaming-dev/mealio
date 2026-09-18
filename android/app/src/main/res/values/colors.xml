@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mealio Brand Colors -->
+    <color name="ic_launcher_background">#171512</color>
+    <color name="mealio_splash_bg">#171512</color>
+</resources>
