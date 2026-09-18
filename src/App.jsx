@@ -50,6 +50,8 @@ function Shell() {
     return <Onboarding />;
   }
 
+  const isAuthPage = location.pathname === '/auth';
+
   return (
     <div className="app-shell">
       <div key={location.pathname} className="page-transition">
@@ -70,7 +72,7 @@ function Shell() {
           <Route path="/ai-chef" element={<AuthGuard><AIChef /></AuthGuard>} />
         </Routes>
       </div>
-      <BottomNav />
+      {!isAuthPage && <BottomNav />}
     </div>
   );
 }
@@ -85,7 +87,6 @@ export default function App() {
   );
 }
 
-// Wrapper pour permettre l'utilisation de useLocation dans Shell
 function ShellWrapper() {
   return <Shell />;
 }
