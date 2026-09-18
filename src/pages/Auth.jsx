@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import './styles/auth.css';
+import '../styles/auth.css';
 
 export default function Auth() {
   const { state, t, login, signup } = useApp();
