@@ -16,38 +16,38 @@ export default function Home() {
   return (
     <div className="screen" style={{ 
       position: 'relative',
-      maxWidth: '800px', 
+      maxWidth: 'var(--app-max-width)', 
       margin: '0 auto', 
       width: '100%', 
-      backgroundColor: '#171512', 
-      color: '#F4EBDD',
+      backgroundColor: 'var(--bg-main)', 
+      color: 'var(--text-primary)',
       minHeight: '100vh',
       paddingBottom: '100px'
     }}>
       <AmbientBackground />
       
       {/* TOP AREA */}
-      <div style={{ padding: '32px 24px 0', marginBottom: '32px', position: 'relative', zIndex: 1 }}>
+      <div style={{ padding: '32px var(--padding-screen) 0', marginBottom: 'var(--margin-section)', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
           <div style={{ 
             width: '56px', height: '56px', borderRadius: '50%', 
             background: '#3A211C', display: 'flex', 
             alignItems: 'center', justifyContent: 'center', fontSize: '32px',
-            border: '2px solid #F04A32'
+            border: '2px solid var(--accent)'
           }}>
             {state.profile.avatar || '🧑‍🍳'}
           </div>
           <div>
             <h1 style={{ 
-              fontSize: '28px', 
-              fontFamily: 'Fraunces, serif', 
+              fontSize: 'var(--fs-h1)', 
+              fontFamily: 'var(--font-serif)', 
               lineHeight: '1.2', 
               margin: 0,
               fontWeight: '700' 
             }}>
               {greeting}, {state.profile.username || 'Chef'} 👋
             </h1>
-            <p style={{ color: '#AAA39A', fontSize: '15px', margin: 0, fontFamily: 'DM Sans, sans-serif' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--fs-body)', margin: 0, fontFamily: 'var(--font-sans)' }}>
               Qu'avez-vous envie de cuisiner aujourd'hui ?
             </p>
           </div>
@@ -55,15 +55,15 @@ export default function Home() {
 
         <div style={{ 
           position: 'relative', 
-          backgroundColor: '#211E19', 
+          backgroundColor: 'var(--bg-card)', 
           borderRadius: '16px', 
           padding: '12px 20px',
           display: 'flex',
           alignItems: 'center',
-          border: '1px solid #3A211C',
+          border: '1px solid var(--border-color)',
           boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
         }}>
-          <span style={{ color: '#AAA39A', marginRight: '12px', fontSize: '20px' }}>🔍</span>
+          <span style={{ color: 'var(--text-secondary)', marginRight: '12px', fontSize: '20px' }}>🔍</span>
           <input 
             placeholder="Rechercher une recette, un ingrédient..." 
             value={search}
@@ -73,10 +73,10 @@ export default function Home() {
               backgroundColor: 'transparent', 
               border: 'none', 
               outline: 'none', 
-              color: '#F4EBDD', 
+              color: 'var(--text-primary)', 
               fontSize: '16px', 
               width: '100%',
-              fontFamily: 'DM Sans, sans-serif'
+              fontFamily: 'var(--font-sans)'
             }}
           />
         </div>
@@ -87,7 +87,7 @@ export default function Home() {
         display: 'grid', 
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
         gap: '20px', 
-        padding: '0 24px',
+        padding: '0 var(--padding-screen)',
         marginBottom: '40px',
         position: 'relative',
         zIndex: 1
@@ -96,10 +96,10 @@ export default function Home() {
         <div 
           onClick={() => navigate('/ai-chef')} 
           style={{ 
-            backgroundColor: '#211E19', 
+            backgroundColor: 'var(--bg-card)', 
             borderRadius: '24px', 
             padding: '24px', 
-            border: '1px solid #3A211C', 
+            border: '1px solid var(--border-color)', 
             cursor: 'pointer',
             position: 'relative',
             overflow: 'hidden',
@@ -110,7 +110,7 @@ export default function Home() {
         >
           <div style={{ position: 'relative', zIndex: 2 }}>
             <div style={{ 
-              color: '#F04A32', 
+              color: 'var(--accent)', 
               fontSize: '12px', 
               fontWeight: '800', 
               textTransform: 'uppercase', 
@@ -118,26 +118,26 @@ export default function Home() {
               letterSpacing: '1px' 
             }}>✨ Assistant IA</div>
             <h2 style={{ 
-              color: '#F4EBDD', 
-              fontSize: '22px', 
-              fontFamily: 'Fraunces, serif', 
+              color: 'var(--text-primary)', 
+              fontSize: 'var(--fs-h2)', 
+              fontFamily: 'var(--font-serif)', 
               marginBottom: '12px',
               fontWeight: '700' 
             }}>
               Pas d'idées pour le repas ?
             </h2>
-            <p style={{ color: '#AAA39A', fontSize: '14px', marginBottom: '20px', lineHeight: '1.5', fontFamily: 'DM Sans, sans-serif' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--fs-body)', marginBottom: '20px', lineHeight: '1.5', fontFamily: 'var(--font-sans)' }}>
               Dites à Mealio ce qu'il reste dans votre frigo et obtenez une recette personnalisée.
             </p>
             <button style={{ 
-              backgroundColor: '#F04A32', 
-              color: '#F4EBDD', 
+              backgroundColor: 'var(--accent)', 
+              color: 'white', 
               border: 'none', 
               padding: '10px 20px', 
               borderRadius: '12px', 
               fontWeight: '700', 
               cursor: 'pointer',
-              fontFamily: 'DM Sans, sans-serif'
+              fontFamily: 'var(--font-sans)'
             }}>
               Demander au Chef IA →
             </button>
@@ -152,10 +152,10 @@ export default function Home() {
         <div 
           onClick={() => navigate('/create?tab=scan')} 
           style={{ 
-            backgroundColor: '#211E19', 
+            backgroundColor: 'var(--bg-card)', 
             borderRadius: '24px', 
             padding: '24px', 
-            border: '1px solid #3A211C', 
+            border: '1px solid var(--border-color)', 
             cursor: 'pointer',
             position: 'relative',
             overflow: 'hidden',
@@ -166,7 +166,7 @@ export default function Home() {
         >
           <div style={{ position: 'relative', zIndex: 2 }}>
             <div style={{ 
-              color: '#F04A32', 
+              color: 'var(--accent)', 
               fontSize: '12px', 
               fontWeight: '800', 
               textTransform: 'uppercase', 
@@ -174,26 +174,26 @@ export default function Home() {
               letterSpacing: '1px' 
             }}>📸 Vision Intelligente</div>
             <h2 style={{ 
-              color: '#F4EBDD', 
-              fontSize: '22px', 
-              fontFamily: 'Fraunces, serif', 
+              color: 'var(--text-primary)', 
+              fontSize: 'var(--fs-h2)', 
+              fontFamily: 'var(--font-serif)', 
               marginBottom: '12px',
               fontWeight: '700' 
             }}>
               Identifiez un plat
             </h2>
-            <p style={{ color: '#AAA39A', fontSize: '14px', marginBottom: '20px', lineHeight: '1.5', fontFamily: 'DM Sans, sans-serif' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--fs-body)', marginBottom: '20px', lineHeight: '1.5', fontFamily: 'var(--font-sans)' }}>
               Prenez une photo d'un plat et Mealio retrouve la recette pour vous.
             </p>
             <button style={{ 
               backgroundColor: 'transparent', 
-              color: '#F4EBDD', 
-              border: '1px solid #F04A32', 
+              color: 'var(--text-primary)', 
+              border: '1px solid var(--accent)', 
               padding: '10px 20px', 
               borderRadius: '12px', 
               fontWeight: '700', 
               cursor: 'pointer',
-              fontFamily: 'DM Sans, sans-serif'
+              fontFamily: 'var(--font-sans)'
             }}>
               Ouvrir la caméra →
             </button>
@@ -206,7 +206,7 @@ export default function Home() {
       </div>
 
       {/* RECIPE SECTIONS */}
-      <div style={{ padding: '0 24px', position: 'relative', zIndex: 1 }}>
+      <div style={{ padding: '0 var(--padding-screen)', position: 'relative', zIndex: 1 }}>
         <div style={{ marginBottom: '40px' }}>
           <div style={{ 
             display: 'flex', 
@@ -215,14 +215,14 @@ export default function Home() {
             marginBottom: '20px' 
           }}>
             <h3 style={{ 
-              fontSize: '22px', 
-              fontFamily: 'Fraunces, serif', 
+              fontSize: 'var(--fs-h2)', 
+              fontFamily: 'var(--font-serif)', 
               fontWeight: 700, 
-              color: '#F4EBDD' 
+              color: 'var(--text-primary)' 
             }}>Recettes Populaires</h3>
             <span 
               onClick={() => navigate('/search')} 
-              style={{ color: '#F04A32', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+              style={{ color: 'var(--accent)', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
             >
               Voir tout
             </span>
@@ -246,14 +246,14 @@ export default function Home() {
             marginBottom: '20px' 
           }}>
             <h3 style={{ 
-              fontSize: '22px', 
-              fontFamily: 'Fraunces, serif', 
+              fontSize: 'var(--fs-h2)', 
+              fontFamily: 'var(--font-serif)', 
               fontWeight: 700, 
-              color: '#F4EBDD' 
+              color: 'var(--text-primary)' 
             }}>Rapide & Facile</h3>
             <span 
               onClick={() => navigate('/search')} 
-              style={{ color: '#F04A32', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}
+              style={{ color: 'var(--accent)', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
             >
               Explorer
             </span>
