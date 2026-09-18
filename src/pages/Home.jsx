@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
+import AmbientBackground from '../components/AmbientBackground';
 
 export default function Home() {
   const { state, allRecipes } = useApp();
@@ -14,6 +15,7 @@ export default function Home() {
 
   return (
     <div className="screen" style={{ 
+      position: 'relative',
       maxWidth: '800px', 
       margin: '0 auto', 
       width: '100%', 
@@ -22,8 +24,10 @@ export default function Home() {
       minHeight: '100vh',
       paddingBottom: '100px'
     }}>
+      <AmbientBackground />
+      
       {/* TOP AREA */}
-      <div style={{ padding: '32px 24px 0', marginBottom: '32px' }}>
+      <div style={{ padding: '32px 24px 0', marginBottom: '32px', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
           <div style={{ 
             width: '56px', height: '56px', borderRadius: '50%', 
@@ -84,7 +88,9 @@ export default function Home() {
         gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
         gap: '20px', 
         padding: '0 24px',
-        marginBottom: '40px' 
+        marginBottom: '40px',
+        position: 'relative',
+        zIndex: 1
       }}>
         {/* AI Chef Card */}
         <div 
@@ -200,7 +206,7 @@ export default function Home() {
       </div>
 
       {/* RECIPE SECTIONS */}
-      <div style={{ padding: '0 24px' }}>
+      <div style={{ padding: '0 24px', position: 'relative', zIndex: 1 }}>
         <div style={{ marginBottom: '40px' }}>
           <div style={{ 
             display: 'flex', 

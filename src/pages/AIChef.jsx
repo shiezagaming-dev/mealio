@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { askAI } from '../data/aiService';
 import { ArrowLeft, Send, Sparkles } from 'lucide-react';
+import AmbientBackground from '../components/AmbientBackground';
 
 export default function AIChef() {
   const { allRecipes, t } = useApp();
@@ -76,8 +77,11 @@ export default function AIChef() {
       flexDirection: 'column', 
       height: '100vh', 
       backgroundColor: 'var(--mealio-bg)',
-      padding: '0'
+      padding: '0',
+      position: 'relative'
     }}>
+      <AmbientBackground />
+
       {/* HEADER */}
       <header style={{ 
         padding: '24px', 
@@ -86,7 +90,8 @@ export default function AIChef() {
         gap: '16px', 
         backgroundColor: 'var(--mealio-surface)',
         borderBottom: '1px solid var(--mealio-border)',
-        zIndex: 10
+        zIndex: 10,
+        position: 'relative'
       }}>
         <button 
           onClick={() => navigate(-1)}
@@ -112,7 +117,9 @@ export default function AIChef() {
         display: 'flex', 
         flexDirection: 'column', 
         gap: '16px',
-        paddingBottom: '120px'
+        paddingBottom: '120px',
+        position: 'relative',
+        zIndex: 1
       }}>
         {messages.map((m, i) => (
           <div key={i} style={{ 
@@ -186,7 +193,8 @@ export default function AIChef() {
         backgroundColor: 'var(--mealio-surface)',
         borderTop: '1px solid var(--mealio-border)',
         padding: '20px 24px calc(80px + env(safe-area-inset-bottom))',
-        boxSizing: 'border-box'
+        boxSizing: 'border-box',
+        zIndex: 10
       }}>
         <div style={{ 
           display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '16px', 
