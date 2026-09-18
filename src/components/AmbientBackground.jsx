@@ -37,26 +37,26 @@ export default function AmbientBackground() {
       
       <div className="blob-1" style={{ 
         position: 'absolute', top: '10%', left: '10%', 
-        width: '350px', height: '350px', 
+        width: '400px', height: '400px', 
         borderRadius: '50%', 
         background: 'radial-gradient(circle, var(--accent-soft) 0%, transparent 70%)', 
-        filter: 'blur(80px)', opacity: 0.55 
+        filter: 'blur(80px)', opacity: 0.65 
       }} />
       
       <div className="blob-2" style={{ 
         position: 'absolute', bottom: '15%', right: '10%', 
-        width: '400px', height: '400px', 
+        width: '450px', height: '450px', 
         borderRadius: '50%', 
         background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)', 
-        filter: 'blur(90px)', opacity: 0.25 
+        filter: 'blur(90px)', opacity: 0.35 
       }} />
       
       <div className="blob-3" style={{ 
         position: 'absolute', top: '40%', right: '20%', 
-        width: '300px', height: '300px', 
+        width: '350px', height: '350px', 
         borderRadius: '50%', 
         background: 'radial-gradient(circle, var(--accent-soft) 0%, transparent 70%)', 
-        filter: 'blur(80px)', opacity: 0.45 
+        filter: 'blur(80px)', opacity: 0.55 
       }} />
     </div>
   );
