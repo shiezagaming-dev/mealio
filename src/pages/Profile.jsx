@@ -13,12 +13,11 @@ export default function Profile() {
 
   const cuisineCount = new Set(state.cuisinesCooked).size;
   
-  // Data for previews
   const uncheckedShopping = state.shoppingList?.filter(i => !i.checked) || [];
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
   const todayMeal = state.mealPlan?.[today];
   const savedRecipes = state.savedIds?.map(id => {
-    const all = state.allRecipes ? state.allRecipes() : []; // Fallback
+    const all = state.allRecipes ? state.allRecipes() : [];
     return all.find(r => r.id === id);
   }).filter(Boolean) || [];
 
@@ -71,7 +70,6 @@ export default function Profile() {
         {/* PREVIEW CARDS STACK */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--margin-section)' }}>
           
-          {/* Shopping List Preview */}
           <PreviewCard 
             title="Liste de Courses" 
             icon={ShoppingBag} 
@@ -93,7 +91,6 @@ export default function Profile() {
             )}
           </PreviewCard>
 
-          {/* Meal Plan Preview */}
           <PreviewCard 
             title="Planning Repas" 
             icon={Calendar} 
@@ -113,7 +110,6 @@ export default function Profile() {
             )}
           </PreviewCard>
 
-          {/* Saved Recipes Preview */}
           <PreviewCard 
             title="Recettes Sauvegardées" 
             icon={Heart} 
@@ -133,7 +129,6 @@ export default function Profile() {
             </div>
           </PreviewCard>
 
-          {/* Achievements Preview */}
           <PreviewCard 
             title="Succès" 
             icon={Trophy} 
@@ -165,7 +160,6 @@ export default function Profile() {
             </div>
           </PreviewCard>
 
-          {/* Simple Rows */}
           <MenuRow icon={History} label={t('profile.history')} onClick={() => navigate('/history')} />
           <MenuRow icon={Settings} label={t('profile.settings')} onClick={() => navigate('/settings')} />
         </div>

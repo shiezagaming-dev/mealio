@@ -5,7 +5,7 @@ export default function AmbientBackground() {
     <div style={{ 
       position: 'absolute', 
       inset: 0, 
-      zIndex: -1, 
+      zIndex: 0, 
       pointerEvents: 'none', 
       overflow: 'hidden' 
     }}>
@@ -40,23 +40,23 @@ export default function AmbientBackground() {
         width: '350px', height: '350px', 
         borderRadius: '50%', 
         background: 'radial-gradient(circle, var(--accent-soft) 0%, transparent 70%)', 
-        filter: 'blur(80px)', opacity: 0.4 
+        filter: 'blur(80px)', opacity: 0.55 
       }} />
       
       <div className="blob-2" style={{ 
         position: 'absolute', bottom: '15%', right: '10%', 
         width: '400px', height: '400px', 
         borderRadius: '50%', 
-        background: 'radial-gradient(circle, var(--bg-card-alt) 0%, transparent 70%)', 
-        filter: 'blur(90px)', opacity: 0.5 
+        background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)', 
+        filter: 'blur(90px)', opacity: 0.25 
       }} />
       
       <div className="blob-3" style={{ 
         position: 'absolute', top: '40%', right: '20%', 
         width: '300px', height: '300px', 
         borderRadius: '50%', 
-        background: 'radial-gradient(circle, var(--accent) 0%, transparent 70%)', 
-        filter: 'blur(80px)', opacity: 0.3 
+        background: 'radial-gradient(circle, var(--accent-soft) 0%, transparent 70%)', 
+        filter: 'blur(80px)', opacity: 0.45 
       }} />
     </div>
   );

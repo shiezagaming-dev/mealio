@@ -130,7 +130,6 @@ export default function Search() {
           </div>
         </form>
 
-        {/* MEAL CATEGORIES SECTION - Hidden when search is active or results exist */}
         {!query.trim() && results.length === 0 && (
           <div style={{ marginBottom: '40px' }}>
             <h3 style={{ fontSize: 'var(--fs-h2)', color: 'var(--text-primary)', marginBottom: '20px' }}>
@@ -175,7 +174,6 @@ export default function Search() {
           </div>
         )}
 
-        {/* FILTERS - Always visible during active search */}
         <div style={{ marginBottom: '32px' }}>
           <div className="horizontal-scroll" style={{ gap: '8px' }}>
             {FILTERS.map((f) => (
@@ -197,7 +195,6 @@ export default function Search() {
           </div>
         </div>
 
-        {/* RESULTS */}
         <div style={{ marginBottom: '120px' }}>
           <div style={{ 
             display: 'flex', 
