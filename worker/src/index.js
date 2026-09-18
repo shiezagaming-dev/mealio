@@ -39,6 +39,14 @@ export default {
   }
 };
 
+function base64ToUint8Array(base64) {
+  const cleaned = base64.replace(/^data:image\/\w+;base64,/, '');
+  const binary = atob(cleaned);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
 async function callOpenRouter(payload, env) {
   if (!env.OPENROUTER_MODELS) {
     throw new Error('Server configuration error: OPENROUTER_MODELS is missing');
@@ -69,8 +77,7 @@ async function callOpenRouter(payload, env) {
       }
 
       const data = await response.json();
-      // On injecte le modèle qui a répondu pour le debug
-      data._servedBy = model.trim();
+      data._servedBy = `openrouter:${model.trim()}`;
       return data;
 
     } catch (e) {
@@ -84,10 +91,33 @@ async function callOpenRouter(payload, env) {
 
 async function handleChat(request, env, corsHeaders) {
   const { messages } = await request.json();
-  const result = await callOpenRouter({ messages }, env);
-  return new Response(JSON.stringify(result), { 
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-  });
+  
+  try {
+    // 1. Try Cloudflare Workers AI
+    const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+      messages: messages
+    });
+    
+    // Normalize to OpenRouter shape: { choices: [{ message: { content: "..." } }] }
+    const result = {
+      choices: [{
+        message: {
+          content: aiResponse.response
+        }
+      }],
+      _servedBy: 'workers-ai'
+    };
+    
+    return new Response(JSON.stringify(result), { 
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    });
+  } catch (e) {
+    console.error("Workers AI Chat failed, falling back to OpenRouter:", e.message);
+    const result = await callOpenRouter({ messages }, env);
+    return new Response(JSON.stringify(result), { 
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    });
+  }
 }
 
 async function handleRecipe(request, env, corsHeaders) {
@@ -95,35 +125,80 @@ async function handleRecipe(request, env, corsHeaders) {
   const systemPrompt = `You are a professional chef. Provide a structured recipe in JSON format.
   Required fields: title, description, ingredients (array of {item, amount, unit}), instructions (array), prepTime, cookTime, totalTime, servings, difficulty, cuisine, dietaryInfo, substitutions, tips.`;
 
-  const result = await callOpenRouter({
-    messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: prompt }
-    ],
-    response_format: { type: 'json_object' }
-  }, env);
-
-  return new Response(JSON.stringify(result), { 
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-  });
+  try {
+    // 1. Try Cloudflare Workers AI
+    const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: prompt }
+      ]
+    });
+    
+    const result = {
+      choices: [{
+        message: {
+          content: aiResponse.response
+        }
+      }],
+      _servedBy: 'workers-ai'
+    };
+    
+    return new Response(JSON.stringify(result), { 
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    });
+  } catch (e) {
+    console.error("Workers AI Recipe failed, falling back to OpenRouter:", e.message);
+    const result = await callOpenRouter({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: prompt }
+      ],
+      response_format: { type: 'json_object' }
+    }, env);
+    return new Response(JSON.stringify(result), { 
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    });
+  }
 }
 
 async function handleAnalyze(request, env, corsHeaders) {
   const { image, prompt } = await request.json();
   
-  const result = await callOpenRouter({
-    messages: [
-      {
-        role: 'user',
-        content: [
-          { type: 'text', text: prompt },
-          { type: 'image_url', image_url: { url: image } }
-        ]
-      }
-    ]
-  }, env);
-
-  return new Response(JSON.stringify(result), { 
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-  });
+  try {
+    // 1. Try Cloudflare Workers AI Vision
+    const aiResponse = await env.AI.run('@cf/llava-hf/llava-1.5-7b-hf', {
+      image: Array.from(base64ToUint8Array(image)),
+      prompt: prompt,
+      max_tokens: 512
+    });
+    
+    const result = {
+      choices: [{
+        message: {
+          content: aiResponse.response
+        }
+      }],
+      _servedBy: 'workers-ai'
+    };
+    
+    return new Response(JSON.stringify(result), { 
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    });
+  } catch (e) {
+    console.error("Workers AI Vision failed, falling back to OpenRouter:", e.message);
+    const result = await callOpenRouter({
+      messages: [
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt },
+            { type: 'image_url', image_url: { url: image } }
+          ]
+        }
+      ]
+    }, env);
+    return new Response(JSON.stringify(result), { 
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    });
+  }
 }

@@ -2,6 +2,9 @@ name = "mealio-ai-backend"
 main = "src/index.js"
 compatibility_date = "2024-01-01"
 
+[ai]
+binding = "AI"
+
 [vars]
 OPENROUTER_MODELS = "inclusionai/ling-3.0-flash-vl:free,meta-llama/llama-3.3-70b-instruct:free,google/gemma-2-9b-it:free"
 FRONTEND_ORIGIN = "https://mealio.ishimweshiza324.workers.dev"
