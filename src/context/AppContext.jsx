@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { recipes as seedRecipes, achievementDefs, defaultFolders, weekDays } from '../data/mockData';
 import { fetchRandomMeals, searchMealsByName, fetchAllCategories, fetchMealsByCategory, lookupMealById } from '../data/mealdb';
+import { t as translate } from '../i18n';
 
 const AppCtx = createContext(null);
 
@@ -17,8 +18,12 @@ function loadState() {
 }
 
 function defaultState() {
+  // Détection automatique de la langue
+  const browserLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
+  
   return {
     theme: 'light',
+    language: browserLang,
     hasCompletedOnboarding: false,
     account: { email: '', username: '', loggedIn: false },
     profile: {
@@ -62,10 +67,7 @@ export function AppProvider({ children }) {
     
     async function initLibrary() {
       try {
-        // 1. Fetch random meals for the home screen
         const randoms = await fetchRandomMeals(12);
-        
-        // 2. Fetch all categories and their partial meals for the catalog
         const cats = await fetchAllCategories();
         const catalogPromises = cats.map(cat => fetchMealsByCategory(cat));
         const catalogResults = await Promise.all(catalogPromises);
@@ -75,7 +77,6 @@ export function AppProvider({ children }) {
           setLiveRecipes(randoms);
           setCategories(cats);
           setCatalog(allPartialMeals);
-          console.log('CATALOG SIZE:', allPartialMeals.length);
           setLiveLoading(false);
         }
       } catch (e) {
@@ -101,6 +102,10 @@ export function AppProvider({ children }) {
   function showToast(msg) {
     setToast(msg);
     setTimeout(() => setToast(null), 1800);
+  }
+
+  function setLanguage(lang) {
+    setState(s => ({ ...s, language: lang }));
   }
 
   function completeOnboarding(name) {
@@ -130,15 +135,12 @@ export function AppProvider({ children }) {
   }
 
   async function getOrFetchFullRecipe(id) {
-    // 1. Check if already fully loaded
     const existing = getRecipe(id);
     if (existing) return existing;
 
-    // 2. Check if it's in the catalog (partial)
     const partial = catalog.find(m => `mdb_${m.idMeal}` === id);
     if (!partial) return null;
 
-    // 3. Fetch full details
     try {
       const full = await lookupMealById(id);
       if (full) {
@@ -280,9 +282,14 @@ export function AppProvider({ children }) {
     logHistory({ type: 'search', label: `Searched "${query}"`, icon: '🔎' });
   }
 
+  // Helper de traduction global injecté dans le contexte
+  const t = (key, defaultValue) => translate(state.language, key, defaultValue);
+
   const value = {
     state,
     setState,
+    t,
+    setLanguage,
     allRecipes,
     getRecipe,
     getOrFetchFullRecipe,
