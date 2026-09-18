@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Camera, Refrigerator, ListPlus, PlusCircle, Loader2, AlertCircle } from 'lucide-react';
-import { Camera as CapCamera, PhotoGallery } from '@capacitor/camera';
+import { Camera as CapCamera, CameraSource } from '@capacitor/camera';
 import AmbientBackground from '../components/AmbientBackground';
 import { imageToBase64 } from '../utils/imageHelper';
 
@@ -23,7 +23,7 @@ export default function CreateScan() {
   const [ingredients, setIngredients] = useState([]);
   const [currentIng, setCurrentIng] = useState('');
 
-  const handleCapture = async (source = 'camera') => {
+  const handleCapture = async (sourceType = 'camera') => {
     try {
       setLoading(true);
       setError(null);
@@ -32,12 +32,11 @@ export default function CreateScan() {
       const options = {
         quality: 90,
         allowEditing: false,
-        resultType: 'uri'
+        resultType: 'uri',
+        source: sourceType === 'camera' ? CameraSource.Camera : CameraSource.Photos
       };
 
-      const photo = source === 'camera' 
-        ? await CapCamera.getPhoto(options) 
-        : await PhotoGallery.getPhoto(options);
+      const photo = await CapCamera.getPhoto(options);
 
       if (!photo) return;
 
