@@ -36,9 +36,8 @@ export default function Auth() {
         <header className="auth-header">
           <img 
             src="/logo.png" 
-            alt="Mealio Logo" 
+            alt="Mealio" 
             className="auth-logo" 
-            onError={(e) => { e.target.style.display = 'none'; }}
           />
           <h1 className="auth-title">{isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}</h1>
           <p className="auth-subtitle">{t('auth.subtitle')}</p>
