@@ -7,12 +7,12 @@ import AmbientBackground from '../components/AmbientBackground';
 
 const FILTERS = ['Under 15 min', 'Under 30 min', 'Easy', 'Vegetarian', 'Vegan', 'Gluten-free', 'Budget'];
 const CATEGORIES_LIST = [
-  { id: 'Breakfast', img: 'https://images.unsplash.com/photo-1482049016688-2bcf81e51d0e?q=80&w=400' },
-  { id: 'Lunch', img: 'https://images.unsplash.com/photo-1546069901-ba959//q=80&w=400' },
-  { id: 'Dinner', img: 'https://images.unsplash.com/photo-1504674900247-a688eacf7c6a?q=80&w=400' },
-  { id: 'Dessert', img: 'https://images.unsplash.com/photo-1551024601-bec78aea7eea?q=80&w=400' },
-  { id: 'Drinks', img: 'https://images.unsplash.com/photo-1513558161293-e776f397f88f?q=80&w=400' },
-  { id: 'Appetizers', img: 'https://images.unsplash.com/photo-1541529086526-6755f67f377c?q=80&w=400' },
+  { id: 'Breakfast', img: 'https://images.unsplash.com/photo-1482049016688-2bcf81e51d0e?q=80&w=400', color: '#FFD8B1' },
+  { id: 'Lunch', img: 'https://images.unsplash.com/photo-1546069901-ba959a-q=80&w=400', color: '#B1E5FF' },
+  { id: 'Dinner', img: 'https://images.unsplash.com/photo-1504674900247-a688eacf7c6a?q=80&w=400', color: '#FFB1B1' },
+  { id: 'Dessert', img: 'https://images.unsplash.com/photo-1551024601-bec78aea7eea?q=80&w=400', color: '#FFB1E5' },
+  { id: 'Drinks', img: 'https://images.unsplash.com/photo-1513558161293-e776f397f88f?q=80&w=400', color: '#B1FFD8' },
+  { id: 'Appetizers', img: 'https://images.unsplash.com/photo-1541529086526-6755f67f377c?q=80&w=400', color: '#E5FFB1' },
 ];
 
 export default function Search() {
@@ -71,7 +71,7 @@ export default function Search() {
     const unique = combined.filter((r) => (seen.has(r.id) ? false : (seen.add(r.id), true)));
     return unique.filter((r) => {
       const text = `${r.name} ${r.tags?.join(' ') || ''} ${r.cuisine || ''}`.toLowerCase();
-      const matchesQuery = query.trim() === '' || text.includes(query.toLowerCase());
+      const matchesQuery = query.trim() === '' || text.toLowerCase().includes(query.toLowerCase());
       const matchesFilters = activeFilters.every((f) => {
         const fl = f.toLowerCase();
         if (fl === 'under 15 min') return r.time <= 15;
@@ -94,7 +94,7 @@ export default function Search() {
   }
 
   return (
-    <div className="screen" style={{ position: 'relative', width: '100%' }}>
+    <div className="screen" style={{ position: 'relative', width: '100%', backgroundColor: 'transparent' }}>
       <AmbientBackground />
       <div style={{ padding: '40px var(--padding-screen) 0', position: 'relative', zIndex: 1 }}>
         <h1 style={{ fontSize: 'var(--fs-h1)', marginBottom: '24px', color: 'var(--text-primary)' }}>
@@ -130,44 +130,52 @@ export default function Search() {
           </div>
         </form>
 
-        {/* MEAL CATEGORIES SECTION */}
-        <div style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontSize: 'var(--fs-h2)', color: 'var(--text-primary)', marginBottom: '20px' }}>
-            {t('search.byMeal')}
-          </h3>
-          <div style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(2, 1fr)', 
-            gap: '16px' 
-          }}>
-            {CATEGORIES_LIST.map((cat) => (
-              <div 
-                key={cat.id} 
-                onClick={() => setQuery(cat.id)}
-                className="recipe-card-premium"
-                style={{ 
-                  height: '110px', borderRadius: 'var(--r-md)', 
-                  position: 'relative', overflow: 'hidden', cursor: 'pointer',
-                  border: '1px solid var(--border-color)',
-                  padding: 0
-                }}
-              >
-                <img src={cat.img} alt={cat.id} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5 }} />
-                <div style={{ 
-                  position: 'absolute', inset: 0, 
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: 'linear-gradient(to top, rgba(23,18,15,0.9), transparent)',
-                  color: 'var(--text-primary)', fontWeight: '700', fontSize: '18px', 
-                  fontFamily: 'var(--font-serif)'
-                }}>
-                  {cat.id}
+        {/* MEAL CATEGORIES SECTION - Hidden when search is active or results exist */}
+        {!query.trim() && results.length === 0 && (
+          <div style={{ marginBottom: '40px' }}>
+            <h3 style={{ fontSize: 'var(--fs-h2)', color: 'var(--text-primary)', marginBottom: '20px' }}>
+              {t('search.byMeal')}
+            </h3>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(2, 1fr)', 
+              gap: '16px' 
+            }}>
+              {CATEGORIES_LIST.map((cat) => (
+                <div 
+                  key={cat.id} 
+                  onClick={() => setQuery(cat.id)}
+                  className="recipe-card-premium"
+                  style={{ 
+                    height: '110px', borderRadius: 'var(--r-md)', 
+                    position: 'relative', overflow: 'hidden', cursor: 'pointer',
+                    border: '1px solid var(--border-color)',
+                    padding: 0,
+                    backgroundColor: cat.color
+                  }}
+                >
+                  <img 
+                    src={cat.img} 
+                    alt={cat.id} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} 
+                    onError={(e) => { e.target.style.display = 'none'; }}
+                  />
+                  <div style={{ 
+                    position: 'absolute', inset: 0, 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: 'linear-gradient(to top, rgba(23,18,15,0.9), transparent)',
+                    color: 'var(--text-primary)', fontWeight: '700', fontSize: '18px', 
+                    fontFamily: 'var(--font-serif)'
+                  }}>
+                    {cat.id}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* FILTERS */}
+        {/* FILTERS - Always visible during active search */}
         <div style={{ marginBottom: '32px' }}>
           <div className="horizontal-scroll" style={{ gap: '8px' }}>
             {FILTERS.map((f) => (
