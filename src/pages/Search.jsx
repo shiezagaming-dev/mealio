@@ -3,18 +3,9 @@ import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import RecipeCard from '../components/RecipeCard';
 import { translations } from '../i18n';
+import AmbientBackground from '../components/AmbientBackground';
 
 const FILTERS = ['Under 15 min', 'Under 30 min', 'Easy', 'Vegetarian', 'Vegan', 'Gluten-free', 'Budget'];
-const COMMON_INGREDIENTS = [
-  { name: 'Chicken', img: 'Chicken' },
-  { name: 'Egg', img: 'Egg' },
-  { name: 'Pasta', img: 'Pasta' },
-  { name: 'Apple', img: 'Apple' },
-  { name: 'Tomato', img: 'Tomato' },
-  { name: 'Beef', img: 'Beef' },
-  { name: 'Rice', img: 'Rice' },
-  { name: 'Cheese', img: 'Cheese' },
-];
 const CATEGORIES_LIST = [
   { id: 'Breakfast', img: 'https://images.unsplash.com/photo-1482049016688-2bcf81e51d0e?q=80&w=400' },
   { id: 'Lunch', img: 'https://images.unsplash.com/photo-1546069901-ba959//q=80&w=400' },
@@ -49,23 +40,24 @@ export default function Search() {
     }
     let cancelled = false;
     setLiveSearching(true);
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       searchOnline(query).then((r) => {
         if (!cancelled) {
-          setLiveResults(r);
-          registerLiveRecipes(r);
+          setLiveResults(r || []);
+          registerLiveRecipes(r || []);
           setLiveSearching(false);
         }
       });
     }, 400);
-    return () => { cancelled = true; clearTimeout(t); };
-  }, [query]);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [query, searchOnline, registerLiveRecipes]);
 
   const results = useMemo(() => {
+    const recipesList = allRecipes();
     const seen = new Set();
     const combined = [
       ...liveResults, 
-      ...allRecipes(), 
+      ...recipesList, 
       ...catalog.map(m => ({
         id: `mdb_${m.idMeal}`,
         name: m.strMeal,
@@ -102,24 +94,25 @@ export default function Search() {
   }
 
   return (
-    <div className="app-container">
-      <div style={{ padding: '40px 24px 0' }}>
-        <h1 style={{ fontSize: '36px', marginBottom: '24px', color: 'var(--mealio-text)' }}>
+    <div className="screen" style={{ position: 'relative', width: '100%' }}>
+      <AmbientBackground />
+      <div style={{ padding: '40px var(--padding-screen) 0', position: 'relative', zIndex: 1 }}>
+        <h1 style={{ fontSize: 'var(--fs-h1)', marginBottom: '24px', color: 'var(--text-primary)' }}>
           {t('search.title')}
         </h1>
 
         <form onSubmit={submitSearch} style={{ marginBottom: '40px' }}>
           <div style={{ 
             position: 'relative', 
-            backgroundColor: 'var(--mealio-surface)', 
-            borderRadius: 'var(--radius-lg)', 
+            backgroundColor: 'var(--bg-card)', 
+            borderRadius: 'var(--r-lg)', 
             padding: '16px 24px',
             display: 'flex',
             alignItems: 'center',
-            border: '1px solid var(--mealio-border)',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+            border: '1px solid var(--border-color)',
+            boxShadow: 'var(--shadow-sm)'
           }}>
-            <span style={{ color: 'var(--mealio-text-secondary)', marginRight: '12px', fontSize: '22px' }}>🔍</span>
+            <span style={{ color: 'var(--text-secondary)', marginRight: '12px', fontSize: '22px' }}>🔍</span>
             <input
               placeholder={t('search.placeholder')}
               value={query}
@@ -128,76 +121,18 @@ export default function Search() {
                 backgroundColor: 'transparent', 
                 border: 'none', 
                 outline: 'none', 
-                color: 'var(--mealio-text)', 
+                color: 'var(--text-primary)', 
                 fontSize: '18px', 
                 width: '100%',
-                fontFamily: 'var(--font-body)'
+                fontFamily: 'var(--font-sans)'
               }}
             />
           </div>
         </form>
 
-        {/* INGREDIENTS SECTION */}
-        <div style={{ marginBottom: '40px' }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'baseline', 
-            marginBottom: '20px' 
-          }}>
-            <h3 style={{ fontSize: '22px', color: 'var(--mealio-text)', margin: 0 }}>
-              {t('search.byIngredients')}
-            </h3>
-            <span style={{ color: 'var(--mealio-accent)', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
-              {t('common.viewAll')}
-            </span>
-          </div>
-          <div className="horizontal-scroll">
-            {COMMON_INGREDIENTS.map((ing) => (
-              <div 
-                key={ing.name} 
-                onClick={() => setQuery(ing.name)} 
-                style={{ 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center', 
-                  cursor: 'pointer', 
-                  width: '84px', 
-                  flexShrink: 0 
-                }}
-              >
-                <div style={{ 
-                  width: '64px', height: '64px', borderRadius: '50%', 
-                  overflow: 'hidden', 
-                  backgroundColor: 'var(--mealio-surface-2)',
-                  border: '2px solid var(--mealio-border)',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <img 
-                    src={`https://www.themealdb.com/images/ingredients/${ing.img}.png`} 
-                    alt={ing.name} 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </div>
-                <span style={{ 
-                  fontSize: '13px', 
-                  fontWeight: '500', 
-                  marginTop: '10px', 
-                  color: 'var(--mealio-text-secondary)',
-                  fontFamily: 'var(--font-body)'
-                }}>{ing.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* MEAL CATEGORIES SECTION */}
         <div style={{ marginBottom: '40px' }}>
-          <h3 style={{ fontSize: '22px', color: 'var(--mealio-text)', marginBottom: '20px' }}>
+          <h3 style={{ fontSize: 'var(--fs-h2)', color: 'var(--text-primary)', marginBottom: '20px' }}>
             {t('search.byMeal')}
           </h3>
           <div style={{ 
@@ -209,11 +144,11 @@ export default function Search() {
               <div 
                 key={cat.id} 
                 onClick={() => setQuery(cat.id)}
-                className="card"
+                className="recipe-card-premium"
                 style={{ 
-                  height: '110px', borderRadius: 'var(--radius-md)', 
+                  height: '110px', borderRadius: 'var(--r-md)', 
                   position: 'relative', overflow: 'hidden', cursor: 'pointer',
-                  border: '1px solid var(--mealio-border)',
+                  border: '1px solid var(--border-color)',
                   padding: 0
                 }}
               >
@@ -222,8 +157,8 @@ export default function Search() {
                   position: 'absolute', inset: 0, 
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   background: 'linear-gradient(to top, rgba(23,18,15,0.9), transparent)',
-                  color: 'var(--mealio-text)', fontWeight: '700', fontSize: '18px', 
-                  fontFamily: 'var(--font-heading)'
+                  color: 'var(--text-primary)', fontWeight: '700', fontSize: '18px', 
+                  fontFamily: 'var(--font-serif)'
                 }}>
                   {cat.id}
                 </div>
@@ -239,11 +174,11 @@ export default function Search() {
               <span 
                 key={f} 
                 style={{ 
-                  padding: '8px 16px', borderRadius: 'var(--radius-sm)', 
-                  background: activeFilters.includes(f) ? 'var(--mealio-accent)' : 'var(--mealio-surface)', 
-                  color: activeFilters.includes(f) ? 'var(--mealio-text)' : 'var(--mealio-text-secondary)',
-                  border: '1px solid var(--mealio-border)', cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap',
-                  fontFamily: 'var(--font-body)',
+                  padding: '8px 16px', borderRadius: 'var(--r-sm)', 
+                  background: activeFilters.includes(f) ? 'var(--accent)' : 'var(--bg-card)', 
+                  color: activeFilters.includes(f) ? 'var(--text-primary)' : 'var(--text-secondary)',
+                  border: '1px solid var(--border-color)', cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap',
+                  fontFamily: 'var(--font-sans)',
                   transition: 'all 0.2s ease'
                 }} 
                 onClick={() => toggleFilter(f)}
@@ -262,25 +197,21 @@ export default function Search() {
             alignItems: 'baseline', 
             marginBottom: '24px' 
           }}>
-            <h3 style={{ fontSize: '22px', color: 'var(--mealio-text)', fontFamily: 'var(--font-heading)' }}>
+            <h3 style={{ fontSize: 'var(--fs-h2)', color: 'var(--text-primary)', fontFamily: 'var(--font-serif)' }}>
               {results.length} {t('search.results')}
             </h3>
-            {liveSearching && <span style={{ color: 'var(--mealio-text-secondary)', fontSize: '13px' }}>Recherche...</span>}
+            {liveSearching && <span style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Recherche...</span>}
           </div>
           
           {results.length === 0 ? (
             <div style={{ 
-              textAlign: 'center', padding: '60px 0', color: 'var(--mealio-text-secondary)' 
+              textAlign: 'center', padding: '60px 0', color: 'var(--text-secondary)' 
             }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>🍽️</div>
               <p>{t('search.noResults')}</p>
             </div>
           ) : (
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', 
-              gap: '20px' 
-            }}>
+            <div className="recipe-grid">
               {results.map((r) => <RecipeCard key={r.id} recipe={r} />)}
             </div>
           )}
