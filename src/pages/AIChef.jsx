@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { askAI } from '../data/aiService';
+import { ArrowLeft, Send, Sparkles } from 'lucide-react';
 
 export default function AIChef() {
-  const { allRecipes } = useApp();
+  const { allRecipes, t } = useApp();
   const navigate = useNavigate();
   const [messages, setMessages] = useState([
-    { role: 'ai', text: "Bonjour ! Je suis votre Chef IA 👋 Je peux vous aider à trouver des idées de repas, suggérer des substitutions ou adapter vos recettes. Que voulez-vous cuisiner ?" },
+    { role: 'ai', text: t('aiChef.greeting') || "Bonjour ! Je suis votre Chef IA 👋 Je peux vous aider à trouver des idées de repas, suggérer des substitutions ou adapter vos recettes. Que voulez-vous cuisiner ?" },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -63,75 +64,178 @@ export default function AIChef() {
   }
 
   const suggestions = [
-    'Idée de dîner rapide',
-    'Remplacer le beurre',
-    'Recette avec poulet et riz',
-    'Recette végétarienne',
+    t('aiChef.suggestion1') || 'Idée de dîner rapide',
+    t('aiChef.suggestion2') || 'Remplacer le beurre',
+    t('aiChef.suggestion3') || 'Recette avec poulet et riz',
+    t('aiChef.suggestion4') || 'Recette végétarienne',
   ];
 
   return (
-    <div className="screen" style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: 'var(--space-lg) var(--space-lg) calc(100px + env(safe-area-inset-bottom))' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
+    <div className="app-container" style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100vh', 
+      backgroundColor: 'var(--mealio-bg)',
+      padding: '0'
+    }}>
+      {/* HEADER */}
+      <header style={{ 
+        padding: '24px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '16px', 
+        backgroundColor: 'var(--mealio-surface)',
+        borderBottom: '1px solid var(--mealio-border)',
+        zIndex: 10
+      }}>
         <button 
-          className="btn-premium btn-secondary" 
-          style={{ width: '40px', height: '40px', borderRadius: '50%', padding: 0 }} 
           onClick={() => navigate(-1)}
+          style={{ 
+            width: '40px', height: '40px', borderRadius: '50%', 
+            border: '1px solid var(--mealio-border)', background: 'var(--mealio-surface-warm)',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--mealio-text-primary)'
+          }}
         >
-          ←
+          <ArrowLeft size={20} />
         </button>
-        <h1 style={{ fontSize: '24px' }}>✨ AI Chef</h1>
-      </div>
+        <h1 style={{ fontSize: '22px', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Sparkles size={20} color="var(--mealio-accent)" /> {t('aiChef.title')}
+        </h1>
+      </header>
 
-      <div className="chat-col" style={{ flex: 1, overflowY: 'auto', paddingBottom: 'var(--space-md)' }}>
+      {/* CHAT AREA */}
+      <div style={{ 
+        flex: 1, 
+        overflowY: 'auto', 
+        padding: '24px', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        gap: '16px',
+        paddingBottom: '120px'
+      }}>
         {messages.map((m, i) => (
-          <div key={i} className={`chat-bubble ${m.role}`}>{m.text}</div>
+          <div key={i} style={{ 
+            display: 'flex', 
+            justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
+            width: '100%'
+          }}>
+            <div style={{ 
+              maxWidth: '80%', 
+              padding: '12px 16px', 
+              borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+              backgroundColor: m.role === 'user' ? 'var(--mealio-accent)' : 'var(--mealio-surface)',
+              color: m.role === 'user' ? 'white' : 'var(--mealio-text-primary)',
+              border: m.role === 'ai' ? '1px solid var(--mealio-border)' : 'none',
+              boxShadow: 'var(--shadow-subtle)',
+              fontSize: '15px',
+              lineHeight: '1.5',
+              fontFamily: 'var(--font-body)'
+            }}>
+              {m.text}
+            </div>
+          </div>
         ))}
-        {loading && <div className="chat-bubble ai" style={{ opacity: 0.6 }}>Le Chef réfléchit...</div>}
+        {loading && (
+          <div style={{ 
+            display: 'flex', justifyContent: 'flex-start', width: '100%' 
+          }}>
+            <div style={{ 
+              padding: '12px 16px', borderRadius: '16px 16px 16px 4px',
+              backgroundColor: 'var(--mealio-surface)',
+              color: 'var(--mealio-text-secondary)',
+              border: '1px solid var(--mealio-border)',
+              fontSize: '14px',
+              fontStyle: 'italic'
+            }}>
+              {t('common.loading')}...
+            </div>
+          </div>
+        )}
         
         {error && (
-          <div className="chat-bubble ai" style={{ border: '1px solid var(--danger)', backgroundColor: 'var(--accent-soft)' }}>
-            <p style={{ color: 'var(--danger)', fontWeight: '600', marginBottom: '8px' }}>
-              Mealio's AI is having trouble right now — try again?
-            </p>
-            <button 
-              className="btn-premium btn-primary" 
-              onClick={() => send(error)}
-              style={{ padding: '6px 12px', fontSize: '12px' }}
-            >
-              Retry
-            </button>
+          <div style={{ 
+            display: 'flex', justifyContent: 'center', width: '100%', marginBottom: '16px' 
+          }}>
+            <div style={{ 
+              maxWidth: '80%', padding: '16px', borderRadius: '16px', 
+              backgroundColor: 'var(--mealio-accent-soft)', 
+              border: '1px solid var(--mealio-accent)',
+              textAlign: 'center'
+            }}>
+              <p style={{ color: 'var(--mealio-accent-dark)', fontWeight: '600', marginBottom: '12px', fontSize: '14px' }}>
+                {t('aiChef.error')}
+              </p>
+              <button 
+                className="btn btn-primary" 
+                onClick={() => send(error)}
+                style={{ padding: '8px 16px', fontSize: '13px' }}
+              >
+                {t('common.tryAgain')}
+              </button>
+            </div>
           </div>
         )}
         <div ref={endRef} />
       </div>
 
-      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: 'var(--space-md)', scrollbarWidth: 'none' }}>
-        {suggestions.map((s) => (
-          <span 
-            key={s} 
-            className="chip" 
-            style={{ 
-              padding: '8px 16px', borderRadius: 'var(--r-pill)', 
-              background: 'var(--bg-card)', border: '1px solid var(--border-color)', 
-              fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap' 
-            }} 
-            onClick={() => setInput(s)}
-          >
-            {s}
-          </span>
-        ))}
-      </div>
+      {/* INPUT AREA */}
+      <div style={{ 
+        position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+        width: '100%', maxWidth: 'var(--app-max-width)',
+        backgroundColor: 'var(--mealio-surface)',
+        borderTop: '1px solid var(--mealio-border)',
+        padding: '20px 24px calc(80px + env(safe-area-inset-bottom))',
+        boxSizing: 'border-box'
+      }}>
+        <div style={{ 
+          display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '16px', 
+          scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' 
+        }}>
+          {suggestions.map((s, i) => (
+            <button 
+              key={i} 
+              onClick={() => setInput(s)}
+              style={{ 
+                padding: '8px 16px', borderRadius: '20px', 
+                background: 'var(--mealio-surface-warm)', border: '1px solid var(--mealio-border)', 
+                fontSize: '13px', cursor: 'pointer', whiteSpace: 'nowrap',
+                color: 'var(--mealio-text-primary)', fontFamily: 'var(--font-body)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
 
-      <div className="search-bar-premium" style={{ marginTop: 'var(--space-md)', marginBottom: 'env(safe-area-inset-bottom)' }}>
-        <input
-          placeholder="Posez-moi une question..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && send()}
-        />
-        <button className="btn-premium btn-primary" onClick={() => send()} disabled={loading} style={{ padding: '8px 16px' }}>
-          Envoyer
-        </button>
+        <div style={{ 
+          display: 'flex', gap: '12px', alignItems: 'center',
+          backgroundColor: 'var(--mealio-bg)', 
+          borderRadius: 'var(--radius-lg)', 
+          padding: '8px 8px 8px 16px',
+          border: '1px solid var(--mealio-border)'
+        }}>
+          <input
+            placeholder={t('aiChef.placeholder')}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && send()}
+            style={{ 
+              backgroundColor: 'transparent', border: 'none', outline: 'none', 
+              color: 'var(--mealio-text-primary)', fontSize: '16px', flex: 1,
+              fontFamily: 'var(--font-body)', padding: '8px 0'
+            }}
+          />
+          <button 
+            className="btn btn-primary" 
+            onClick={() => send()} 
+            disabled={loading} 
+            style={{ padding: '10px', borderRadius: 'var(--radius-md)' }}
+          >
+            <Send size={20} />
+          </button>
+        </div>
       </div>
     </div>
   );

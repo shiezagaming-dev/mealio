@@ -1,19 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { xpToLevel } from '../data/mockData';
-
-const KITCHEN_LINKS = [
-  { to: '/saved', icon: '❤️', label: 'Recettes Sauvegardées' },
-  { to: '/history', icon: '🕐', label: 'Historique' },
-  { to: '/planner', icon: '📅', label: 'Planificateur' },
-  { to: '/shopping', icon: '🛒', label: 'Liste de Courses' },
-  { to: '/achievements', icon: '🏆', label: 'Succès' },
-  { to: '/ai-chef', icon: '✨', label: 'Chef IA' },
-  { to: '/settings', icon: '⚙️', label: 'Paramètres' },
-];
+import { Settings, Heart, History, Calendar, ShoppingBag, Trophy, User, ArrowRight } from 'lucide-react';
 
 export default function Profile() {
-  const { state } = useApp();
+  const { state, setState, toggleTheme, showToast, t } = useApp();
   const navigate = useNavigate();
   const { level } = xpToLevel(state.xp);
   const p = state.profile;
@@ -22,142 +14,113 @@ export default function Profile() {
   const totalMinutes = state.mealsCooked * 22;
 
   return (
-    <div className="screen" style={{ 
-      maxWidth: '800px', 
-      margin: '0 auto', 
-      width: '100%', 
-      backgroundColor: '#171512', 
-      color: '#F4EBDD',
-      minHeight: '100vh',
-      paddingBottom: '100px'
-    }}>
+    <div className="app-container" style={{ padding: '48px 24px 120px' }}>
       {/* PROFILE HEADER */}
-      <div style={{ textAlign: 'center', padding: '40px 24px 0', marginBottom: '32px' }}>
+      <div style={{ 
+        display: 'flex', flexDirection: 'column', alignItems: 'center', 
+        textAlign: 'center', marginBottom: '40px' 
+      }}>
         <div style={{ 
           width: '110px', height: '110px', borderRadius: '50%', 
-          background: '#211E19', display: 'flex', 
-          alignItems: 'center', justifyContent: 'center', fontSize: '56px', 
-          margin: '0 auto 16px', border: '3px solid #F04A32',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.4)'
+          background: 'var(--mealio-surface-warm)', display: 'flex', 
+          alignItems: 'center', justifyContent: 'center', fontSize: '56px',
+          border: '4px solid white', boxShadow: 'var(--shadow-medium)',
+          marginBottom: '16px'
         }}>
-          {p.avatar}
+          {p.avatar || '🧑‍🍳'}
         </div>
-        <h1 style={{ 
-          fontSize: '32px', 
-          fontFamily: 'Fraunces, serif', 
-          fontWeight: '700', 
-          margin: '0 0 8px 0' 
-        }}>
-          {p.username}
+        <h1 style={{ fontSize: '32px', margin: '0 0 8px 0', color: 'var(--mealio-text-primary)' }}>
+          {p.username || 'Chef'}
         </h1>
         <div style={{ 
-          display: 'inline-block', padding: '6px 16px', borderRadius: '20px', 
-          background: '#F04A32', color: '#F4EBDD', fontSize: '13px', fontWeight: '700',
-          fontFamily: 'DM Sans, sans-serif', textTransform: 'uppercase', letterSpacing: '1px'
+          backgroundColor: 'var(--mealio-accent)', color: 'white', 
+          padding: '6px 16px', borderRadius: '20px', fontSize: '14px', 
+          fontWeight: '700', fontFamily: 'var(--font-body)',
+          textTransform: 'uppercase', letterSpacing: '1px'
         }}>
-          Niveau {level} — Home Chef
+          Niveau {level}
         </div>
-        <p style={{ 
-          color: '#AAA39A', 
-          marginTop: '16px', 
-          fontSize: '16px', 
-          fontFamily: 'DM Sans, sans-serif',
-          maxWidth: '400px',
-          marginInline: 'auto',
-          lineHeight: '1.5'
-        }}>
-          {p.bio}
-        </p>
       </div>
 
       {/* STATS GRID */}
-      <div style={{ padding: '0 24px', marginBottom: '40px' }}>
-        <h3 style={{ 
-          fontSize: '20px', 
-          fontFamily: 'Fraunces, serif', 
-          fontWeight: '600', 
-          marginBottom: '16px',
-          color: '#F4EBDD'
-        }}>Mes Statistiques</h3>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', 
-          gap: '16px' 
-        }}>
-          {[
-            { label: 'Repas Cuisinés', value: state.mealsCooked, icon: '🍳' },
-            { label: 'Cuisines', value: cuisineCount, icon: '🌎' },
-            { label: 'Temps Total', value: `${Math.round(totalMinutes / 60)}h`, icon: '⏱️' },
-            { label: 'Série Actuelle', value: `🔥 ${state.streak}`, icon: '🔥' },
-          ].map((stat, i) => (
-            <div key={i} style={{ 
-              backgroundColor: '#211E19', 
-              borderRadius: '20px', 
-              padding: '20px', 
-              textAlign: 'center', 
-              border: '1px solid #3A211C',
-              transition: 'transform 0.2s ease'
-            }}>
-              <div style={{ fontSize: '24px', fontWeight: '800', color: '#F04A32', marginBottom: '4px' }}>
-                {stat.value}
-              </div>
-              <div style={{ fontSize: '12px', color: '#AAA39A', fontWeight: '600', fontFamily: 'DM Sans, sans-serif', textTransform: 'uppercase' }}>
-                {stat.label}
-              </div>
-            </div>
-          ))}
-        </div>
+      <div style={{ 
+        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', 
+        marginBottom: '40px' 
+      }}>
+        <StatCard label={t('profile.cooked')} value={state.mealsCooked} />
+        <StatCard label="Cuisines" value={cuisineCount} />
+        <StatCard label="Série" value={`${state.streak}j`} />
       </div>
 
-      {/* KITCHEN NAVIGATION */}
-      <div style={{ padding: '0 24px' }}>
-        <h3 style={{ 
-          fontSize: '20px', 
-          fontFamily: 'Fraunces, serif', 
-          fontWeight: '600', 
-          marginBottom: '16px',
-          color: '#F4EBDD'
-        }}>Ma Cuisine</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {KITCHEN_LINKS.map((l) => (
-            <div 
-              key={l.to} 
-              onClick={() => navigate(l.to)}
-              style={{ 
-                backgroundColor: '#211E19', 
-                padding: '16px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '16px', 
-                cursor: 'pointer',
-                borderRadius: '16px',
-                border: '1px solid #3A211C',
-                transition: 'all 0.2s ease',
-                fontFamily: 'DM Sans, sans-serif'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#27231D';
-                e.currentTarget.style.borderColor = '#F04A32';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#211E19';
-                e.currentTarget.style.borderColor = '#3A211C';
-              }}
-            >
-              <div style={{ 
-                width: '44px', height: '44px', borderRadius: '12px', 
-                background: '#171512', display: 'flex', 
-                alignItems: 'center', justifyContent: 'center', fontSize: '22px',
-                border: '1px solid #3A211C'
-              }}>
-                {l.icon}
-              </div>
-              <span style={{ flex: 1, fontWeight: '600', fontSize: '16px', color: '#F4EBDD' }}>{l.label}</span>
-              <span style={{ color: '#AAA39A', fontSize: '20px' }}>›</span>
-            </div>
-          ))}
-        </div>
+      {/* NAVIGATION MENU */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <MenuRow icon={Heart} label={t('profile.saved')} onClick={() => navigate('/saved')} />
+        <MenuRow icon={History} label={t('profile.history')} onClick={() => navigate('/history')} />
+        <MenuRow icon={Calendar} label={t('profile.mealPlan')} onClick={() => navigate('/mealplan')} />
+        <MenuRow icon={ShoppingBag} label={t('profile.shoppingList')} onClick={() => navigate('/shopping')} />
+        <MenuRow icon={Trophy} label={t('profile.achievements')} onClick={() => {}} />
+        
+        <div style={{ height: '1px', background: 'var(--mealio-border)', margin: '24px 0' }} />
+        
+        <MenuRow icon={Settings} label={t('profile.settings')} onClick={() => navigate('/settings')} />
       </div>
+    </div>
+  );
+}
+
+function StatCard({ label, value }) {
+  return (
+    <div className="card" style={{ 
+      padding: '20px 12px', textAlign: 'center', 
+      backgroundColor: 'var(--mealio-surface)',
+      border: '1px solid var(--mealio-border)',
+      borderRadius: 'var(--radius-md)',
+      boxShadow: 'var(--shadow-subtle)'
+    }}>
+      <div style={{ fontSize: '22px', fontWeight: '700', color: 'var(--mealio-accent)', marginBottom: '4px' }}>
+        {value}
+      </div>
+      <div style={{ fontSize: '12px', color: 'var(--mealio-text-secondary)', fontWeight: '600', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
+        {label}
+      </div>
+    </div>
+  );
+}
+
+function MenuRow({ icon: Icon, label, onClick }) {
+  return (
+    <div 
+      onClick={onClick}
+      style={{ 
+        display: 'flex', alignItems: 'center', padding: '16px', 
+        backgroundColor: 'var(--mealio-surface)', 
+        borderRadius: 'var(--radius-md)', 
+        border: '1px solid var(--mealio-border)',
+        cursor: 'pointer',
+        transition: 'all 0.2s ease',
+        boxShadow: 'var(--shadow-subtle)'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--mealio-surface-warm)';
+        e.currentTarget.style.borderColor = 'var(--mealio-accent)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = 'var(--mealio-surface)';
+        e.currentTarget.style.borderColor = 'var(--mealio-border)';
+      }}
+    >
+      <div style={{ 
+        width: '40px', height: '40px', borderRadius: '10px', 
+        backgroundColor: 'var(--mealio-surface-warm)', 
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        marginRight: '16px', color: 'var(--mealio-accent)'
+      }}>
+        <Icon size={20} />
+      </div>
+      <span style={{ flex: 1, fontWeight: '500', fontSize: '16px', color: 'var(--mealio-text-primary)', fontFamily: 'var(--font-body)' }}>
+        {label}
+      </span>
+      <ArrowRight size={18} style={{ color: 'var(--mealio-text-secondary)', opacity: 0.5 }} />
     </div>
   );
 }
