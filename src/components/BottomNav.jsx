@@ -1,42 +1,33 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { translations } from '../i18n';
+import { Home, Search, Plus, Heart, User } from 'lucide-react';
 
 const items = [
-  { path: '/', icon: '🏠', labelKey: 'common.home' },
-  { path: '/search', icon: '🔍', labelKey: 'common.search' },
-  { path: '/create', icon: '✨', labelKey: 'common.create', primary: true },
-  { path: '/saved', icon: '❤️', labelKey: 'common.saved' },
-  { path: '/profile', icon: '👤', labelKey: 'common.profile' },
+  { path: '/', icon: Home, labelKey: 'common.home' },
+  { path: '/search', icon: Search, labelKey: 'common.search' },
+  { path: '/create', icon: Plus, labelKey: 'common.create', primary: true },
+  { path: '/saved', icon: Heart, labelKey: 'common.saved' },
+  { path: '/profile', icon: User, labelKey: 'common.profile' },
 ];
 
 export default function BottomNav() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { state } = useApp();
+  const { t } = useApp();
   
-  const lang = state.language || 'fr';
-  const t = (key) => {
-    const keys = key.split('.');
-    let result = translations[lang];
-    for (const k of keys) {
-      result = result?.[k];
-    }
-    return result || key;
-  };
-
   return (
-    <nav className="bottom-nav">
+    <nav className="bottom-nav-premium">
       {items.map((it) => {
         const isActive = pathname === it.path;
+        const Icon = it.icon;
         return (
           <button
             key={it.path}
             onClick={() => navigate(it.path)}
-            className="nav-item"
+            className={`nav-item-premium ${it.primary ? 'fab' : ''} ${isActive ? 'active' : ''}`}
             style={{ 
               border: 'none', 
-              background: 'transparent', 
+              background: it.primary ? 'var(--accent)' : 'transparent', 
               cursor: 'pointer', 
               display: 'flex', 
               flexDirection: 'column', 
@@ -45,36 +36,24 @@ export default function BottomNav() {
               gap: '4px',
               flex: 1,
               transition: 'all 0.2s ease',
-              position: 'relative',
-              color: isActive ? 'var(--mealio-accent)' : 'var(--mealio-text-secondary)',
-              opacity: isActive ? 1 : 0.7
+              color: isActive && !it.primary ? 'var(--mealio-accent)' : (it.primary ? 'white' : 'var(--text-secondary)'),
             }}
           >
-            <span style={{ 
-              fontSize: it.primary ? '28px' : '24px', 
-              transition: 'all 0.2s ease',
-              filter: isActive ? 'none' : 'grayscale(1)'
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
             }}>
-              {it.icon}
-            </span>
+              <Icon size={it.primary ? 26 : 22} strokeWidth={isActive ? 2.5 : 2} />
+            </div>
             {!it.primary && (
               <span style={{ 
-                fontSize: '11px', 
-                fontWeight: '600', 
-                fontFamily: 'var(--font-body)'
+                fontSize: '10px', 
+                fontWeight: '500', 
+                fontFamily: 'var(--font-sans)'
               }}>
                 {t(it.labelKey)}
               </span>
-            )}
-            {isActive && (
-              <div style={{ 
-                position: 'absolute', 
-                bottom: '8px', 
-                width: '4px', 
-                height: '4px', 
-                borderRadius: '50%', 
-                backgroundColor: 'var(--mealio-accent)' 
-              }} />
             )}
           </button>
         );
