@@ -1,0 +1,8 @@
+<div style={{ 
+  width: '56px', height: '56px', borderRadius: '50%', 
+  background: '#3A211C', display: 'flex', 
+  alignItems: 'center', justifyContent: 'center', fontSize: '32px',
+  border: '2px solid #F04A32'
+}}>
+  {state.profile.avatar || '🧑‍🍳'}
+</div> // <--- ERREUR ICI
