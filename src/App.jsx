@@ -20,6 +20,7 @@ import './styles/global.css';
 import { App as CapacitorApp } from '@capacitor/app';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useKeyboard } from './hooks/useKeyboard';
 
 function AuthGuard({ children }) {
   const { state } = useApp();
@@ -33,6 +34,7 @@ function Shell() {
   const { state } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
+  const isKeyboardOpen = useKeyboard();
 
   useEffect(() => {
     const backListener = CapacitorApp.addListener('backButton', (data) => {
@@ -72,7 +74,8 @@ function Shell() {
           <Route path="/ai-chef" element={<AuthGuard><AIChef /></AuthGuard>} />
         </Routes>
       </div>
-      {!isAuthPage && <BottomNav />}
+      {/* Masquer la BottomNav si on est sur Auth OU si le clavier est ouvert */}
+      {!isAuthPage && !isKeyboardOpen && <BottomNav />}
     </div>
   );
 }

@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { askAI } from '../data/aiService';
-import { ArrowLeft, Send, Sparkles } from 'lucide-react';
+import { ArrowLeft, Send, Sparkles, AlertCircle } from 'lucide-react';
 import AmbientBackground from '../components/AmbientBackground';
+import { useKeyboard } from '../hooks/useKeyboard';
 
 export default function AIChef() {
   const { allRecipes, t } = useApp();
   const navigate = useNavigate();
+  const isKeyboardOpen = useKeyboard();
   const [messages, setMessages] = useState([
     { role: 'ai', text: t('aiChef.greeting') || "Bonjour ! Je suis votre Chef IA 👋 Je peux vous aider à trouver des idées de repas, suggérer des substitutions ou adapter vos recettes. Que voulez-vous cuisiner ?" },
   ]);
@@ -18,7 +20,7 @@ export default function AIChef() {
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, error]);
+  }, [messages, error, isKeyboardOpen]);
 
   async function send(textOverride = null) {
     const textToSend = textOverride || input.trim();
@@ -58,7 +60,8 @@ export default function AIChef() {
 
       setMessages((m) => [...m, { role: 'ai', text }]);
     } catch (e) {
-      setError(textToSend);
+      console.error("AI Chef Request Failed:", e);
+      setError("Mealio couldn't reach the AI right now.");
     } finally {
       setLoading(false);
     }
@@ -78,11 +81,19 @@ export default function AIChef() {
       height: '100vh', 
       backgroundColor: 'var(--bg-main)',
       padding: '0',
-      position: 'relative'
+      position: 'relative',
+      overflow: 'hidden'
     }}>
       <AmbientBackground />
 
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div style={{ 
+        position: 'relative', 
+        zIndex: 1, 
+        display: 'flex', 
+        flexDirection: 'column', 
+        height: '100%',
+        backgroundColor: 'transparent'
+      }}>
         {/* HEADER */}
         <header style={{ 
           padding: '24px', 
@@ -91,7 +102,8 @@ export default function AIChef() {
           gap: '16px', 
           backgroundColor: 'var(--bg-card)',
           borderBottom: '1px solid var(--border-color)',
-          position: 'relative'
+          position: 'relative',
+          zIndex: 10
         }}>
           <button 
             onClick={() => navigate(-1)}
@@ -104,7 +116,7 @@ export default function AIChef() {
           >
             <ArrowLeft size={20} />
           </button>
-          <h1 style={{ fontSize: '22px', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h1 style={{ fontSize: '22px', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', fontFamily: 'var(--font-serif)' }}>
             <Sparkles size={20} color="var(--accent)" /> {t('aiChef.title')}
           </h1>
         </header>
@@ -117,7 +129,8 @@ export default function AIChef() {
           display: 'flex', 
           flexDirection: 'column', 
           gap: '16px',
-          paddingBottom: '120px'
+          paddingBottom: '120px',
+          zIndex: 1
         }}>
           {messages.map((m, i) => (
             <div key={i} style={{ 
@@ -126,7 +139,7 @@ export default function AIChef() {
               width: '100%'
             }}>
               <div style={{ 
-                maxWidth: '80%', 
+                maxWidth: '85%', 
                 padding: '12px 16px', 
                 borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                 backgroundColor: m.role === 'user' ? 'var(--accent)' : 'var(--bg-card)',
@@ -141,6 +154,7 @@ export default function AIChef() {
               </div>
             </div>
           ))}
+          
           {loading && (
             <div style={{ 
               display: 'flex', justifyContent: 'flex-start', width: '100%' 
@@ -151,9 +165,11 @@ export default function AIChef() {
                 color: 'var(--text-secondary)',
                 border: '1px solid var(--border-color)',
                 fontSize: '14px',
-                fontStyle: 'italic'
+                fontStyle: 'italic',
+                display: 'flex', alignItems: 'center', gap: '8px'
               }}>
-                {t('common.loading')}...
+                <div className="loader" style={{ width: '12px', height: '12px', borderWidth: '2px', borderTopColor: 'var(--accent)' }} />
+                Mealio is thinking...
               </div>
             </div>
           )}
@@ -164,19 +180,21 @@ export default function AIChef() {
             }}>
               <div style={{ 
                 maxWidth: '80%', padding: '16px', borderRadius: '16px', 
-                backgroundColor: 'var(--accent-soft)', 
+                backgroundColor: 'rgba(240, 74, 50, 0.1)', 
                 border: '1px solid var(--accent)',
-                textAlign: 'center'
+                textAlign: 'center',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px'
               }}>
-                <p style={{ color: 'var(--accent-dark)', fontWeight: '600', marginBottom: '12px', fontSize: '14px' }}>
-                  {t('aiChef.error')}
-                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#ff8a7a', fontWeight: '600' }}>
+                  <AlertCircle size={18} />
+                  {error}
+                </div>
                 <button 
-                  className="btn btn-primary" 
-                  onClick={() => send(error)}
+                  className="btn-premium btn-primary" 
+                  onClick={() => send()}
                   style={{ padding: '8px 16px', fontSize: '13px' }}
                 >
-                  {t('common.tryAgain')}
+                  Try again
                 </button>
               </div>
             </div>
@@ -184,15 +202,20 @@ export default function AIChef() {
           <div ref={endRef} />
         </div>
 
-        {/* INPUT AREA */}
+        {/* INPUT AREA - Keyboard Aware */}
         <div style={{ 
-          position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-          width: '100%', maxWidth: 'var(--app-max-width)',
+          position: 'fixed', 
+          bottom: 0, 
+          left: '50%', 
+          transform: 'translateX(-50%)',
+          width: '100%', 
+          maxWidth: 'var(--app-max-width)',
           backgroundColor: 'var(--bg-card)',
           borderTop: '1px solid var(--border-color)',
           padding: '20px 24px calc(80px + env(safe-area-inset-bottom))',
           boxSizing: 'border-box',
-          zIndex: 10
+          zIndex: 10,
+          transition: 'bottom 0.2s ease'
         }}>
           <div style={{ 
             display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '16px', 
@@ -234,7 +257,7 @@ export default function AIChef() {
               }}
             />
             <button 
-              className="btn btn-primary" 
+              className="btn-premium btn-primary" 
               onClick={() => send()} 
               disabled={loading} 
               style={{ padding: '10px', borderRadius: 'var(--r-md)' }}
