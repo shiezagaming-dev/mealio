@@ -77,13 +77,14 @@ h1, h2, h3, h4 {
   margin: 0 auto;
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-lg) var(--space-lg) calc(100px + env(safe-area-inset-bottom));
+  /* Padding bottom increased to clear the floating nav */
+  padding: var(--space-lg) var(--space-lg) calc(110px + env(safe-area-inset-bottom));
   -webkit-overflow-scrolling: touch;
 }
 
 @media (min-width: 768px) {
   .screen {
-    padding: var(--space-xl) calc(var(--space-xl) * 2) 120px;
+    padding: var(--space-xl) calc(var(--space-xl) * 2) 130px;
   }
 }
 
@@ -224,7 +225,7 @@ h1, h2, h3, h4 {
 
 .bottom-nav-premium {
   position: fixed;
-  bottom: 24px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 32px);

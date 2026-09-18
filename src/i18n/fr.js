@@ -63,10 +63,15 @@ export const fr = {
   },
   aiChef: {
     title: 'Chef IA',
+    greeting: 'Bonjour ! Je suis votre Chef IA 👋 Je peux vous aider à trouver des idées de repas, suggérer des substitutions ou adapter vos recettes. Que voulez-vous cuisiner ?',
     subtitle: "Besoin d'inspiration ?",
     placeholder: 'Demandez une idée de recette...',
     cta: 'Demander au Chef',
     error: 'Une erreur est survenue avec le Chef IA.',
+    suggestion1: 'Idée de dîner rapide',
+    suggestion2: 'Remplacer le beurre',
+    suggestion3: 'Recette avec poulet et riz',
+    suggestion4: 'Recette végétarienne',
   },
   scanner: {
     title: 'Scanner un plat',

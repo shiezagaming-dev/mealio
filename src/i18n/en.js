@@ -63,10 +63,15 @@ export const en = {
   },
   aiChef: {
     title: 'AI Chef',
+    greeting: 'Hello! I am your AI Chef 👋 I can help you find meal ideas, suggest substitutions or adapt your recipes. What would you like to cook?',
     subtitle: 'Need some inspiration?',
     placeholder: 'Ask for a recipe idea...',
     cta: 'Ask the Chef',
     error: 'An error occurred with the AI Chef.',
+    suggestion1: 'Quick dinner idea',
+    suggestion2: 'Replace butter',
+    suggestion3: 'Recipe with chicken and rice',
+    suggestion4: 'Vegetarian recipe',
   },
   scanner: {
     title: 'Scan a dish',
