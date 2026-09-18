@@ -16,12 +16,12 @@ const COMMON_INGREDIENTS = [
   { name: 'Cheese', img: 'Cheese' },
 ];
 const CATEGORIES_LIST = [
-  { id: 'Breakfast', img: 'https://images.unsplash.com/photo-1482049016688-2bcf81e51d0e?q=80&w=200' },
-  { id: 'Lunch', img: 'https://images.unsplash.com/photo-1546069901-ba959//q=80&w=200' },
-  { id: 'Dinner', img: 'https://images.unsplash.com/photo-1504674900247-a688eacf7c6a?q=80&w=200' },
-  { id: 'Dessert', img: 'https://images.unsplash.com/photo-1551024601-bec78aea7eea?q=80&w=200' },
-  { id: 'Drinks', img: 'https://images.unsplash.com/photo-1513558161293-e776f397f88f?q=80&w=200' },
-  { id: 'Appetizers', img: 'https://images.unsplash.com/photo-1541529086526-6755f67f377c?q=80&w=200' },
+  { id: 'Breakfast', img: 'https://images.unsplash.com/photo-1482049016688-2bcf81e51d0e?q=80&w=400' },
+  { id: 'Lunch', img: 'https://images.unsplash.com/photo-1546069901-ba959//q=80&w=400' },
+  { id: 'Dinner', img: 'https://images.unsplash.com/photo-1504674900247-a688eacf7c6a?q=80&w=400' },
+  { id: 'Dessert', img: 'https://images.unsplash.com/photo-1551024601-bec78aea7eea?q=80&w=400' },
+  { id: 'Drinks', img: 'https://images.unsplash.com/photo-1513558161293-e776f397f88f?q=80&w=400' },
+  { id: 'Appetizers', img: 'https://images.unsplash.com/photo-1541529086526-6755f67f377c?q=80&w=400' },
 ];
 
 export default function Search() {
@@ -102,37 +102,24 @@ export default function Search() {
   }
 
   return (
-    <div className="screen" style={{ 
-      maxWidth: '800px', 
-      margin: '0 auto', 
-      width: '100%', 
-      backgroundColor: '#171512', 
-      color: '#F4EBDD',
-      minHeight: '100vh',
-      paddingBottom: '100px'
-    }}>
-      <div style={{ padding: '32px 24px 0' }}>
-        <h1 style={{ 
-          fontSize: '36px', 
-          fontFamily: 'Fraunces, serif', 
-          marginBottom: '24px',
-          fontWeight: '700'
-        }}>
+    <div className="app-container">
+      <div style={{ padding: '40px 24px 0' }}>
+        <h1 style={{ fontSize: '36px', marginBottom: '24px', color: 'var(--mealio-text)' }}>
           {t('search.title')}
         </h1>
 
         <form onSubmit={submitSearch} style={{ marginBottom: '40px' }}>
           <div style={{ 
             position: 'relative', 
-            backgroundColor: '#211E19', 
-            borderRadius: '16px', 
-            padding: '12px 20px',
+            backgroundColor: 'var(--mealio-surface)', 
+            borderRadius: 'var(--radius-lg)', 
+            padding: '16px 24px',
             display: 'flex',
             alignItems: 'center',
-            border: '1px solid #3A211C',
-            boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
+            border: '1px solid var(--mealio-border)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
           }}>
-            <span style={{ color: '#AAA39A', marginRight: '12px', fontSize: '20px' }}>🔍</span>
+            <span style={{ color: 'var(--mealio-text-secondary)', marginRight: '12px', fontSize: '22px' }}>🔍</span>
             <input
               placeholder={t('search.placeholder')}
               value={query}
@@ -141,41 +128,31 @@ export default function Search() {
                 backgroundColor: 'transparent', 
                 border: 'none', 
                 outline: 'none', 
-                color: '#F4EBDD', 
-                fontSize: '16px', 
+                color: 'var(--mealio-text)', 
+                fontSize: '18px', 
                 width: '100%',
-                fontFamily: 'DM Sans, sans-serif'
+                fontFamily: 'var(--font-body)'
               }}
             />
           </div>
         </form>
 
-        <div className="section" style={{ marginBottom: '40px' }}>
+        {/* INGREDIENTS SECTION */}
+        <div style={{ marginBottom: '40px' }}>
           <div style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
-            alignItems: 'center', 
-            marginBottom: '16px' 
+            alignItems: 'baseline', 
+            marginBottom: '20px' 
           }}>
-            <h3 style={{ 
-              fontSize: '20px', 
-              fontFamily: 'Fraunces, serif', 
-              fontWeight: '600' 
-            }}>
+            <h3 style={{ fontSize: '22px', color: 'var(--mealio-text)', margin: 0 }}>
               {t('search.byIngredients')}
             </h3>
-            <span style={{ color: '#F04A32', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
+            <span style={{ color: 'var(--mealio-accent)', fontSize: '14px', fontWeight: '600', cursor: 'pointer' }}>
               {t('common.viewAll')}
             </span>
           </div>
-          <div style={{ 
-            display: 'flex', 
-            gap: '20px', 
-            overflowX: 'auto', 
-            paddingBottom: '12px', 
-            scrollbarWidth: 'none',
-            WebkitOverflowScrolling: 'touch'
-          }}>
+          <div className="horizontal-scroll">
             {COMMON_INGREDIENTS.map((ing) => (
               <div 
                 key={ing.name} 
@@ -185,17 +162,20 @@ export default function Search() {
                   flexDirection: 'column', 
                   alignItems: 'center', 
                   cursor: 'pointer', 
-                  width: '80px', 
+                  width: '84px', 
                   flexShrink: 0 
                 }}
               >
                 <div style={{ 
                   width: '64px', height: '64px', borderRadius: '50%', 
                   overflow: 'hidden', 
-                  backgroundColor: '#27231D',
-                  border: '2px solid #3A211C',
-                  transition: 'border-color 0.2s ease',
-                  boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
+                  backgroundColor: 'var(--mealio-surface-2)',
+                  border: '2px solid var(--mealio-border)',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
                 }}>
                   <img 
                     src={`https://www.themealdb.com/images/ingredients/${ing.img}.png`} 
@@ -204,24 +184,20 @@ export default function Search() {
                   />
                 </div>
                 <span style={{ 
-                  fontSize: '12px', 
+                  fontSize: '13px', 
                   fontWeight: '500', 
-                  marginTop: '8px', 
-                  color: '#AAA39A',
-                  fontFamily: 'DM Sans, sans-serif'
+                  marginTop: '10px', 
+                  color: 'var(--mealio-text-secondary)',
+                  fontFamily: 'var(--font-body)'
                 }}>{ing.name}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="section" style={{ marginBottom: '40px' }}>
-          <h3 style={{ 
-            fontSize: '20px', 
-            fontFamily: 'Fraunces, serif', 
-            fontWeight: '600', 
-            marginBottom: '16px' 
-          }}>
+        {/* MEAL CATEGORIES SECTION */}
+        <div style={{ marginBottom: '40px' }}>
+          <h3 style={{ fontSize: '22px', color: 'var(--mealio-text)', marginBottom: '20px' }}>
             {t('search.byMeal')}
           </h3>
           <div style={{ 
@@ -233,19 +209,21 @@ export default function Search() {
               <div 
                 key={cat.id} 
                 onClick={() => setQuery(cat.id)}
+                className="card"
                 style={{ 
-                  height: '100px', borderRadius: '20px', 
+                  height: '110px', borderRadius: 'var(--radius-md)', 
                   position: 'relative', overflow: 'hidden', cursor: 'pointer',
-                  border: '1px solid #3A211C'
+                  border: '1px solid var(--mealio-border)',
+                  padding: 0
                 }}
               >
-                <img src={cat.img} alt={cat.id} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} />
+                <img src={cat.img} alt={cat.id} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5 }} />
                 <div style={{ 
                   position: 'absolute', inset: 0, 
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: 'linear-gradient(to top, rgba(23,18,15,0.8), transparent)',
-                  color: '#F4EBDD', fontWeight: '700', fontSize: '16px', 
-                  fontFamily: 'Fraunces, serif'
+                  background: 'linear-gradient(to top, rgba(23,18,15,0.9), transparent)',
+                  color: 'var(--mealio-text)', fontWeight: '700', fontSize: '18px', 
+                  fontFamily: 'var(--font-heading)'
                 }}>
                   {cat.id}
                 </div>
@@ -254,17 +232,18 @@ export default function Search() {
           </div>
         </div>
 
-        <div className="section" style={{ marginBottom: '32px' }}>
-          <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '8px', scrollbarWidth: 'none' }}>
+        {/* FILTERS */}
+        <div style={{ marginBottom: '32px' }}>
+          <div className="horizontal-scroll" style={{ gap: '8px' }}>
             {FILTERS.map((f) => (
               <span 
                 key={f} 
                 style={{ 
-                  padding: '8px 16px', borderRadius: '20px', 
-                  background: activeFilters.includes(f) ? '#F04A32' : '#211E19', 
-                  color: activeFilters.includes(f) ? '#F4EBDD' : '#AAA39A',
-                  border: '1px solid #3A211C', cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap',
-                  fontFamily: 'DM Sans, sans-serif',
+                  padding: '8px 16px', borderRadius: 'var(--radius-sm)', 
+                  background: activeFilters.includes(f) ? 'var(--mealio-accent)' : 'var(--mealio-surface)', 
+                  color: activeFilters.includes(f) ? 'var(--mealio-text)' : 'var(--mealio-text-secondary)',
+                  border: '1px solid var(--mealio-border)', cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap',
+                  fontFamily: 'var(--font-body)',
                   transition: 'all 0.2s ease'
                 }} 
                 onClick={() => toggleFilter(f)}
@@ -275,22 +254,23 @@ export default function Search() {
           </div>
         </div>
 
-        <div style={{ marginBottom: '80px' }}>
+        {/* RESULTS */}
+        <div style={{ marginBottom: '120px' }}>
           <div style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
-            alignItems: 'center', 
-            marginBottom: '20px' 
+            alignItems: 'baseline', 
+            marginBottom: '24px' 
           }}>
-            <h3 style={{ fontSize: '20px', fontFamily: 'Fraunces, serif', fontWeight: '600' }}>
+            <h3 style={{ fontSize: '22px', color: 'var(--mealio-text)', fontFamily: 'var(--font-heading)' }}>
               {results.length} {t('search.results')}
             </h3>
-            {liveSearching && <span style={{ color: '#AAA39A', fontSize: '13px' }}>Recherche...</span>}
+            {liveSearching && <span style={{ color: 'var(--mealio-text-secondary)', fontSize: '13px' }}>Recherche...</span>}
           </div>
           
           {results.length === 0 ? (
             <div style={{ 
-              textAlign: 'center', padding: '60px 0', color: '#AAA39A' 
+              textAlign: 'center', padding: '60px 0', color: 'var(--mealio-text-secondary)' 
             }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>🍽️</div>
               <p>{t('search.noResults')}</p>

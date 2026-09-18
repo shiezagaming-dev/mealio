@@ -26,29 +26,14 @@ export default function BottomNav() {
   };
 
   return (
-    <nav style={{ 
-      position: 'fixed', 
-      bottom: 0, 
-      left: '50%', 
-      transform: 'translateX(-50%)', 
-      width: '100%', 
-      maxWidth: '800px', // Contrainte tablette
-      zIndex: 1000,
-      backgroundColor: '#211E19',
-      borderTop: '1px solid #3A211C',
-      display: 'flex',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      padding: '12px 0',
-      paddingBottom: 'calc(12px + env(safe-area-inset-bottom))',
-      boxShadow: '0 -4px 20px rgba(0,0,0,0.4)'
-    }}>
+    <nav className="bottom-nav">
       {items.map((it) => {
         const isActive = pathname === it.path;
         return (
           <button
             key={it.path}
             onClick={() => navigate(it.path)}
+            className="nav-item"
             style={{ 
               border: 'none', 
               background: 'transparent', 
@@ -56,18 +41,19 @@ export default function BottomNav() {
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 
+              justifyContent: 'center',
               gap: '4px',
               flex: 1,
               transition: 'all 0.2s ease',
               position: 'relative',
-              padding: '8px 0'
+              color: isActive ? 'var(--mealio-accent)' : 'var(--mealio-text-secondary)',
+              opacity: isActive ? 1 : 0.7
             }}
           >
             <span style={{ 
               fontSize: it.primary ? '28px' : '24px', 
-              filter: isActive ? 'none' : 'grayscale(1)',
-              opacity: isActive ? 1 : 0.6,
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              filter: isActive ? 'none' : 'grayscale(1)'
             }}>
               {it.icon}
             </span>
@@ -75,8 +61,7 @@ export default function BottomNav() {
               <span style={{ 
                 fontSize: '11px', 
                 fontWeight: '600', 
-                color: isActive ? '#F04A32' : '#AAA39A',
-                transition: 'all 0.2s ease'
+                fontFamily: 'var(--font-body)'
               }}>
                 {t(it.labelKey)}
               </span>
@@ -84,11 +69,11 @@ export default function BottomNav() {
             {isActive && (
               <div style={{ 
                 position: 'absolute', 
-                bottom: -8, 
+                bottom: '8px', 
                 width: '4px', 
                 height: '4px', 
                 borderRadius: '50%', 
-                backgroundColor: '#F04A32' 
+                backgroundColor: 'var(--mealio-accent)' 
               }} />
             )}
           </button>
