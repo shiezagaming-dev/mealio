@@ -93,12 +93,11 @@ async function handleChat(request, env, corsHeaders) {
   const { messages } = await request.json();
   
   try {
-    // 1. Try Cloudflare Workers AI
+    // PRIMARY: Cloudflare Workers AI
     const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
       messages: messages
     });
     
-    // Normalize to OpenRouter shape: { choices: [{ message: { content: "..." } }] }
     const result = {
       choices: [{
         message: {
@@ -126,7 +125,7 @@ async function handleRecipe(request, env, corsHeaders) {
   Required fields: title, description, ingredients (array of {item, amount, unit}), instructions (array), prepTime, cookTime, totalTime, servings, difficulty, cuisine, dietaryInfo, substitutions, tips.`;
 
   try {
-    // 1. Try Cloudflare Workers AI
+    // PRIMARY: Cloudflare Workers AI
     const aiResponse = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
       messages: [
         { role: 'system', content: systemPrompt },
@@ -165,7 +164,7 @@ async function handleAnalyze(request, env, corsHeaders) {
   const { image, prompt } = await request.json();
   
   try {
-    // 1. Try Cloudflare Workers AI Vision
+    // PRIMARY: Cloudflare Workers AI Vision
     const aiResponse = await env.AI.run('@cf/llava-hf/llava-1.5-7b-hf', {
       image: Array.from(base64ToUint8Array(image)),
       prompt: prompt,
