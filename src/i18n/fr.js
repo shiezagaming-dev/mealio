@@ -110,12 +110,19 @@ export const fr = {
     empty: 'Aucun repas prévu',
   },
   auth: {
-    signIn: 'Connexion',
-    signUp: 'Créer un compte',
+    welcomeBack: 'Bon retour',
+    createAccount: 'Rejoindre Mealio',
+    subtitle: 'Votre compagnon culinaire propulsé par l\'IA',
     email: 'Adresse e-mail',
     password: 'Mot de passe',
     submit: 'Se connecter',
-    forgot: 'Mot de passe oublié',
+    login: 'Connexion',
+    signup: 'S\'inscrire',
+    forgotPassword: 'Mot de passe oublié ?',
+    noAccount: "Vous n'avez pas de compte ?",
+    createAccountLink: 'En créer un',
+    haveAccount: 'Déjà un compte ?',
+    loginLink: 'Se connecter',
     signOut: 'Déconnexion',
   }
 };

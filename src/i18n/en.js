@@ -110,12 +110,19 @@ export const en = {
     empty: 'No meals planned',
   },
   auth: {
-    signIn: 'Sign in',
-    signUp: 'Create account',
+    welcomeBack: 'Welcome Back',
+    createAccount: 'Join Mealio',
+    subtitle: 'Your AI-powered culinary companion',
     email: 'Email address',
     password: 'Password',
     submit: 'Connect',
-    forgot: 'Forgot password',
+    login: 'Log In',
+    signup: 'Sign Up',
+    forgotPassword: 'Forgot password?',
+    noAccount: "Don't have an account?",
+    createAccountLink: 'Create one',
+    haveAccount: 'Already have an account?',
+    loginLink: 'Log in',
     signOut: 'Sign out',
   }
 };
