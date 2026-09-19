@@ -7,11 +7,13 @@ import '../styles/auth.css';
 export default function Auth() {
   const { state, t, login, signup, setState } = useApp();
   const navigate = useNavigate();
-  const [isLogin, setIsLogin] = useState(true);
+  const [view, setView] = useState('login'); // 'login', 'signup', 'forgot'
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState(false);
 
   useEffect(() => {
     if (window.google) {
@@ -29,12 +31,12 @@ export default function Auth() {
   function handleGoogleResponse(response) {
     try {
       const payload = JSON.parse(atob(response.credential.split('.')[1]));
-      const { email: gEmail, name, picture } = payload;
+      const { email: gEmail, name: gName, picture } = payload;
       
       setState(s => ({
         ...s,
-        account: { email: gEmail, username: name, loggedIn: true },
-        profile: { ...s.profile, username: name, avatar: picture || '🧑‍🍳' }
+        account: { email: gEmail, username: gName, loggedIn: true },
+        profile: { ...s.profile, username: gName, avatar: picture || '🧑‍🍳' }
       }));
       
       navigate('/');
@@ -48,12 +50,31 @@ export default function Auth() {
     setError(null);
     setLoading(true);
     try {
-      if (isLogin) {
+      if (view === 'login') {
         await login(email, password);
-      } else {
+        navigate('/');
+      } else if (view === 'signup') {
+        if (!name.trim()) {
+          setError(t('auth.nameRequired'));
+          setLoading(false);
+          return;
+        }
         await signup(email, password);
+        setState(s => ({
+          ...s,
+          account: { email, username: name, loggedIn: true },
+          profile: { ...s.profile, username: name }
+        }));
+        navigate('/');
+      } else if (view === 'forgot') {
+        // Mock forgot password flow
+        if (!email.trim()) {
+          setError(t('auth.email')); // Reuse email label as simple error or add specific key
+          setLoading(false);
+          return;
+        }
+        setForgotSuccess(true);
       }
-      navigate('/');
     } catch (err) {
       setError(err.message || 'Une erreur est survenue');
     } finally {
@@ -81,78 +102,128 @@ export default function Auth() {
                 <rect x="20" y="60" width="60" height="15" rx="5" fill="var(--accent)" />
               </svg>
             </div>
-            <h1 className="auth-title">{isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}</h1>
-            <p className="auth-subtitle">{t('auth.subtitle')}</p>
+            <h1 className="auth-title">
+              {view === 'login' ? t('auth.welcomeBack') : 
+               view === 'signup' ? t('auth.createAccount') : 
+               t('auth.forgotTitle')}
+            </h1>
+            <p className="auth-subtitle">
+              {view === 'forgot' ? t('auth.forgotSubtitle') : t('auth.subtitle')}
+            </p>
           </header>
 
-          <div className="google-auth-section">
-            <div id="google-signin-btn"></div>
-            <div className="auth-divider">
-              <span>{t('common.search') === 'Search' ? 'or' : 'ou'}</span>
-            </div>
-          </div>
-
-          <form onSubmit={handleSubmit} className="auth-form">
-            {error && (
-              <div className="auth-error">
-                {error}
+          {view !== 'forgot' && (
+            <div className="google-auth-section">
+              <div id="google-signin-btn"></div>
+              <div className="auth-divider">
+                <span>{t('common.search') === 'Search' ? 'or' : 'ou'}</span>
               </div>
-            )}
-
-            <div className="auth-field">
-              <label htmlFor="email">{t('auth.email')}</label>
-              <input 
-                id="email"
-                type="email" 
-                className="auth-input"
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                placeholder="exemple@mail.com"
-                required 
-                autoComplete="email"
-              />
             </div>
+          )}
 
-            <div className="auth-field">
-              <label htmlFor="password">{t('auth.password')}</label>
-              <input 
-                id="password"
-                type="password" 
-                className="auth-input"
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                placeholder="••••••••"
-                required 
-                autoComplete="current-password"
-              />
-            </div>
-
-            <div className="auth-forgot">
-              <button type="button" className="auth-link-btn" onClick={() => navigate('/forgot-password')}>
-                {t('auth.forgotPassword')}
+          {forgotSuccess ? (
+            <div className="auth-success-view">
+              <div className="auth-error" style={{ backgroundColor: 'rgba(40, 167, 69, 0.1)', color: '#28a745' }}>
+                {t('auth.forgotSuccess')}
+              </div>
+              <button className="auth-submit-btn" onClick={() => { setForgotSuccess(false); setView('login'); }}>
+                {t('auth.backToLogin')}
               </button>
             </div>
-
-            <button type="submit" className="auth-submit-btn" disabled={loading}>
-              {loading ? (
-                <span className="loader"></span>
-              ) : (
-                isLogin ? t('auth.login') : t('auth.signup')
+          ) : (
+            <form onSubmit={handleSubmit} className="auth-form">
+              {error && (
+                <div className="auth-error">
+                  {error}
+                </div>
               )}
-            </button>
-          </form>
 
-          <footer className="auth-footer">
-            <span className="auth-footer-text">{isLogin ? t('auth.noAccount') : t('auth.haveAccount')}</span>
-            <button 
-              className="auth-switch-btn" 
-              onClick={() => setIsLogin(!isLogin)}
-            >
-              {isLogin ? t('auth.createAccountLink') : t('auth.loginLink')}
-            </button>
-          </footer>
-        </div>
-      </div>
+              {view === 'signup' && (
+                <div className="auth-field">
+                  <label htmlFor="name">{t('auth.name')}</label>
+                  <input 
+                    id="name"
+                    type="text" 
+                    className="auth-input"
+                    value={name} 
+                    onChange={(e) => setName(e.target.value)} 
+                    placeholder={t('auth.namePlaceholder')}
+                    required 
+                  />
+                </div>
+              )}
+
+              <div className="auth-field">
+                <label htmlFor="email">{t('auth.email')}</label>
+                <input 
+                  id="email"
+                  type="email" 
+                  className="auth-input"
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  placeholder="exemple@mail.com"
+                  required 
+                  autoComplete="email"
+                />
+              </div>
+
+              {view !== 'forgot' && (
+                <div className="auth-field">
+                  <label htmlFor="password">{t('auth.password')}</label>
+                  <input 
+                    id="password"
+                    type="password" 
+                    className="auth-input"
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    placeholder="••••••••"
+                    required 
+                    autoComplete="current-password"
+                  />
+                </div>
+              )}
+
+              {view === 'login' && (
+                <div className="auth-forgot">
+                  <button type="button" className="auth-link-btn" onClick={() => setView('forgot')}>
+                    {t('auth.forgotPassword')}
+                  </button>
+                </div>
+              )}
+
+              <button type="submit" className="auth-submit-btn" disabled={loading}>
+                {loading ? (
+                  <span className="loader"></span>
+                ) : (
+                  view === 'login' ? t('auth.login') : 
+                  view === 'signup' ? t('auth.signup') : 
+                  t('auth.forgotSubmit')
+                )}
+              </button>
+            </form>
+          )}
+
+          {view !== 'forgot' && (
+            <footer className="auth-footer">
+              <span className="auth-footer-text">
+                {view === 'login' ? t('auth.noAccount') : t('auth.haveAccount')}
+              </span>
+              <button 
+                className="auth-switch-btn" 
+                onClick={() => setView(view === 'login' ? 'signup' : 'login')}
+              >
+                {view === 'login' ? t('auth.createAccountLink') : t('auth.loginLink')}
+              </button>
+            </footer>
+          )}
+
+          {view === 'forgot' && !forgotSuccess && (
+            <footer className="auth-footer">
+              <button className="auth-switch-btn" onClick={() => setView('login')}>
+                {t('auth.backToLogin')}
+              </button>
+            </footer>
+          )}
 
       <style>{`
         .auth-page-wrapper {
@@ -314,6 +385,11 @@ export default function Auth() {
           border-radius: 12px;
           font-size: 0.85rem;
           text-align: center;
+        }
+        .auth-success-view {
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
         }
       `}</style>
     </div>
