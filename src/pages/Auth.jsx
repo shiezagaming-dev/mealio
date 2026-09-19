@@ -16,7 +16,7 @@ export default function Auth() {
   useEffect(() => {
     if (window.google) {
       window.google.accounts.id.initialize({
-        client_id: 'YOUR_GOOGLE_CLIENT_ID',
+        client_id: '1068978731743-e25jqlpude9a354u21m2bnl1jhq6sqk4.apps.googleusercontent.com',
         callback: handleGoogleResponse,
       });
       window.google.accounts.id.renderButton(
