@@ -224,6 +224,8 @@ export default function Auth() {
               </button>
             </footer>
           )}
+        </div>
+      </div>
 
       <style>{`
         .auth-page-wrapper {
