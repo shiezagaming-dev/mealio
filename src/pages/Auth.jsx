@@ -1,3 +1,4 @@
+// import { useState, useEffect } from 'react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
@@ -13,7 +14,9 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
   const [forgotSuccess, setForgotSuccess] = useState(false);
+  const [forgotError, setForgotError] = useState(false);
 
   useEffect(() => {
     if (window.google) {
@@ -67,12 +70,12 @@ export default function Auth() {
         }));
         navigate('/');
       } else if (view === 'forgot') {
-        // Mock forgot password flow
-        if (!email.trim()) {
-          setError(t('auth.email')); // Reuse email label as simple error or add specific key
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(forgotEmail)) {
+          setForgotError(t('auth.email'));
           setLoading(false);
           return;
         }
+        // Mock forgot password - show success message
         setForgotSuccess(true);
       }
     } catch (err) {
@@ -130,6 +133,32 @@ export default function Auth() {
                 {t('auth.backToLogin')}
               </button>
             </div>
+          ) : view === 'forgot' ? (
+            <form onSubmit={handleSubmit} className="auth-form">
+              {forgotError && (
+                <div className="auth-error">
+                  {forgotError}
+                </div>
+              )}
+              <div className="auth-field">
+                <label htmlFor="forgot-email">{t('auth.email')}</label>
+                <input 
+                  id="forgot-email"
+                  type="email" 
+                  className="auth-input"
+                  value={forgotEmail} 
+                  onChange={(e) => setForgotEmail(e.target.value)} 
+                  placeholder={t('auth.email')}
+                  required 
+                  autoComplete="email"
+                />
+              </div>
+              <button type="submit" className="auth-submit-btn" disabled={loading}>
+                {loading ? (
+                  <span className="loader"></span>
+                ) : t('auth.forgotSubmit')}
+              </button>
+            </form>
           ) : (
             <form onSubmit={handleSubmit} className="auth-form">
               {error && (
