@@ -40,11 +40,29 @@ export default function Home() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
             <div style={{ 
               width: '56px', height: '56px', borderRadius: '50%', 
-              background: '#3A211C', display: 'flex', 
-              alignItems: 'center', justifyContent: 'center', fontSize: '32px',
-              border: '2px solid var(--accent)'
+              overflow: 'hidden',
+              border: '2px solid var(--accent)',
+              flexShrink: 0,
+              backgroundColor: '#3A211C'
             }}>
-              {state.profile.avatar || '🧑‍🍳'}
+              {state.profile.avatar ? (
+                <img 
+                  src={state.profile.avatar} 
+                  alt="Profile photo" 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              ) : (
+                <span style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  width: '100%', 
+                  height: '100%', 
+                  fontSize: '24px'
+                }}>
+                  🧑‍🍳
+                </span>
+              )}
             </div>
             <div>
               <h1 style={{ 
