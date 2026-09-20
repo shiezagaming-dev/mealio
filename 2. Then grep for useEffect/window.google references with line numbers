@@ -1,0 +1,1 @@
+cat src/pages/Auth.jsx | grep -n "useEffect\|window.google\|initialize\|renderButton"
