@@ -119,7 +119,7 @@ export default function Home() {
             alignItems: 'center', 
             gap: '8px' 
           }}>
-            <Sparkles size={20} color="var(--accent)" /> Créer & Scanner
+            <Sparkles size={20} color="var(--accent)" /> Créer &amp; Scanner
           </h3>
           <div style={{ 
             display: 'grid', 
@@ -223,7 +223,7 @@ export default function Home() {
                 fontFamily: 'var(--font-serif)', 
                 fontWeight: 700, 
                 color: 'var(--text-primary)' 
-              }}>Rapide & Facile</h3>
+              }}>Rapide &amp; Facile</h3>
               <span 
                 onClick={() => navigate('/search')} 
                 style={{ color: 'var(--accent)', fontSize: '14px', fontWeight: '600', cursor: 'pointer', fontFamily: 'var(--font-sans)' }}
