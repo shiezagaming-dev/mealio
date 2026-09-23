@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { recipes as seedRecipes, achievementDefs, defaultFolders, weekDays } from '../data/mockData';
 import { fetchRandomMeals, searchMealsByName, fetchAllCategories, fetchMealsByCategory, lookupMealById } from '../data/mealdb';
+import { askAI } from '../data/aiService';
 import { t as translate } from '../i18n';
 
 const AppCtx = createContext(null);
@@ -18,9 +19,8 @@ function loadState() {
 }
 
 function defaultState() {
-  // Détection automatique de la langue
   const browserLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
-  
+
   return {
     theme: 'light',
     language: browserLang,
@@ -64,7 +64,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     let cancelled = false;
     setLiveLoading(true);
-    
+
     async function initLibrary() {
       try {
         const randoms = await fetchRandomMeals(12);
@@ -92,6 +92,10 @@ export function AppProvider({ children }) {
   async function searchOnline(query) {
     if (!query.trim()) return [];
     return searchMealsByName(query.trim());
+  }
+
+  async function analyzeImage(imageBase64, prompt) {
+    return askAI([{ role: 'user', content: prompt }], { vision: true, imageBase64 });
   }
 
   useEffect(() => {
@@ -282,7 +286,6 @@ export function AppProvider({ children }) {
     logHistory({ type: 'search', label: `Searched "${query}"`, icon: '🔎' });
   }
 
-  // Helper de traduction global injecté dans le contexte
   const t = (key, defaultValue) => translate(state.language, key, defaultValue);
 
   const value = {
@@ -314,6 +317,7 @@ export function AppProvider({ children }) {
     liveLoading,
     searchOnline,
     completeOnboarding,
+    analyzeImage,
   };
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>
