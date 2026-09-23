@@ -35,3 +35,5 @@ export const MealioAPI = {
     return request('/api/ai/analyze-meal', { image, prompt });
   }
 };
+
+export { BACKEND_URL };

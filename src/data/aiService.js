@@ -1,6 +1,4 @@
-import { MealioAPI } from '../services/api';
-
-const API_BASE_URL = 'https://mealio-ai-backend.ishimweshiza324.workers.dev';
+import { MealioAPI, BACKEND_URL } from '../services/api';
 
 /**
  * Service AI unifié pour Mealio.
@@ -12,7 +10,7 @@ export async function askAI(messages, options = {}) {
   try {
     if (vision) {
       // Analyse d'image via le Worker avec URL absolue
-      const response = await fetch(`${API_BASE_URL}/api/ai/analyze-meal`, {
+      const response = await fetch(`${BACKEND_URL}/api/ai/analyze-meal`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: imageBase64, prompt: messages[messages.length - 1].content }),
@@ -28,7 +26,7 @@ export async function askAI(messages, options = {}) {
       };
     } else {
       // Chat texte via le Worker avec URL absolue
-      const response = await fetch(`${API_BASE_URL}/api/ai/chat`, {
+      const response = await fetch(`${BACKEND_URL}/api/ai/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages }),

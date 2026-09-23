@@ -8,7 +8,7 @@ import AmbientBackground from '../components/AmbientBackground';
 const FILTERS = ['Under 15 min', 'Under 30 min', 'Easy', 'Vegetarian', 'Vegan', 'Gluten-free', 'Budget'];
 const CATEGORIES_LIST = [
   { id: 'Breakfast', img: 'https://images.unsplash.com/photo-1482049016688-2bcf81e51d0e?q=80&w=400', color: '#FFD8B1' },
-  { id: 'Lunch', img: 'https://images.unsplash.com/photo-1546069901-ba959a-q=80&w=400', color: '#B1E5FF' },
+  { id: 'Lunch', img: 'https://images.unsplash.com/photo-1546069901?q=80&w=400', color: '#B1E5FF' },
   { id: 'Dinner', img: 'https://images.unsplash.com/photo-1504674900247-a688eacf7c6a?q=80&w=400', color: '#FFB1B1' },
   { id: 'Dessert', img: 'https://images.unsplash.com/photo-1551024601-bec78aea7eea?q=80&w=400', color: '#FFB1E5' },
   { id: 'Drinks', img: 'https://images.unsplash.com/photo-1513558161293-e776f397f88f?q=80&w=400', color: '#B1FFD8' },
@@ -56,8 +56,8 @@ export default function Search() {
     const recipesList = allRecipes();
     const seen = new Set();
     const combined = [
-      ...liveResults, 
-      ...recipesList, 
+      ...liveResults,
+      ...recipesList,
       ...catalog.map(m => ({
         id: `mdb_${m.idMeal}`,
         name: m.strMeal,
@@ -102,10 +102,10 @@ export default function Search() {
         </h1>
 
         <form onSubmit={submitSearch} style={{ marginBottom: '40px' }}>
-          <div style={{ 
-            position: 'relative', 
-            backgroundColor: 'var(--bg-card)', 
-            borderRadius: 'var(--r-lg)', 
+          <div style={{
+            position: 'relative',
+            backgroundColor: 'var(--bg-card)',
+            borderRadius: 'var(--r-lg)',
             padding: '16px 24px',
             display: 'flex',
             alignItems: 'center',
@@ -117,12 +117,12 @@ export default function Search() {
               placeholder={t('search.placeholder')}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              style={{ 
-                backgroundColor: 'transparent', 
-                border: 'none', 
-                outline: 'none', 
-                color: 'var(--text-primary)', 
-                fontSize: '18px', 
+              style={{
+                backgroundColor: 'transparent',
+                border: 'none',
+                outline: 'none',
+                color: 'var(--text-primary)',
+                fontSize: '18px',
                 width: '100%',
                 fontFamily: 'var(--font-sans)'
               }}
@@ -135,35 +135,35 @@ export default function Search() {
             <h3 style={{ fontSize: 'var(--fs-h2)', color: 'var(--text-primary)', marginBottom: '20px' }}>
               {t('search.byMeal')}
             </h3>
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(2, 1fr)', 
-              gap: '16px' 
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '16px'
             }}>
               {CATEGORIES_LIST.map((cat) => (
-                <div 
-                  key={cat.id} 
+                <div
+                  key={cat.id}
                   onClick={() => setQuery(cat.id)}
                   className="recipe-card-premium"
-                  style={{ 
-                    height: '110px', borderRadius: 'var(--r-md)', 
+                  style={{
+                    height: '110px', borderRadius: 'var(--r-md)',
                     position: 'relative', overflow: 'hidden', cursor: 'pointer',
                     border: '1px solid var(--border-color)',
                     padding: 0,
                     backgroundColor: cat.color
                   }}
                 >
-                  <img 
-                    src={cat.img} 
-                    alt={cat.id} 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }} 
+                  <img
+                    src={cat.img}
+                    alt={cat.id}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.6 }}
                     onError={(e) => { e.target.style.display = 'none'; }}
                   />
-                  <div style={{ 
-                    position: 'absolute', inset: 0, 
+                  <div style={{
+                    position: 'absolute', inset: 0,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: 'linear-gradient(to top, rgba(23,18,15,0.9), transparent)',
-                    color: 'var(--text-primary)', fontWeight: '700', fontSize: '18px', 
+                    color: 'var(--text-primary)', fontWeight: '700', fontSize: '18px',
                     fontFamily: 'var(--font-serif)'
                   }}>
                     {cat.id}
@@ -177,16 +177,16 @@ export default function Search() {
         <div style={{ marginBottom: '32px' }}>
           <div className="horizontal-scroll" style={{ gap: '8px' }}>
             {FILTERS.map((f) => (
-              <span 
-                key={f} 
-                style={{ 
-                  padding: '8px 16px', borderRadius: 'var(--r-sm)', 
-                  background: activeFilters.includes(f) ? 'var(--accent)' : 'var(--bg-card)', 
+              <span
+                key={f}
+                style={{
+                  padding: '8px 16px', borderRadius: 'var(--r-sm)',
+                  background: activeFilters.includes(f) ? 'var(--accent)' : 'var(--bg-card)',
                   color: activeFilters.includes(f) ? 'var(--text-primary)' : 'var(--text-secondary)',
                   border: '1px solid var(--border-color)', cursor: 'pointer', fontSize: '13px', whiteSpace: 'nowrap',
                   fontFamily: 'var(--font-sans)',
                   transition: 'all 0.2s ease'
-                }} 
+                }}
                 onClick={() => toggleFilter(f)}
               >
                 {f}
@@ -196,21 +196,21 @@ export default function Search() {
         </div>
 
         <div style={{ marginBottom: '120px' }}>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: 'baseline', 
-            marginBottom: '24px' 
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            marginBottom: '24px'
           }}>
             <h3 style={{ fontSize: 'var(--fs-h2)', color: 'var(--text-primary)', fontFamily: 'var(--font-serif)' }}>
               {results.length} {t('search.results')}
             </h3>
             {liveSearching && <span style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Recherche...</span>}
           </div>
-          
+
           {results.length === 0 ? (
-            <div style={{ 
-              textAlign: 'center', padding: '60px 0', color: 'var(--text-secondary)' 
+            <div style={{
+              textAlign: 'center', padding: '60px 0', color: 'var(--text-secondary)'
             }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>🍽️</div>
               <p>{t('search.noResults')}</p>
